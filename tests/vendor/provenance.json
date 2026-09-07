@@ -1,0 +1,147 @@
+{
+  "clientVersion": "1.0.96",
+  "desktopReaderSha256": "c35905fe5a8812ad31bf3e1dbdf6d1f2e4c757b2472a27087616b84e62275b0a",
+  "serverDtoSourceSha256": "65bdebb0edfd7daa075b52a85be3296a8d5ec30e479532dbf1290ee7dd7b05d7",
+  "inputs": [
+    {
+      "path": "node_modules/uuid/dist/index.js",
+      "sha256": "65e9fae8f22278e6c9ac5b016dbe1ead01b8014f66ce08a807741885d4bf01f1"
+    },
+    {
+      "path": "node_modules/uuid/dist/max.js",
+      "sha256": "8f81a7b2a5f8704ea1b4e8f83d36659856fdf3d122b2bd16fe1b5c47c97b6ffa"
+    },
+    {
+      "path": "node_modules/uuid/dist/md5.js",
+      "sha256": "15784bb25da507dd4645984534ff773c6181ab58eb7d71023f538318c957eca3"
+    },
+    {
+      "path": "node_modules/uuid/dist/native.js",
+      "sha256": "b6dfd1a72e81f1528c37a4ca8eb2e085d42c353dc098f610a18cd66358d8bb39"
+    },
+    {
+      "path": "node_modules/uuid/dist/nil.js",
+      "sha256": "a6f8ac293df0b75af2946e5190d8f00336b826bb1340b96d669a09beb8885ff8"
+    },
+    {
+      "path": "node_modules/uuid/dist/parse.js",
+      "sha256": "a383f50a691c05533a40bbb4a87f718daa050abbc96debc9715efdc74d8538b4"
+    },
+    {
+      "path": "node_modules/uuid/dist/regex.js",
+      "sha256": "774bc4bc767a58458dfdd252430d96b71b3d380ac241b50df6cb757aaa1b4783"
+    },
+    {
+      "path": "node_modules/uuid/dist/rng.js",
+      "sha256": "c77577812df80cdfd9401a90736a3f4fcf428bd85219ea0977d515949e2cfb18"
+    },
+    {
+      "path": "node_modules/uuid/dist/sha1.js",
+      "sha256": "417afd0d7f9695f9b6facf84fbe17bd8e9cb1eed04893ecf1e0c241d13a622d2"
+    },
+    {
+      "path": "node_modules/uuid/dist/stringify.js",
+      "sha256": "bb592b599f2b00be6ca9fb2ac2fb7350abf3a6e6e274201cf6865c8c15e52b6a"
+    },
+    {
+      "path": "node_modules/uuid/dist/v1.js",
+      "sha256": "a3cd1c783a64f6e010af00593ac8e7e28c127a5e63266da4809b5687f1a081aa"
+    },
+    {
+      "path": "node_modules/uuid/dist/v1ToV6.js",
+      "sha256": "f0a2d19ee0d4398607808fcfc3eebeb1ea7af08a0c17d71d42fc612f97241a3f"
+    },
+    {
+      "path": "node_modules/uuid/dist/v3.js",
+      "sha256": "3b65ad31501886af057e13aeec03afedc54f1f85cc8d332b0eb89800b11fbce4"
+    },
+    {
+      "path": "node_modules/uuid/dist/v35.js",
+      "sha256": "cd9bdff5aca247c93c0c7bfa3bddbd022076aebb8759ca00004dc980f38901d8"
+    },
+    {
+      "path": "node_modules/uuid/dist/v4.js",
+      "sha256": "c56f3f55a2a738c9092a202baca95cf964c8e7aad2dfa8479216af02b095bd59"
+    },
+    {
+      "path": "node_modules/uuid/dist/v5.js",
+      "sha256": "daaf09616ea3b145ccd6a1dfea190b65d546267a9916c5741e026d4290c61ae9"
+    },
+    {
+      "path": "node_modules/uuid/dist/v6.js",
+      "sha256": "32f4c875353e043cb8d790f2d63d46e7b23d592fa3d5d09ace6afcff1dd44e03"
+    },
+    {
+      "path": "node_modules/uuid/dist/v6ToV1.js",
+      "sha256": "78475a282beaea6e8c45e5f2586134929be2e21728f159fb8559df06d7288475"
+    },
+    {
+      "path": "node_modules/uuid/dist/v7.js",
+      "sha256": "38208cc85d447b13d7fc9e75377d4f82e17ad982334786396623c57c1406a257"
+    },
+    {
+      "path": "node_modules/uuid/dist/validate.js",
+      "sha256": "78ba6a91a3c2d219e3a6980d7704c0998e8152cabcaece0f5a04989025d0e60c"
+    },
+    {
+      "path": "node_modules/uuid/dist/version.js",
+      "sha256": "5a43d6eb8496806fd5e152f92edda603dbb1f77108045edcf034f22c9e320ce8"
+    },
+    {
+      "path": "src/renderer/src/utils/atlasStatsSync.ts",
+      "sha256": "1d226b323d195f7480c8acdd54286a035de594730f6c6f0f6dec831ee042706d"
+    },
+    {
+      "path": "src/renderer/src/utils/atlasTags.ts",
+      "sha256": "f2a892d091515a31a421a4adee6d0d890316447e7c5a001987403805cdd9eee3"
+    },
+    {
+      "path": "src/renderer/src/utils/atlasUrl.ts",
+      "sha256": "62f7a4e37705c7ce1fa86b9f06f3accfe5a0b782e29fe37034ef46245883d335"
+    },
+    {
+      "path": "src/renderer/src/utils/discordShareWire.ts",
+      "sha256": "b33b6cdd62d807629612aa808469426e4e29440cacded5a0530c5bdab3e05015"
+    },
+    {
+      "path": "src/renderer/src/utils/investmentSetup.ts",
+      "sha256": "4258f0a1cfaa184e6a6e75d2ca262257536d5195f466bf1501c687c9520ddde2"
+    },
+    {
+      "path": "src/renderer/src/utils/lootCategories.ts",
+      "sha256": "358a6633dbb84b4fefb63ec27715881e9334dace6c5f52b258d0f5d2c1007f66"
+    },
+    {
+      "path": "src/renderer/src/utils/lootSummary.ts",
+      "sha256": "c65492b13e91315117d2a64117d534cc1fdd627786d6c0619bafb50182112149"
+    },
+    {
+      "path": "src/renderer/src/utils/lootUtils.ts",
+      "sha256": "e2d12d0a4a9cd3f5d0c7b2ed25fcb47190b032f9e0f6f83c7243f333405d00ec"
+    },
+    {
+      "path": "src/renderer/src/utils/manualStatistics.ts",
+      "sha256": "c32bdd8d275debdc20f07f1f6d13f922b81bae469846b6be8f258dd0e1c98790"
+    },
+    {
+      "path": "src/renderer/src/utils/runStatistics.ts",
+      "sha256": "1b515ace4b7b7b428f6697bf75fac349398eac2805e2a125a77a07710638605b"
+    },
+    {
+      "path": "src/shared/atlasReaderSafety.ts",
+      "sha256": "4ff755b199bdb5b499b72d469e68d7c75b5735cbfca8cb41365c249d2d2c1716"
+    },
+    {
+      "path": "src/shared/atlasStats.ts",
+      "sha256": "01ccaa35aa5b82ac878a76e140d06b15fcc5449e459d540b565875410d307f2a"
+    },
+    {
+      "path": "src/shared/manualLoot.ts",
+      "sha256": "c826c6e6c198b7dc24f25bb2d0b7fe7c8231af997ceb856baaac39cfeff3a4b2"
+    },
+    {
+      "path": "website/node_modules/fflate/esm/browser.js",
+      "sha256": "b7ca4450b19559a1d50eb381adcee94b82449674be4cd17789d9beba7e6122a1"
+    }
+  ]
+}

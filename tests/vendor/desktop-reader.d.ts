@@ -1,0 +1,3 @@
+interface Decoded {strategyNotes:string;mapType:string;chisel:string;scarabs:string[];deliOrbType:string;deliOrbQty:number;astroType:string;operation:string;updateStrategyId:string|null;evidenceTargetStrategyId:string|null;netProfit:number;totalInvest:number}
+export function decodeDiscordSharePayload(payload:string):Decoded|null;
+export function buildImportedSetupPlan(source:{mapType:string;chisel:string;scarabs:string[];deliriumType:string;deliriumCountPerMap:number;astrolabeType:string}):{mapType:string;chiselType:string;scarabNames:string[];deliriumType:string;deliriumCountPerMap:number;astrolabeType:string};

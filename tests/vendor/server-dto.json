@@ -1,0 +1,134 @@
+{
+  "detail": {
+    "schema_version": 1,
+    "id": "11111111-1111-4111-8111-000000000001",
+    "revision": 1,
+    "title": "Sparse current strategy",
+    "notes": null,
+    "tags": [],
+    "league": null,
+    "attribution": null,
+    "community": null,
+    "published_at": null,
+    "updated_at": null,
+    "score": null,
+    "setup": {
+      "map_type": null,
+      "group_play": null,
+      "party_size": null,
+      "chisel": null,
+      "scarabs": [],
+      "delirium": null,
+      "astrolabe": null,
+      "multiplying_modifiers": null,
+      "atlas": {
+        "url": null,
+        "points": null,
+        "points_max": null
+      },
+      "run_regex": null,
+      "slam_regex": null,
+      "game_data": {
+        "revision": null,
+        "patch_version": null
+      }
+    },
+    "observed": {
+      "map_count": null,
+      "mod_average": null,
+      "mod_sample_size": null,
+      "quantity_average": null,
+      "rarity_average": null,
+      "pack_size_average": null,
+      "currency_average": null,
+      "multiplier_average": null
+    },
+    "economics": {
+      "all_in_cost_per_map_chaos": null,
+      "recurring_cost_per_map_chaos": null,
+      "net_per_map_divines": null,
+      "historical_net_divines": null,
+      "historical_invest_divines": null
+    },
+    "coverage": {
+      "run_count": null,
+      "map_count": null,
+      "timed_run_count": null,
+      "timed_map_count": null,
+      "timed_minutes": null,
+      "timed_net_divines": null,
+      "net_divines_per_hour": null,
+      "loot_available": false
+    },
+    "loot": null
+  },
+  "row": {
+    "schema_version": 1,
+    "id": "11111111-1111-4111-8111-000000000001",
+    "title": "Sparse current strategy",
+    "tags": [],
+    "league": null,
+    "attribution": null,
+    "community": null,
+    "published_at": null,
+    "updated_at": null,
+    "score": null,
+    "map_type": null,
+    "observed": {
+      "map_count": null,
+      "mod_average": null,
+      "mod_sample_size": null
+    },
+    "results": {
+      "all_in_cost_per_map_chaos": null,
+      "net_per_map_divines": null,
+      "net_divines_per_hour": null
+    },
+    "evidence": {
+      "run_count": null,
+      "timed_run_count": null,
+      "timed_map_count": null
+    }
+  },
+  "run": {
+    "schema_version": 1,
+    "ordinal": 1,
+    "contributed_on": "2026-09-04",
+    "setup": {
+      "map_type": null,
+      "group_play": null,
+      "party_size": null,
+      "chisel": null,
+      "scarabs": [],
+      "delirium": null,
+      "astrolabe": null,
+      "multiplying_modifiers": null,
+      "game_data": {
+        "revision": null,
+        "patch_version": null
+      }
+    },
+    "observed": {
+      "map_count": null,
+      "mod_average": null,
+      "mod_sample_size": null,
+      "quantity_average": null,
+      "rarity_average": null,
+      "pack_size_average": null,
+      "currency_average": null,
+      "multiplier": null
+    },
+    "economics": {
+      "recurring_cost_per_map_chaos": null,
+      "total_invest_chaos": null,
+      "net_profit_chaos": null,
+      "net_per_map_divines": null,
+      "divine_price_chaos": null
+    },
+    "timing": {
+      "reported_minutes": null
+    },
+    "cost_breakdown": null,
+    "loot": null
+  }
+}

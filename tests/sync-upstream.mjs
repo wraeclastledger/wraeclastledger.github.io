@@ -1,0 +1,21 @@
+// Maintainer-only provenance refresh. Ordinary tests need no sibling checkout.
+import fs from 'node:fs';
+import path from 'node:path';
+import {createRequire} from 'node:module';
+import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
+const site=fileURLToPath(new URL('..',import.meta.url));
+if (!process.argv[2] || !process.argv[3]) throw Error('Pass the desktop and API source checkouts as arguments.');
+const client=path.resolve(process.argv[2]);
+const require=createRequire(path.join(client,'package.json'));
+const {build}=require('esbuild');
+const result=await build({absWorkingDir:client,stdin:{contents:"export {decodeDiscordSharePayload} from './src/renderer/src/utils/discordShareWire'; export {buildImportedSetupPlan} from './src/renderer/src/utils/investmentSetup';",sourcefile:'website-parity-entry.ts',resolveDir:client,loader:'ts'},alias:{fflate:path.join(site,'node_modules/fflate/esm/browser.js')},bundle:true,platform:'browser',format:'esm',target:'es2022',write:false,minify:true,metafile:true});
+fs.mkdirSync(path.join(site,'tests/vendor'),{recursive:true});fs.writeFileSync(path.join(site,'tests/vendor/desktop-reader.js'),result.outputFiles[0].contents);
+if (!process.argv[3]) throw Error('Pass the API source checkout as the second argument.');
+const server=path.resolve(process.argv[3]);
+const dto=require(path.join(server,'api/publicStrategyDto.js'));
+const row={id:'11111111-1111-4111-8111-000000000001',strategy_name:'Sparse current strategy',current_revision:1};
+fs.writeFileSync(path.join(site,'tests/vendor/server-dto.json'),JSON.stringify({detail:dto.mapWebStrategyDetail(row),row:dto.mapWebStrategyListItem(row),run:dto.mapWebEvidenceRun({ordinal:1,submitted_at:'2026-09-04T12:00:00Z',setup_snapshot:{},payload:{}})},null,2)+'\n');
+const sha=value=>createHash('sha256').update(value).digest('hex');
+fs.writeFileSync(path.join(site,'tests/vendor/provenance.json'),JSON.stringify({clientVersion:JSON.parse(fs.readFileSync(path.join(client,'package.json'))).version,desktopReaderSha256:sha(result.outputFiles[0].contents),serverDtoSourceSha256:sha(fs.readFileSync(path.join(server,'api/publicStrategyDto.js'))),inputs:Object.keys(result.metafile.inputs).filter(p=>p!=='website-parity-entry.ts').sort().map(p=>({path:p.replaceAll('\\','/').replace(path.relative(client, site).replaceAll('\\','/') + '/', 'website/'),sha256:sha(fs.readFileSync(path.resolve(client,p)))}))},null,2)+'\n');
+console.log('Refreshed test-only snapshots from the accepted server DTO and shipped desktop parser/Load adapter.');
