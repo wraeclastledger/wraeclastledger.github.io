@@ -8,7 +8,7 @@ original prototype and isolated community preview retain their current roles.
 
 | Area | Verified state | Remaining work |
 | --- | --- | --- |
-| Source | Both profiles passed Windows/Ubuntu CI at `232709328b4af37c12c910efca797f0d6d505bb6` | Validate every subsequent candidate |
+| Source | Totals implementation `9d17f082a16903025998fc28106e2561598105e7` passed 166 tests and both Windows/Ubuntu build profiles | Validate every subsequent candidate |
 | API | Public HTTPS, exact website CORS, no-store, safe-route isolation and HTTP 308 accepted | Browser proof from the canonical website |
 | Domain | Organization ownership verified; retain the verification TXT | Repository custom domain, apex/www serving DNS |
 | Pages | Workflow mode; custom domain unset; publication draft inactive | Review and activate the exact workflow after gates pass |
@@ -75,7 +75,7 @@ not contain account IDs, origin addresses, operator paths, private keys or logs.
 
 ## Release sequence
 
-The approved scope keeps community totals. Complete their backend acceptance and pre-publication checks in
+The approved scope keeps community totals; their backend acceptance is complete. Follow the remaining checks in
 [PRODUCTION_READINESS](../PRODUCTION_READINESS.md). Review the exact source diff
 and both CI profiles. Then, with explicit launch authorization, configure the
 approved settings and activate the reviewed `pages.yml.example` by placing it in

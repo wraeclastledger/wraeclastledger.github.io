@@ -42,7 +42,9 @@ catalogue. The website card is retained and its detail-request loop is removed.
 
 ## Remaining launch gates
 
-Before publication:
+Complete preparation before dispatch; checks requiring the actual canonical
+website run immediately after the separately approved controlled deployment,
+before accepting the launch:
 
 1. Verify the actual canonical website's browser connection to the accepted API.
    Local previews and command-line CORS checks cannot replace this. The Pages
@@ -67,8 +69,9 @@ Before publication:
    Record the exact source commit and artifact hashes. Website rollback must not
    roll back application data.
 
-The community review is synthetic. Production community discovery, visibility,
-aggregates and admission controls need a separately tested backend contract.
+The multi-community review is synthetic. Production multi-community discovery,
+visibility, cross-community aggregates and admission controls need a separately
+tested backend contract; the existing home catalogue totals are already live.
 Public aliases and temporary recipient links are additional work. Browser
 preferences grant no access, and the website exposes no voting or authoring API.
 
