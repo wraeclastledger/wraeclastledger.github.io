@@ -20,6 +20,7 @@ export function inspectArtifact(directory, profile) {
     for (const entry of fs.readdirSync(path.join(root, relative), { withFileTypes: true })) {
       const file = path.posix.join(relative, entry.name);
       const full = path.join(root, file);
+      if (entry.name.startsWith('.')) throw new Error(`Hidden asset would be omitted by Pages packaging: ${file}`);
       const stat = fs.lstatSync(full);
       if (stat.isSymbolicLink() || (!stat.isDirectory() && (!stat.isFile() || stat.nlink !== 1))) {
         throw new Error(`Unsupported linked or special artifact entry: ${file}`);

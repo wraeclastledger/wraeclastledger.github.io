@@ -31,6 +31,10 @@ change those hashes. Never reuse the previous build's CSP without comparison.
 Reports are not served or committed. The artifact scanner catches bounded known
 preview/private content, linked files, source maps and profile mix-ups; it is not
 a universal privacy scanner. Review the staged source and final artifact too.
+Vite build metadata is retained in the evidence directory before the website is
+hashed. Hidden entries are rejected in the final static directory because the
+GitHub Pages packaging action omits them. Downloaded release files and the actual
+Pages tar must both match the reviewed manifest before deployment approval.
 
 ## Preconditions before activating the workflow
 

@@ -1,16 +1,19 @@
 import fs from 'node:fs';
 import { createHash } from 'node:crypto';
 import { inspectArtifact } from './artifact-policy.mjs';
+import { retainBuildMetadata } from './static-metadata.mjs';
+import { fileURLToPath } from 'node:url';
 const args = process.argv.slice(2);
 if (args.length && (args.length !== 2 || args[0] !== '--profile')) {
   throw new Error('Usage: node scripts/check-artifact.mjs [--profile same-origin|pages]');
 }
 const profile = args[1] || 'same-origin';
 const root = new URL('../dist/client/', import.meta.url);
-const result = inspectArtifact(root, profile);
-const manifestText = JSON.stringify(result.manifest, null, 2) + '\n';
 const output = new URL(`../outputs/${profile}/`, import.meta.url);
 fs.mkdirSync(output, { recursive: true });
+retainBuildMetadata(fileURLToPath(root), fileURLToPath(output));
+const result = inspectArtifact(root, profile);
+const manifestText = JSON.stringify(result.manifest, null, 2) + '\n';
 fs.writeFileSync(new URL('artifact-manifest.json', output), manifestText);
 fs.writeFileSync(new URL('release-policy.json', output), JSON.stringify({
   profile, apiUrl: result.apiUrl,

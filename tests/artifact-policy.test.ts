@@ -5,6 +5,7 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { artifactHeaders, inspectArtifact } from '../scripts/artifact-policy.mjs';
 import { PAGES_API_URL } from '../scripts/build-policy.mjs';
+import { retainBuildMetadata } from '../scripts/static-metadata.mjs';
 const roots: string[] = [];
 function artifact(api = PAGES_API_URL) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'wl-artifact-'));
@@ -21,6 +22,26 @@ afterEach(() => {
   }
 });
 describe('artifact and response policy', () => {
+  it('keeps build metadata out of the exact deployable manifest', () => {
+    const root = artifact();
+    const reports = artifact();
+    fs.mkdirSync(path.join(root, '.vite'));
+    fs.writeFileSync(path.join(root, '.vite', 'manifest.json'), '{"entry":"app.js"}');
+    expect(() => inspectArtifact(root, 'pages')).toThrow('Hidden asset');
+    retainBuildMetadata(root, reports);
+    expect(fs.readFileSync(path.join(reports, 'vite-build-manifest.json'), 'utf8')).toBe('{"entry":"app.js"}');
+    expect(fs.existsSync(path.join(root, '.vite'))).toBe(false);
+    expect(inspectArtifact(root, 'pages').manifest.map(row => row.file)).not.toContain('.vite/manifest.json');
+  });
+  it('rejects unexpected hidden assets and refuses to remove unknown metadata', () => {
+    const root = artifact();
+    fs.mkdirSync(path.join(root, '.private'));
+    expect(() => inspectArtifact(root, 'pages')).toThrow('Hidden asset');
+    fs.mkdirSync(path.join(root, '.vite'));
+    fs.writeFileSync(path.join(root, '.vite', 'unexpected.json'), '{}');
+    expect(() => retainBuildMetadata(root, root)).toThrow('Unexpected Vite');
+    expect(fs.existsSync(path.join(root, '.vite', 'unexpected.json'))).toBe(true);
+  });
   it('binds generated headers and the manifest to the actual bytes', () => {
     const root = artifact();
     const before = inspectArtifact(root, 'pages');
