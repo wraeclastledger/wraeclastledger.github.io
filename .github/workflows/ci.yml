@@ -14,18 +14,20 @@ concurrency:
 
 jobs:
   validate:
-    name: Source and static export (${{ matrix.os }})
+    name: Source and static export (${{ matrix.os }}, ${{ matrix.profile }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
         os: [windows-2022, ubuntu-24.04]
+        profile: [same-origin, pages]
     defaults:
       run:
         shell: bash
     env:
       CI: 'true'
+      WEBSITE_BUILD_PROFILE: ${{ matrix.profile }}
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7

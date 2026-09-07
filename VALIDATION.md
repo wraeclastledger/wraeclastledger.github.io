@@ -1,7 +1,8 @@
 # Validation
 
 The source validation command is `npm run validate`, using Node 24.20.0 and
-npm 11.19.0. CI runs it on Windows and Ubuntu after a clean locked install.
+npm 11.19.0. CI validates same-origin and Pages profiles on Windows and Ubuntu
+after a clean locked install. `npm run validate:pages` selects the Pages profile.
 
 The suite covers:
 
@@ -17,13 +18,19 @@ The suite covers:
 - Synthetic Home/Following persistence, failure warnings, directory pagination,
   unavailable communities and audience invalidation.
 - Export configuration rejecting local review flags and unapproved API addresses.
+- Exact Pages API selection, credential/referrer omission and a real loopback
+  HTTP-redirect rejection check without contacting the production API.
+- Artifact/profile mismatch, linked files, preview/private payload rejection,
+  inline-script hash changes, external script rejection and the CSP size limit.
 
 All test records are constructed fixtures. No saved live strategy responses,
 real publication IDs, participant identities, authored notes, private operational
 reports or original local Git history are included in this public repository.
 
 Artifact validation requires an index and Brotli WASM, rejects known fixture and
-review content, and produces a SHA256 manifest. The scanner is a bounded check,
+review content, and produces a SHA256 manifest and proposed response headers in
+`outputs/<profile>/`. It verifies the Pages API is compiled into the Pages profile
+and absent from the same-origin artifact. The scanner is a bounded check,
 not a general security guarantee. Logs and manifests are ignored generated files.
 
 The existing >500 kB chunk warning remains visible. Repeated builds can have

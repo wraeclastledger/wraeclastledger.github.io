@@ -19,7 +19,8 @@
     "format": "oxfmt",
     "review:static": "node tests/review-static.mjs",
     "codec:sync": "node scripts/sync-desktop-codec.mjs",
-    "validate": "node scripts/validate.mjs"
+    "validate": "node scripts/validate.mjs",
+    "validate:pages": "node scripts/validate.mjs --profile pages"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

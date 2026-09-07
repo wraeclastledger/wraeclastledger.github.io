@@ -17,7 +17,7 @@ npm ci
 npm run validate
 ```
 
-Validation runs typecheck, tests, lint, static build and artifact checks. The
+Validation runs typecheck, tests, lint, static build and artifact/header checks. The
 exported website is `dist/client`; server intermediates are not public assets.
 
 For a local synthetic strategy preview, start these in separate terminals:
@@ -33,8 +33,16 @@ switch is required. The former alternate layout has been retired.
 
 For development with live reloading, set `C1_LOCAL_API=1` in the process environment
 and run `npm run dev` (loopback port 43120). A development-only HTTPS API endpoint
-may be supplied through `VITE_PUBLIC_API_URL`. Export builds reject preview flags
-and external API settings until production routing is separately configured.
+may be supplied through `VITE_PUBLIC_API_URL`. Export builds reject preview flags.
+The default export uses same-origin `/web/v1`. `npm run validate:pages` prepares
+a separate profile using only `https://api.wraeclastledger.com/web/v1`; it does
+not connect or publish that service. Each build replaces `dist/client`, so preserve
+a candidate before building the other profile. Generated manifests and proposed
+response headers are written outside the artifact in `outputs/<profile>/`.
+
+The [Pages release draft](ops/PAGES_RELEASE.md) describes artifact review and
+activation gates. Its workflow example is inactive outside `.github/workflows`.
+Normal source CI validates both profiles on Windows and Ubuntu and cannot deploy.
 
 ## Isolated community workflow review
 

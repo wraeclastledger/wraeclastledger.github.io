@@ -10,12 +10,18 @@ domain. The existing application API supplies data; it is not bundled here.
 The preferred prototype is now the standard presentation on every route; the
 former alternate layout is retired. Closer visual acceptance remains separate.
 
+Prepared locally: an explicit Pages profile targets only
+`https://api.wraeclastledger.com/web/v1`; the default same-origin preview profile
+is preserved. API requests omit credentials/referrers and reject redirects.
+Artifact validation produces content hashes and a CSP/header proposal from the
+actual HTML. [The deployment draft](ops/PAGES_RELEASE.md) is inactive and applies
+no infrastructure changes. These checks do not prove the live API or headers.
+
 Before publication:
 
-1. Configure the exact API address and browser CORS origins or an approved edge
-   proxy. The current export requires same-origin `/web/v1`; GitHub Pages alone
-   will not proxy it. Change the build policy and artifact checks together for
-   the approved configuration.
+1. Complete and verify the API origin hostname/vhost, certificate and browser
+   CORS for the canonical website. The prepared Pages profile does not proxy API
+   requests through GitHub; it requires the separately configured API hostname.
 2. Replace the local bounded community-summary reader with a production aggregate
    endpoint before wider use. Do not remove its cap or sum rounded per-map values.
 3. Complete second-browser, narrow layout, keyboard, zoom, clipboard and actual
@@ -25,8 +31,9 @@ Before publication:
    the production host's behavior.
 5. Confirm About/Privacy, source/download/support links and provider logging
    disclosures against the actual deployment.
-6. Review bundle performance, verify the custom domain, prepare a separately
-   triggered publication workflow and retain the prior static artifact for rollback.
+6. Review bundle performance, verify the custom domain, review/activate the
+   separately triggered publication-workflow draft and its environment protection.
+   Retain the prior static artifact and matching header policy for rollback.
    Record the exact source commit and artifact hashes. Website rollback must not
    roll back application data.
 

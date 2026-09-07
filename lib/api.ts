@@ -344,6 +344,7 @@ export class PublicApi {
           signal: ctrl.signal,
           credentials: 'omit',
           referrerPolicy: 'no-referrer',
+          redirect: 'error',
           headers: { Accept: 'application/json' },
         }),
         ctrl.signal,

@@ -3,10 +3,13 @@ import { defineConfig, loadEnv } from 'vite';
 import { assertBuildEnvironment } from './scripts/build-policy.mjs';
 // The isolated review service is opt-in and never part of an exported artifact.
 export default defineConfig(({ command, mode }) => {
-  if (command === 'build') {
-    assertBuildEnvironment({ ...loadEnv(mode, process.cwd(), ''), ...process.env });
-  }
+  const buildProfile = command === 'build'
+    ? assertBuildEnvironment({ ...loadEnv(mode, process.cwd(), ''), ...process.env })
+    : undefined;
   return {
+  define: buildProfile ? {
+    'import.meta.env.VITE_PUBLIC_API_URL': JSON.stringify(buildProfile.apiUrl),
+  } : undefined,
   plugins: [vinext()],
   server: {
     host: '127.0.0.1',
