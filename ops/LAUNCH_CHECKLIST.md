@@ -4,15 +4,15 @@ Preparation only. This file is not a DNS import or permission to publish.
 The static host remains GitHub Pages. The existing API, desktop application,
 original prototype and isolated community preview retain their current roles.
 
-## Current state — September 7, 2026
+## Current state — September 8, 2026
 
 | Area | Verified state | Remaining work |
 | --- | --- | --- |
 | Source | Totals implementation `9d17f082a16903025998fc28106e2561598105e7` passed 166 tests and both Windows/Ubuntu build profiles | Validate every subsequent candidate |
 | API | Public HTTPS, exact website CORS, no-store, safe-route isolation and HTTP 308 accepted | Browser proof from the canonical website |
-| Domain | Organization ownership verified; retain the verification TXT | Repository custom domain, apex/www serving DNS |
-| Pages | Workflow mode; custom domain unset; publication draft inactive | Review and activate the exact workflow after gates pass |
-| Deployment environment | Main-only branch policy; no reviewer; admin bypass allowed | Configure the proposed approval gate deliberately |
+| Domain | Organization ownership verified and repository custom domain set to `wraeclastledger.com`; retain the verification TXT | Apex/www serving DNS and certificate issuance |
+| Pages | Workflow mode; publication and maintenance drafts inactive; custom-domain certificate pending | DNS, certificate, HTTPS enforcement, then reviewed workflow activation |
+| Deployment environment | Main-only branch policy, required maintainer approval, self-review allowed, admin bypass disabled | Verify the actual waiting deployment before approving it |
 | Website policy | Generated CSP/header proposal only | Apply and verify actual edge headers/cache/redirect rules |
 | Community totals | Card retained; tested single-request aggregate deployed and accepted | Verify the card from the canonical website origin |
 | User acceptance | Local presentation provisionally accepted | Browser/clipboard/native-import checks; closer visual review deferred |
@@ -21,10 +21,11 @@ CI checks source. GitHub hosts the static files. Cloudflare handles DNS, edge TL
 and response rules. The API server supplies safe strategy data. A source push
 does not deploy the application server or activate the inactive Pages draft.
 
-## Proposed settings, subject to approval
+## Launch settings and remaining operations
 
 **Execution target: maintainer workstation, GitHub/Cloudflare dashboards; these
-are proposed account configuration changes, not commands for either server VM.**
+are account configuration steps, not commands for either server VM. Steps 1–2
+are applied; the remaining operations retain their approval gates.**
 
 1. In the website repository's `github-pages` environment, retain the exact
    `main` branch policy. Add the repository owner as required reviewer, keep

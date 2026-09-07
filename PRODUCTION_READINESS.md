@@ -27,10 +27,12 @@ safe list/detail/evidence reads, exact canonical-site CORS, preflights, denied
 routes, no-store, absence of cookie/credential headers and existing desktop
 compatibility. This is network evidence, not full website browser acceptance.
 
-The organization has verified domain ownership. Pages is in workflow mode with
-no custom domain and no activated publication workflow. Its existing environment
-allows the main branch, but has no required reviewer and permits admin bypass.
-Those settings are not yet the proposed publication gate. The GitHub-generated
+The organization has verified domain ownership. As of September 8, Pages is in
+workflow mode with `wraeclastledger.com` configured and no activated publication
+workflow. Its environment requires maintainer approval, allows only the main
+branch, permits self-review and disables administrator bypass. Custom-domain DNS
+and certificate issuance are pending; HTTPS enforcement must be enabled once
+GitHub issues the certificate. The GitHub-generated
 legacy workflow remains listed; it is not evidence of a successful deployment.
 Website apex/www DNS and website response-header rules remain unapplied.
 
