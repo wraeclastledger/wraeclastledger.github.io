@@ -13,6 +13,11 @@ The community totals card uses one server aggregate at
 missing coverage remain visible; the frontend does not enumerate detail records
 or impose a 50-strategy total limit. A matching API deployment is required.
 
+League choices include the supported catalogue even on a fresh filtered or empty
+page. Additional observed or explicitly entered leagues remain selectable. At
+rollover, update `CURRENT_LEAGUE` and retain historical `KNOWN_LEAGUES` entries in
+`lib/model.ts`; never derive the whole catalogue from a filtered result page.
+
 ## Development
 
 Use Node 24.20.0 and npm 11.19.0, matching CI:

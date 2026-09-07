@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
+import { leagueOptions } from '../lib/league-options';
 import {
   Popover,
   PopoverTrigger,
@@ -17,9 +18,7 @@ export function LeagueFilter({
 }) {
   const [open, setOpen] = useState(false),
     [search, setSearch] = useState('');
-  const options = [...new Set([...leagues, value].filter(Boolean))].sort(
-    (a, b) => a.localeCompare(b),
-  );
+  const options = leagueOptions(leagues, value);
   const choose = (league: string) => {
     onChange(league);
     setOpen(false);

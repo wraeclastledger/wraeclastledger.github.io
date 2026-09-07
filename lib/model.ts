@@ -193,6 +193,9 @@ export interface Query {
 // Release configuration: keep aligned with the desktop current-league fallback.
 export const CURRENT_LEAGUE =
   import.meta.env.VITE_CURRENT_LEAGUE?.trim() || 'Allflame';
+// Supported catalogue, independent of filtered/paginated strategy results.
+// Retain historical entries when adding a new league at rollover.
+export const KNOWN_LEAGUES = [...new Set([CURRENT_LEAGUE, 'Allflame', 'Mirage'])];
 export const DEFAULT_QUERY: Query = {
   search: '',
   league: CURRENT_LEAGUE,
