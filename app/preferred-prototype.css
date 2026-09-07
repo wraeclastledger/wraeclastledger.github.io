@@ -1,7 +1,9 @@
 /* Preferred website presentation. */
 
 #wl-pages-review {
-  color-scheme: light dark;
+  /* Follow the site switch; an OS preference here splits compiled light-dark()
+     colours from the root theme variables even if overridden later. */
+  color-scheme: inherit;
   width: 100%;
   color: light-dark(#202124, #eceff3);
   font-family:
@@ -1665,7 +1667,6 @@
 }
 /* Adapter boundaries: real API metadata and existing reliable controls. */
 #wl-pages-review {
-  color-scheme: inherit;
   font-size: 14px;
 }
 #wl-pages-review.wl-page {
