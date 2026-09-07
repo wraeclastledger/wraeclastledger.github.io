@@ -1,14 +1,13 @@
-# Pages release preparation
+# Pages release runbook
 
-`pages.yml.example` is an inactive draft, outside `.github/workflows`. It cannot
-run on GitHub. Copying/activating it and dispatching it are later reviewed steps.
-No domain, Pages environment, certificate, DNS, header rule or live service is
-configured by local validation. Normal source CI remains read-only.
+The reviewed manual workflows are active as `.github/workflows/pages.yml` and
+`.github/workflows/maintenance.yml`. The `.example` files are reference copies.
+Local validation does not configure infrastructure. Normal source CI remains read-only.
 
-Current state and the proposed first-launch settings are in
+Current state and the first-launch settings are in
 [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md). API infrastructure is accepted;
-the remaining canonical-browser, community-summary and website-host gates still
-apply. Organization domain verification does not configure the repository domain.
+remaining acceptance work is recorded there. Organization verification and the
+repository custom domain are both configured.
 
 ## Build profiles
 
@@ -85,12 +84,22 @@ Before replacing a release, retain its exact static files, manifest, source SHA,
 header policy and workflow run ID. The first launch has no previous live version.
 A rebuild of an older SHA may produce new inline hashes and is not byte-identical
 rollback. A bounded artifact-restore dispatch must be prepared and reviewed before
-a second release: retrieve the retained bytes from the identified successful run,
+a replacement release: retain the bytes from the identified successful run,
 verify its manifest, restore matching headers and deploy without rebuilding.
 Do not enable an arbitrary-run downloader or restore database state for website
 rollback. Do not claim a tested rollback until the live artifact route is exercised.
 
-For first-launch recovery, `maintenance.yml.example` is also inactive. Its pinned
+The current bounded restore route is to rerun only the `deploy` job of the exact
+successful release run within GitHub's rerun window, after verifying its retained
+`github-pages` artifact and header policy. That job has no checkout/install/build;
+the pinned action selects the single Pages artifact in its own run. Stop if a
+preparation job is scheduled or the artifact is absent/expired. Inspect the
+protected environment again and verify the resulting live manifest. Do not rerun
+the whole workflow and call a rebuilt artifact byte-identical recovery.
+This route has been reviewed; a hosted recovery drill remains outstanding.
+See [GitHub job reruns](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs).
+
+For maintenance recovery, `.github/workflows/maintenance.yml` is active. Its pinned
 manual workflow packages two reviewed inert documents, without application installs
 or builds, behind the same environment gate. `scripts/check-maintenance.mjs` rejects
 extra, changed or linked files. The ordinary test suite exercises those failures.

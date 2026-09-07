@@ -1,6 +1,6 @@
 # First website launch
 
-Preparation only. This file is not a DNS import or permission to publish.
+Launch record and operational reference. This file is not a DNS import or permission to publish.
 The static host remains GitHub Pages. The existing API, desktop application,
 original prototype and isolated community preview retain their current roles.
 
@@ -8,24 +8,24 @@ original prototype and isolated community preview retain their current roles.
 
 | Area | Verified state | Remaining work |
 | --- | --- | --- |
-| Source | Totals implementation `9d17f082a16903025998fc28106e2561598105e7` passed 166 tests and both Windows/Ubuntu build profiles | Validate every subsequent candidate |
-| API | Public HTTPS, exact website CORS, no-store, safe-route isolation and HTTP 308 accepted | Browser proof from the canonical website |
-| Domain | Organization ownership verified and repository custom domain set to `wraeclastledger.com`; retain the verification TXT | Apex/www serving DNS and certificate issuance |
-| Pages | Workflow mode; publication and maintenance drafts inactive; custom-domain certificate pending | DNS, certificate, HTTPS enforcement, then reviewed workflow activation |
+| Source | Published colour correction `b7900295788885831c3d23b6f97379648783678a`; 171 tests and four OS/profile CI jobs passed | Validate every subsequent candidate |
+| API | Public HTTPS, exact website CORS, no-store, safe-route isolation and HTTP 308 accepted; canonical browser reads work | Preserve existing desktop service |
+| Domain | Ownership verified, repository custom domain configured, apex/www DNS proxied; retain verification TXT | Observe future certificate renewal |
+| Pages | Manual publication/maintenance active; apex/www certificate approved and Enforce HTTPS enabled | Preserve protected artifact review |
 | Deployment environment | Main-only branch policy, required maintainer approval, self-review allowed, admin bypass disabled | Verify the actual waiting deployment before approving it |
-| Website policy | Generated CSP/header proposal only | Apply and verify actual edge headers/cache/redirect rules |
-| Community totals | Card retained; tested single-request aggregate deployed and accepted | Verify the card from the canonical website origin |
+| Website policy | Exact deployed CSP, five security headers, no-store pages, cache bypass and canonical 308 verified; 30 live checks passed | Compare policy on each release |
+| Community totals | Single-request aggregate and canonical-origin league changes verified | Broader multi-community backend remains separate |
 | User acceptance | Local presentation provisionally accepted | Browser/clipboard/native-import checks; closer visual review deferred |
 
 CI checks source. GitHub hosts the static files. Cloudflare handles DNS, edge TLS
 and response rules. The API server supplies safe strategy data. A source push
-does not deploy the application server or activate the inactive Pages draft.
+does not deploy the application server or dispatch the manual Pages workflow.
 
 ## Launch settings and remaining operations
 
 **Execution target: maintainer workstation, GitHub/Cloudflare dashboards; these
-are account configuration steps, not commands for either server VM. Steps 1–2
-are applied; the remaining operations retain their approval gates.**
+are account configuration reference, not commands for either server VM. Steps
+1–4 and 6–7 are applied. Step 5 remains a proposal; do not repeat the setup.**
 
 1. In the website repository's `github-pages` environment, retain the exact
    `main` branch policy. Add the repository owner as required reviewer, keep
@@ -56,10 +56,10 @@ are applied; the remaining operations retain their approval gates.**
    proves renewal. Never weaken TLS to work around a certificate error.
 5. Propose minimum visitor TLS 1.2 for this zone. This also affects the accepted
    API, so recheck it after approval/application. Keep existing host ports/ACLs.
-6. Prepare two website-only edge redirects, ahead of any conflicting rule:
+6. The website-only edge redirect combines these two conditions:
    `http.host eq "www.wraeclastledger.com"` redirects to the canonical HTTPS
    hostname; `(http.host eq "wraeclastledger.com" and not ssl)` upgrades HTTP.
-   Both use status 308, target expression
+   The combined rule uses status 308, target expression
    `concat("https://wraeclastledger.com", http.request.uri.path)` and preserve
    query string. Keep the API redirect unchanged. Exclude
    `starts_with(http.request.uri.path, "/.well-known/acme-challenge/")` from
@@ -79,8 +79,8 @@ not contain account IDs, origin addresses, operator paths, private keys or logs.
 The approved scope keeps community totals; their backend acceptance is complete. Follow the remaining checks in
 [PRODUCTION_READINESS](../PRODUCTION_READINESS.md). Review the exact source diff
 and both CI profiles. Then, with explicit launch authorization, configure the
-approved settings and activate the reviewed `pages.yml.example` by placing it in
-`.github/workflows`. It has only a manual trigger; regular CI remains validation-only.
+approved settings as needed and use the active `.github/workflows/pages.yml`.
+It has only a manual trigger; regular CI remains validation-only.
 
 Dispatch from main with the full tested source SHA. The preparation job creates
 the final candidate; local build hashes are not a substitute for that artifact.
@@ -104,11 +104,11 @@ first dispatch, record the current Pages/DNS/rules state and the exact unpublish
 operation available for this repository. Deleting Pages previously returned 422;
 do not assume that operation will work or call DNS removal alone an unpublish.
 Removing DNS may take time and does not remove a public github.io artifact.
-The inactive [maintenance workflow](maintenance.yml.example) provides a prepared
+The active [maintenance workflow](../.github/workflows/maintenance.yml) provides a prepared
 replacement route: it packages only the two hash-checked documents in `maintenance/`,
 without installing application dependencies, and uses the same approval environment
-and publication concurrency group. Activate it with the publication workflow after
-approval. Review its artifact before dispatch approval; then verify the notice on
+and publication concurrency group. Review its artifact before dispatch approval;
+then verify the notice on
 the canonical URL, github.io route and a missing path, with no stale application
 assets referenced by HTML. It is a replacement, not an unpublish or guaranteed
 removal of previously cached bytes. The notice needs no scripts, styles or API
@@ -116,7 +116,7 @@ connection, so it works under the reviewed application CSP. Keep cache bypass an
 no-store during recovery. Do not weaken CSP or change the API/database.
 
 GitHub also documents a separate Settings > Pages > site menu > Unpublish site
-control after deployment. Verify that control becomes available on this repository;
+control after deployment. That control is now visible on this repository;
 do not equate the earlier DELETE-site 422 with failure of this distinct operation.
 No live withdrawal drill has yet occurred. If neither replacement nor unpublish
 can be used, stop the launch. Never include a secret in a candidate relying on later deletion.

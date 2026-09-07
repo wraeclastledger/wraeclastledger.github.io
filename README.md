@@ -3,8 +3,9 @@
 Read-only Path of Exile strategy browser with filtering, sorting, pagination,
 immutable run evidence and proof-checked setup codes for the desktop application.
 
-This repository contains the website source and synthetic tests. GitHub Pages
-publication is a separate operation; the included CI workflow only validates source.
+The website is live at [wraeclastledger.com](https://wraeclastledger.com).
+This repository contains the website source and synthetic tests. Source CI only
+validates; the separate manual Pages workflow publishes a reviewed artifact.
 The website reads a safe public API. It does not include the database, private
 server implementation, Discord credentials or desktop session storage.
 The community totals card uses one server aggregate at
@@ -44,11 +45,11 @@ not connect or publish that service. Each build replaces `dist/client`, so prese
 a candidate before building the other profile. Generated manifests and proposed
 response headers are written outside the artifact in `outputs/<profile>/`.
 
-The [Pages release draft](ops/PAGES_RELEASE.md) describes artifact review and
-activation gates. Its workflow example is inactive outside `.github/workflows`.
+The [Pages release runbook](ops/PAGES_RELEASE.md) describes artifact review and
+the protected manual publication and maintenance workflows in `.github/workflows`.
 Normal source CI validates both profiles on Windows and Ubuntu and cannot deploy.
 The [first-launch checklist](ops/LAUNCH_CHECKLIST.md) separates the accepted API
-connection from pending website settings, browser acceptance and publication.
+connection and website infrastructure from remaining browser/recovery acceptance.
 
 ## Isolated community workflow review
 
