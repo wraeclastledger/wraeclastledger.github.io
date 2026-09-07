@@ -1,0 +1,90 @@
+name: Publish reviewed website
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Full tested 40-character source SHA on main
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-pages-publication
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: read
+    env:
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      CI: 'true'
+    steps:
+      - name: Validate exact source input
+        run: '[[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]'
+      - name: Check out exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require source reachable from main and a configured custom domain
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git merge-base --is-ancestor "$SOURCE_SHA" origin/main
+          gh api "repos/$GITHUB_REPOSITORY/pages" --jq '{cname, build_type}' > "$RUNNER_TEMP/pages.json"
+          node --input-type=module -e 'import fs from "node:fs"; const p=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+"/pages.json")); if(p.cname!=="wraeclastledger.com" || p.build_type!=="workflow") process.exit(1);'
+      - name: Set up pinned Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24.20.0'
+          package-manager-cache: false
+      - name: Validate and build Pages candidate
+        run: |
+          test "$(node --version)" = 'v24.20.0'
+          test "$(npm --version)" = '11.19.0'
+          npm ci --no-audit --no-fund
+          npm run validate:pages
+          git diff --exit-code HEAD -- .
+          printf 'Source: `%s`\n\n' "$SOURCE_SHA" >> "$GITHUB_STEP_SUMMARY"
+          printf 'Review the release-policy.json and manifest in release-evidence before approving deployment. Confirm the matching Cloudflare headers and cache transition.\n' >> "$GITHUB_STEP_SUMMARY"
+          sha256sum outputs/pages/artifact-manifest.json >> "$GITHUB_STEP_SUMMARY"
+      - name: Retain exact candidate and header evidence for review and rollback
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-evidence
+          path: |
+            dist/client
+            outputs/pages
+          if-no-files-found: error
+          retention-days: 90
+      - name: Package only the validated static files
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          path: dist/client
+          retention-days: 90
+
+  deploy:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    # REQUIRED BEFORE ACTIVATION: reviewers configured, main-only deployment,
+    # no unnoticed self-approval/bypass. The name alone is NOT an approval gate.
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy the already validated artifact
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
