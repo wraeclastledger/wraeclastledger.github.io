@@ -103,13 +103,28 @@ first dispatch, record the current Pages/DNS/rules state and the exact unpublish
 operation available for this repository. Deleting Pages previously returned 422;
 do not assume that operation will work or call DNS removal alone an unpublish.
 Removing DNS may take time and does not remove a public github.io artifact.
-If an effective first-launch removal/rollback route cannot be established, keep
-deployment inactive. Never include a secret in a candidate relying on later deletion.
+The inactive [maintenance workflow](maintenance.yml.example) provides a prepared
+replacement route: it packages only the two hash-checked documents in `maintenance/`,
+without installing application dependencies, and uses the same approval environment
+and publication concurrency group. Activate it with the publication workflow after
+approval. Review its artifact before dispatch approval; then verify the notice on
+the canonical URL, github.io route and a missing path, with no stale application
+assets referenced by HTML. It is a replacement, not an unpublish or guaranteed
+removal of previously cached bytes. The notice needs no scripts, styles or API
+connection, so it works under the reviewed application CSP. Keep cache bypass and
+no-store during recovery. Do not weaken CSP or change the API/database.
+
+GitHub also documents a separate Settings > Pages > site menu > Unpublish site
+control after deployment. Verify that control becomes available on this repository;
+do not equate the earlier DELETE-site 422 with failure of this distinct operation.
+No live withdrawal drill has yet occurred. If neither replacement nor unpublish
+can be used, stop the launch. Never include a secret in a candidate relying on later deletion.
 
 Later releases require retained exact prior artifacts and a reviewed restore
 dispatch as described in [PAGES_RELEASE](PAGES_RELEASE.md). Static rollback never
 rolls back the application database.
 
 Sources: [GitHub domain setup](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site),
+[GitHub unpublishing](https://docs.github.com/en/pages/getting-started-with-github-pages/unpublishing-a-github-pages-site),
 [environment protection](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments),
 [Cloudflare response-header behavior](https://developers.cloudflare.com/rules/transform/response-header-modification/).

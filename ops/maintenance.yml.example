@@ -1,0 +1,63 @@
+# INACTIVE. Activation and any dispatch require the website launch approval.
+name: Replace website with reviewed maintenance notice
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-pages-publication
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out the exact dispatch revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up pinned Node without installing application dependencies
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24.20.0'
+          package-manager-cache: false
+      - name: Verify only the two reviewed documents are packaged
+        run: |
+          mkdir -p outputs
+          node scripts/check-maintenance.mjs > outputs/maintenance-manifest.json
+          cat outputs/maintenance-manifest.json >> "$GITHUB_STEP_SUMMARY"
+          printf '\nThis replaces the website with a static notice. It does not delete a Pages site or affect the API/database.\n' >> "$GITHUB_STEP_SUMMARY"
+      - name: Retain the reviewed withdrawal evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: maintenance-evidence
+          path: |
+            ops/maintenance
+            outputs/maintenance-manifest.json
+          if-no-files-found: error
+          retention-days: 90
+      - name: Package only the verified notice
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          path: ops/maintenance
+          retention-days: 90
+
+  deploy:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Replace the active website deployment
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

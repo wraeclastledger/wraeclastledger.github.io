@@ -86,5 +86,12 @@ verify its manifest, restore matching headers and deploy without rebuilding.
 Do not enable an arbitrary-run downloader or restore database state for website
 rollback. Do not claim a tested rollback until the live artifact route is exercised.
 
+For first-launch recovery, `maintenance.yml.example` is also inactive. Its pinned
+manual workflow packages two reviewed inert documents, without application installs
+or builds, behind the same environment gate. `scripts/check-maintenance.mjs` rejects
+extra, changed or linked files. The ordinary test suite exercises those failures.
+This is a prepared website replacement; actual hosted recovery still needs a drill.
+See LAUNCH_CHECKLIST for replacement/unpublish distinctions and acceptance checks.
+
 References: [GitHub custom workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages),
 [environment protection](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments).
