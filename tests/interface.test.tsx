@@ -72,15 +72,22 @@ const mount = async () => {
   await act(async () => root.render(<Home />));
   await settle();
 };
-describe.each(['current', 'prototype'])(
+describe.each(['default', 'legacy prototype link'])(
   '%s rendered browser interactions',
   (design) => {
     beforeEach(() => {
       history.replaceState(
         null,
         '',
-        design === 'prototype' ? '/?design=prototype#/' : '/#/',
+        design === 'legacy prototype link' ? '/?design=prototype#/' : '/#/',
       );
+    });
+    it('renders the preferred layout on direct detail links without a design switch', async () => {
+      history.replaceState(null, '', '#/strategy/' + id(1));
+      await mount();
+      expect(host.querySelector('.site.wl-page')).not.toBeNull();
+      expect(host.querySelector('.wl-section')).not.toBeNull();
+      expect(host.querySelector('.wl-metric')).not.toBeNull();
     });
     it('keeps a manual refresh on cooldown after a fast response', async () => {
       await mount();

@@ -68,7 +68,7 @@ import { DisclosureContext } from '../lib/disclosures';
 
 import { MechanicFilter } from '../components/mechanic-filter';
 
-import Detail, { Tags, RunEvidence } from '../components/strategy-detail';
+import { Tags, RunEvidence } from '../components/strategy-detail';
 
 const initialRoute: Route = {
   view: 'list',
@@ -119,13 +119,6 @@ function ErrorNotice({ error, retry }: { error: ApiError; retry: () => void }) {
 export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_REVIEW === '1', defaultCommunity = import.meta.env.VITE_REVIEW_HOME_COMMUNITY || '' }: { communityReview?: boolean; defaultCommunity?: string } = {}) {
   const [initialized, setInitialized] = useState(false);
 
-  const [prototype, setPrototype] = useState(false);
-  useEffect(() => {
-    setPrototype(
-      new URLSearchParams(window.location.search).get('design') === 'prototype',
-    );
-  }, []);
-  const DetailView = prototype ? PrototypeDetail : Detail;
   const communityState = useCommunityPreferences(communityReview, defaultCommunity);
   const [api] = useState(() => new PublicApi(import.meta.env.VITE_PUBLIC_API_URL || '/web/v1', undefined, 15000, communityReview));
   api.preferences = communityState.preferences;
@@ -589,8 +582,8 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
 
   return (
     <div
-      id={prototype ? 'wl-pages-review' : undefined}
-      className={prototype ? 'site wl-page' : 'site'}
+      id="wl-pages-review"
+      className="site wl-page"
     >
       <a
         className="skip"
@@ -1222,7 +1215,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
               <DisclosureContext.Provider
                 value={{ values: nav.disclosures, change: changeDisclosure }}
               >
-                <DetailView
+                <PrototypeDetail
                   strategy={state.detail}
                   evidence={state.evidence}
 

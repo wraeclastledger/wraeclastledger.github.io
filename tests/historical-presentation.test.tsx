@@ -2,7 +2,6 @@
 import { describe, it, expect } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import PrototypeDetail from '../components/prototype-detail';
-import Detail from '../components/strategy-detail';
 import { displayedCosts, historicalCostRows } from '../lib/presentation';
 import { validateResponse } from '../lib/api';
 import { generatePublicStrategySetupCode } from '../lib/vendor/setup-code.js';
@@ -65,14 +64,11 @@ describe('published historical setup display', () => {
       s.economics.all_in_cost_per_map_chaos!,
     );
   });
-  it.each([
-    ['prototype', PrototypeDetail],
-    ['C1', Detail],
-  ] as const)('renders prices and observations in %s', (_name, Component) => {
+  it('renders prices and observations in the preferred detail layout', () => {
     const { s, e } = publishedRun(),
       host = document.createElement('div');
     host.innerHTML = renderToStaticMarkup(
-      <Component
+      <PrototypeDetail
         strategy={s}
         evidence={e}
         onCopy={() => {}}

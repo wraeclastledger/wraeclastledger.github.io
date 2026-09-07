@@ -1,11 +1,4 @@
 import {
-  recordedDivinePrice,
-  displayedSetup,
-  displayedCosts,
-  historicalCostRows,
-  mapRequirementTiles,
-} from '../lib/presentation';
-import {
   artwork,
   lootArtwork,
   JANUS_PORTRAIT,
@@ -14,7 +7,6 @@ import {
 } from '../lib/artwork';
 
 import { Table } from './ui/table';
-import { ObservedDelirium } from './observed-delirium';
 import { SemanticIcon } from './semantic-icon';
 
 import { useState } from 'react';
@@ -30,8 +22,6 @@ import {
 } from './ui/dialog';
 
 import {
-  ExternalLink,
-  Copy,
   PackageOpen,
   Coins,
   Ticket,
@@ -47,15 +37,12 @@ import {
   ChevronRight,
 } from 'lucide-react';
 
-import { isSafeStrategyAtlasUrl } from '../lib/vendor/setup-code.js';
 
 import {
   label,
   money,
   number,
   signedClass,
-  type StrategyDetail,
-  type EvidencePage,
   type EvidenceRun,
   type Loot,
   type Setup,
@@ -694,284 +681,5 @@ export function RunEvidence({ run }: { run: EvidenceRun }) {
         />
       </div>
     </details>
-  );
-}
-
-export default function Detail({
-  strategy,
-
-  onCopy,
-
-  copyBusy,
-  evidence,
-}: {
-  strategy: StrategyDetail;
-
-  onCopy: (text: string) => void;
-
-  copyBusy: boolean;
-  evidence?: EvidencePage | null;
-}) {
-  const [fullTitle, setFullTitle] = useDisclosure('title');
-
-  const s = strategy;
-  const setup = displayedSetup(s, evidence);
-
-  const e = s.economics;
-
-  const totalReturn =
-    e.historical_net_divines != null && e.historical_invest_divines != null
-      ? e.historical_net_divines + e.historical_invest_divines
-      : null;
-
-  const atlas = setup.atlas;
-
-  const safeAtlas = atlas?.url && isSafeStrategyAtlasUrl(atlas.url);
-
-  return (
-    <>
-      <p className="detail-breadcrumb">
-        Public strategy · {s.league || 'League not recorded'} · Revision{' '}
-        {number(s.revision, 0)}
-      </p>
-
-      <header className="detail-heading">
-        <div>
-          <Tags tags={s.tags} />
-
-          <p className="eyebrow" hidden>
-            {s.league || 'League not recorded'} · Revision{' '}
-            {number(s.revision, 0)}
-          </p>
-
-          <h1
-            id="detail-title"
-
-            tabIndex={-1}
-
-            className={!fullTitle ? 'clamped-title' : undefined}
-          >
-            {s.title || 'Untitled strategy'}
-          </h1>
-
-          {(s.title?.length || 0) > 100 && (
-            <button
-              className="text-button title-toggle"
-
-              aria-expanded={fullTitle}
-
-              onClick={() => setFullTitle(!fullTitle)}
-            >
-              {fullTitle ? 'Show shorter title' : 'Show full title'}
-            </button>
-          )}
-
-          <p className="detail-byline">
-            {number(s.coverage.run_count, 0)} contributed{' '}
-            {s.coverage.run_count === 1 ? 'run' : 'runs'} ·{' '}
-            {number(s.observed.map_count, 0)} maps
-          </p>
-        </div>
-
-        <div className="detail-context">
-          <span>
-            Read-only Score <strong>{number(s.score, 0)}</strong>
-          </span>
-
-          <span>
-            {number(s.coverage.run_count, 0)} contributed{' '}
-            {s.coverage.run_count === 1 ? 'run' : 'runs'} ·{' '}
-            {number(s.observed.map_count, 0)} maps
-          </span>
-
-          <time dateTime={s.updated_at || undefined}>
-            Updated{' '}
-            {s.updated_at
-              ? new Date(s.updated_at).toLocaleDateString('en-GB', {
-                  timeZone: 'UTC',
-                })
-              : 'date not recorded'}
-          </time>
-        </div>
-      </header>
-
-      <div className="stats">
-        <Stat
-          title="Net profit"
-
-          value={money(e.historical_net_divines, 'd')}
-
-          className={signedClass(e.historical_net_divines)}
-        />
-
-        <Stat
-          title="Total investment"
-
-          value={money(e.historical_invest_divines, 'd')}
-        />
-
-        <Stat
-          title="Profit / map"
-
-          value={money(e.net_per_map_divines, 'd')}
-
-          className={signedClass(e.net_per_map_divines)}
-        />
-
-        <Stat title="Cost / map" value={money(e.all_in_cost_per_map_chaos)} />
-      </div>
-
-      <p className="footnote">
-        Historical return {money(totalReturn, 'd')} (complete totals only).
-        Authored prices are never replaced with current quotes. Timed coverage:{' '}
-        {number(s.coverage.timed_run_count, 0)}{' '}
-        {s.coverage.timed_run_count === 1 ? 'run' : 'runs'} /{' '}
-        {number(s.coverage.timed_map_count, 0)} maps;{' '}
-        {money(s.coverage.net_divines_per_hour, 'd')} / hour, author-reported.
-      </p>
-
-      <section className="section">
-        <h2 className="loot-section-title">
-          <span>Loot breakdown</span>
-          {recordedDivinePrice(s, evidence) != null && (
-            <small>Authored Divine price: {number(recordedDivinePrice(s, evidence))}c</small>
-          )}
-        </h2>
-
-        <LootEvidence
-          loot={s.loot}
-          divinePrice={recordedDivinePrice(s, evidence)}
-          priceInHeader
-          returnValue={
-            totalReturn == null ? undefined : money(totalReturn, 'd')
-          }
-        />
-      </section>
-
-      <section className="section">
-        <h2>Strategy setup</h2>
-
-        <div className="setup-grid">
-          <section className="setup-pane">
-            <h3>Scarabs and map setup</h3>
-
-            <SetupItems setup={setup} costs={displayedCosts(s, evidence)} />
-          </section>
-
-          <section className="setup-pane">
-            <h3>Cost / map</h3>
-
-            {!historicalCostRows(s, evidence).length && (
-              <div className="setup-line">
-                <span>Recorded costs</span>
-                <strong>{money(e.recurring_cost_per_map_chaos)}</strong>
-              </div>
-            )}
-            {historicalCostRows(s, evidence).map((row) => (
-              <div className="setup-line" key={row.name}>
-                <span>{row.name}</span>
-                <strong>{money(row.value)}</strong>
-              </div>
-            ))}
-
-            <div className="setup-line">
-              <span>All-in</span>
-
-              <strong>{money(e.all_in_cost_per_map_chaos)}</strong>
-            </div>
-
-            <p className="footnote">
-              Historical prices. Base map and rolling costs remain combined.
-            </p>
-          </section>
-
-          <section className="setup-pane">
-            <h3>Map requirements</h3>
-            <ObservedDelirium strategy={s} evidence={evidence} />
-
-            <div className="sample-grid">
-              {mapRequirementTiles(s.observed).map(([name, value]) => (
-                <Stat
-                  key={String(name)}
-
-                  title={String(name)}
-
-                  value={
-                    value == null
-                      ? '—'
-                      : `${number(value as number)}${name === 'Author multiplier' ? '×' : name === 'Mod' ? '' : '%'}`
-                  }
-                />
-              ))}
-            </div>
-
-            <h3 className="atlas-heading">Atlas Tree</h3>
-
-            <p>
-              {number(atlas?.points, 0)} / {number(atlas?.points_max, 0)} points
-              recorded
-            </p>
-
-            {safeAtlas ? (
-              <a
-                className="button"
-
-                href={atlas!.url!}
-
-                target="_blank"
-
-                rel="noopener noreferrer"
-              >
-                Open Atlas Tree <ExternalLink size={15} />
-              </a>
-            ) : (
-              <p className="muted">
-                No supported Atlas Tree link was recorded.
-              </p>
-            )}
-          </section>
-        </div>
-      </section>
-
-      <section className="section">
-        <h2>Map regex</h2>
-
-        {[
-          ['Run', setup.run_regex],
-
-          ['Slam', setup.slam_regex],
-        ]
-          .filter(([name, text]) => name === 'Run' || !!text)
-          .map(([name, text]) => (
-            <div className="regex" key={name}>
-              <span>{name}</span>
-
-              {text ? (
-                <>
-                  <code>{text}</code>
-
-                  <button
-                    disabled={copyBusy}
-
-                    onClick={() => onCopy(text)}
-
-                    aria-label={`Copy ${name} regex`}
-                  >
-                    <Copy size={16} />
-                  </button>
-                </>
-              ) : (
-                <span className="muted">Not recorded</span>
-              )}
-            </div>
-          ))}
-      </section>
-
-      <section className="section notes">
-        <h2>Strategy notes</h2>
-
-        <p>{s.notes || 'No notes were recorded.'}</p>
-      </section>
-    </>
   );
 }

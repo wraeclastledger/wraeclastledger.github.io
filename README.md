@@ -27,9 +27,9 @@ npm run review:api
 npm run review:static
 ```
 
-Open http://127.0.0.1:43122/?design=prototype#/ . `/compare` shows both retained
-presentations with the same synthetic data. The preferred presentation currently
-requires `?design=prototype`; making it the default is a pre-publication follow-up.
+Open http://127.0.0.1:43122/ . The preferred prototype presentation is the standard
+layout for every route. Older `?design=prototype` bookmarks still work; no design
+switch is required. The former alternate layout has been retired.
 
 For development with live reloading, set `C1_LOCAL_API=1` in the process environment
 and run `npm run dev` (loopback port 43120). A development-only HTTPS API endpoint
@@ -45,7 +45,7 @@ npm run review:communities:api
 npm run review:communities
 ```
 
-Open http://127.0.0.1:43127/?design=prototype#/communities . The frontend uses
+Open http://127.0.0.1:43127/#/communities . The frontend uses
 31 synthetic communities from the loopback fixture service on 43128. Home and
 Following use the review-only `wraeclastledger-web-community-review-v1` browser key.
 The service has no production connection. Review flags are set only in the child

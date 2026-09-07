@@ -12,7 +12,8 @@ The suite covers:
   setup-code authority remaining unavailable for display-only legacy costs.
 - Browser Brotli output read by the vendored desktop parser and price-free Load.
 - Exact item artwork, normalized identity and visible ambiguous-name fallbacks.
-- Rendered interactions in both presentations, clipboard fallback and disclosures.
+- Preferred layout at the plain root and direct detail links, with compatibility
+  for old prototype-query bookmarks; clipboard fallback and disclosures.
 - Synthetic Home/Following persistence, failure warnings, directory pagination,
   unavailable communities and audience invalidation.
 - Export configuration rejecting local review flags and unapproved API addresses.
