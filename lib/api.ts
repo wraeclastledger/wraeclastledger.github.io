@@ -1,4 +1,5 @@
 import type { EvidencePage, ListPage, StrategyDetail, Query } from './model';
+import type { CommunitySummary } from './community-summary';
 import { queryParams, UUID } from './routes';
 import { SORTS } from './model';
 import { emptyPreferences, type Preferences } from './community-preferences';
@@ -429,6 +430,30 @@ export class PublicApi {
   detail(id: string, signal: AbortSignal) {
     if (!UUID.test(id)) throw new ApiError('invalid');
     return this.read<StrategyDetail>((this.discovery ? '/discovery' : '') + '/strategies/' + id, 'detail', signal);
+  }
+  async summary(league: string, signal: AbortSignal): Promise<CommunitySummary> {
+    if (this.discovery) throw new ApiError('unavailable');
+    if (league.length > 80 || league.split('').some(c => c.charCodeAt(0) < 32 || c.charCodeAt(0) === 127)) throw new ApiError('invalid');
+    const params = new URLSearchParams({ summary: 'community' });
+    if (league.trim()) params.set('league', league);
+    const response = await this.read<{ schema_version: 1; summary: CommunitySummary }>(
+      '/strategies?' + params,
+      value => {
+        if (!object(value) || value.schema_version !== 1 || Object.keys(value).sort().join(',') !== 'schema_version,summary'
+          || !object(value.summary)) throw new ApiError('invalid');
+        const s = value.summary;
+        if (Object.keys(s).sort().join(',') !== 'covered,map_covered,maps,net,run_covered,runs,strategies') throw new ApiError('invalid');
+        for (const key of ['strategies', 'covered', 'map_covered', 'maps', 'run_covered', 'runs']) {
+          if (!Number.isSafeInteger(s[key]) || Number(s[key]) < 0) throw new ApiError('invalid');
+        }
+        if (['covered', 'map_covered', 'run_covered'].some(key => Number(s[key]) > Number(s.strategies))
+          || (s.net !== null && (typeof s.net !== 'number' || !Number.isFinite(s.net) || Math.abs(s.net) > Number.MAX_SAFE_INTEGER))
+          || (s.strategies === 0 ? s.net !== 0 || s.maps !== 0 || s.runs !== 0
+            : (s.covered === 0) !== (s.net === null))
+          || (s.map_covered === 0 && s.maps !== 0) || (s.run_covered === 0 && s.runs !== 0)) throw new ApiError('invalid');
+      }, signal,
+    );
+    return response.summary;
   }
   evidence(id: string, cursor: string | null, signal: AbortSignal) {
     if (!UUID.test(id)) throw new ApiError('invalid');

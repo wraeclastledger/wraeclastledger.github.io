@@ -16,6 +16,14 @@ const server=http.createServer(async(req,res)=>{
   let offset=0;if(q.get('cursor')){const parts=q.get('cursor').split(':');if(parts[0]!==binding||mode==='changed')return send(409,{error:'cursor_stale'});offset=Number(parts[1]);}
   const search=(q.get('search')||'').toLowerCase();let rows=Array.from({length:67},(_,i)=>row(i+1)).filter(r=>(!search||`${r.title} ${r.tags.join(' ')} ${r.league}`.toLowerCase().includes(search))&&(!q.get('league')||r.league.toLowerCase()===q.get('league').toLowerCase())&&(!q.get('map_type')||r.map_type===q.get('map_type'))&&(!q.get('tags')||q.get('tags').split(',').some(t=>r.tags.includes(t)))&&q.get('group')!=='group');
   if(mode==='empty')rows=[];
+  if(q.get('summary')==='community') {
+    const summaries=rows.map(r=>detail(Number(r.id.slice(-12))));
+    const covered=summaries.filter(d=>d.economics.historical_net_divines!==null);
+    return send(200,{schema_version:1,summary:{strategies:rows.length,covered:covered.length,
+      net:covered.length?covered.reduce((sum,d)=>sum+d.economics.historical_net_divines,0):rows.length?null:0,
+      maps:summaries.reduce((sum,d)=>sum+d.coverage.map_count,0),runs:summaries.reduce((sum,d)=>sum+d.coverage.run_count,0),
+      map_covered:rows.length,run_covered:rows.length}});
+  }
   const sort=q.get('sort')||'activity',order=q.get('order')||'desc';const pick=r=>({activity:r.updated_at,title:r.title,mod:r.observed.mod_average,maps:r.observed.map_count,cost_per_map:r.results.all_in_cost_per_map_chaos,profit_per_map:r.results.net_per_map_divines,score:r.score,div_per_hour:r.results.net_divines_per_hour})[sort];
   rows.sort((a,b)=>{const x=pick(a),y=pick(b);return x==null?y==null?a.id.localeCompare(b.id):1:y==null?-1:((typeof x==='string'?x.localeCompare(y):x-y)*(order==='asc'?1:-1)||a.id.localeCompare(b.id));});
   return send(200,page(rows.slice(offset,offset+25),{total:rows.length,sort,order,next_cursor:offset+25<rows.length?`${binding}:${offset+25}`:null}));

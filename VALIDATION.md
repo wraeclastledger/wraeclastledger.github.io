@@ -9,6 +9,9 @@ The suite covers:
 - Bounded API responses, deadlines, aborts and stale request ownership.
 - Query-bound pagination, route safety and Back/Forward restoration.
 - Null/zero/negative economics and immutable per-run prices.
+- Single-request community totals beyond 50 strategies, exact aggregate schema,
+  missing/count coverage, cancellation and no detail-fan-out fallback. Rendered
+  league changes do not display the previous league's totals under the new label.
 - Synthetic historical cost itemization, including duplicate scarabs and exact
   setup-code authority remaining unavailable for display-only legacy costs.
 - Browser Brotli output read by the vendored desktop parser and price-free Load.

@@ -15,15 +15,45 @@ Prepared locally: an explicit Pages profile targets only
 is preserved. API requests omit credentials/referrers and reject redirects.
 Artifact validation produces content hashes and a CSP/header proposal from the
 actual HTML. [The deployment draft](ops/PAGES_RELEASE.md) is inactive and applies
-no infrastructure changes. These checks do not prove the live API or headers.
+no infrastructure changes. Build checks alone do not prove live behavior.
+
+## Accepted infrastructure — September 7, 2026
+
+The API hostname is live. Origin installation and public-CA HTTPS checks passed.
+Cloudflare Full (strict), API cache bypass and an API-only HTTP 308 redirect are
+active. The redirect preserves paths and query strings at the edge; origin port
+80 is not a prerequisite. Twenty-four external network checks passed, covering
+safe list/detail/evidence reads, exact canonical-site CORS, preflights, denied
+routes, no-store, absence of cookie/credential headers and existing desktop
+compatibility. This is network evidence, not full website browser acceptance.
+
+The organization has verified domain ownership. Pages is in workflow mode with
+no custom domain and no activated publication workflow. Its existing environment
+allows the main branch, but has no required reviewer and permits admin bypass.
+Those settings are not yet the proposed publication gate. The GitHub-generated
+legacy workflow remains listed; it is not evidence of a successful deployment.
+Website apex/www DNS and website response-header rules remain unapplied.
+
+The matching community aggregate is deployed and accepted. Thirty-six external
+network checks passed after rollout, including summary scope/schema, repeat/HEAD
+reads, rejected parameters, edge HTTPS query retention and ordinary/desktop API
+compatibility. Production image tests also cover a 100,000-strategy synthetic
+catalogue. The website card is retained and its detail-request loop is removed.
+
+## Remaining launch gates
 
 Before publication:
 
-1. Complete and verify the API origin hostname/vhost, certificate and browser
-   CORS for the canonical website. The prepared Pages profile does not proxy API
-   requests through GitHub; it requires the separately configured API hostname.
-2. Replace the local bounded community-summary reader with a production aggregate
-   endpoint before wider use. Do not remove its cap or sum rounded per-map values.
+1. Verify the actual canonical website's browser connection to the accepted API.
+   Local previews and command-line CORS checks cannot replace this. The Pages
+   profile makes direct browser requests; GitHub does not proxy the API.
+2. Keep the community totals card, as approved. It now uses one aggregate request
+   at `/web/v1/strategies?summary=community` with an optional league. The matching
+   tested backend is deployed; verify the card through the final website origin.
+   The original 50-strategy/detail-request loop is removed. Historical losses,
+   missing profit and independent map/run coverage remain disclosed; no current
+   prices or rounded per-map values supply the total. Production multi-community
+   discovery/admission remains separate from this existing catalogue summary.
 3. Complete second-browser, narrow layout, keyboard, zoom, clipboard and actual
    website-to-installed-desktop import checks.
 4. Verify actual CSP, worker/WASM behavior, referrer policy, caching, HTTPS,
@@ -31,7 +61,7 @@ Before publication:
    the production host's behavior.
 5. Confirm About/Privacy, source/download/support links and provider logging
    disclosures against the actual deployment.
-6. Review bundle performance, verify the custom domain, review/activate the
+6. Review bundle performance, configure the repository custom domain, review/activate the
    separately triggered publication-workflow draft and its environment protection.
    Retain the prior static artifact and matching header policy for rollback.
    Record the exact source commit and artifact hashes. Website rollback must not
@@ -42,5 +72,6 @@ aggregates and admission controls need a separately tested backend contract.
 Public aliases and temporary recipient links are additional work. Browser
 preferences grant no access, and the website exposes no voting or authoring API.
 
-Domain verification, DNS changes, enabling Pages, publishing the website and
-application-server deployment remain separately controlled operations.
+The [launch checklist](ops/LAUNCH_CHECKLIST.md) records the proposed settings and
+execution order. DNS, deployment-environment changes, publication and application
+deployment remain separately controlled operations.

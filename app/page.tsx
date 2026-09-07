@@ -1415,10 +1415,12 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
                 </p>
 
                 <p>
-                  Hosting and network providers may retain request logs. This
-                  local implementation makes no promise of zero provider logging
-                  or an unverified retention period. Production host and
-                  reporting details must be confirmed before public rollout.
+                  The public website uses GitHub Pages for static hosting and
+                  Cloudflare for delivery and the API connection. These providers
+                  and the API operator may retain network request logs, including
+                  IP addresses. This site makes no promise of zero provider
+                  logging or a fixed retention period. Item artwork is requested
+                  from web.poecdn.com.
                 </p>
 
                 <p>

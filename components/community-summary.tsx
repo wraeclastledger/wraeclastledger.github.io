@@ -9,9 +9,10 @@ import { House } from 'lucide-react';
 import { SemanticIcon } from './semantic-icon';
 export function CommunitySummary({ league }: { league: string }) {
   const [state, setState] = useState<{
+    league: string;
     data: Summary | null;
     error: string | null;
-  }>({ data: null, error: null });
+  }>({ league, data: null, error: null });
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     const ctrl = new AbortController();
@@ -20,6 +21,7 @@ export function CommunitySummary({ league }: { league: string }) {
       ctrl.abort();
       if (active)
         setState({
+          league,
           data: null,
           error: 'The community summary took too long. Please retry.',
         });
@@ -27,16 +29,17 @@ export function CommunitySummary({ league }: { league: string }) {
     const api = new PublicApi(import.meta.env.VITE_PUBLIC_API_URL || '/web/v1');
     void loadCommunitySummary(api, ctrl.signal, league)
       .then((data) => {
-        if (active && !ctrl.signal.aborted) setState({ data, error: null });
+        if (active && !ctrl.signal.aborted) setState({ league, data, error: null });
       })
       .catch((error) => {
         if (active && !ctrl.signal.aborted)
           setState({
+            league,
             data: null,
             error:
               error instanceof ApiError
                 ? errorText(error)
-                : 'This community needs a dedicated aggregate endpoint before its total can be shown.',
+                : 'Community totals are unavailable. Please retry.',
           });
         ctrl.abort();
       })
@@ -47,7 +50,8 @@ export function CommunitySummary({ league }: { league: string }) {
       clearTimeout(timer);
     };
   }, [attempt, league]);
-  const d = state.data;
+  const d = state.league === league ? state.data : null;
+  const error = state.league === league ? state.error : null;
   return (
     <section
       className="community-summary"
@@ -66,6 +70,9 @@ export function CommunitySummary({ league }: { league: string }) {
           <small>
             {number(d.strategies, 0)} public strategies · {number(d.maps, 0)}{' '}
             recorded maps · {number(d.runs, 0)} contributed runs
+            {(d.map_covered < d.strategies || d.run_covered < d.strategies) && (
+              <> · Counts reported for {number(d.map_covered, 0)}/{number(d.strategies, 0)} strategies (maps), {number(d.run_covered, 0)}/{number(d.strategies, 0)} (runs)</>
+            )}
           </small>
         )}
       </div>
@@ -80,17 +87,17 @@ export function CommunitySummary({ league }: { league: string }) {
             </small>
             <small>
               Currently public strategies; losses included.{' '}
-              {d.covered < d.strategies
+              {d.net === null ? 'No historical profit totals are recorded.' : d.covered < d.strategies
                 ? 'Incomplete coverage — this is a known subtotal.'
                 : 'Each run retains its authored Divine value.'}
             </small>
           </>
-        ) : state.error ? (
+        ) : error ? (
           <>
-            <output>{state.error}</output>
+            <output>{error}</output>
             <button
               onClick={() => {
-                setState({ data: null, error: null });
+                setState({ league, data: null, error: null });
                 setAttempt((n) => n + 1);
               }}
             >

@@ -7,6 +7,10 @@ This repository contains the website source and synthetic tests. GitHub Pages
 publication is a separate operation; the included CI workflow only validates source.
 The website reads a safe public API. It does not include the database, private
 server implementation, Discord credentials or desktop session storage.
+The community totals card uses one server aggregate at
+`/web/v1/strategies?summary=community` (optional `league`). Historical losses and
+missing coverage remain visible; the frontend does not enumerate detail records
+or impose a 50-strategy total limit. A matching API deployment is required.
 
 ## Development
 
@@ -43,6 +47,8 @@ response headers are written outside the artifact in `outputs/<profile>/`.
 The [Pages release draft](ops/PAGES_RELEASE.md) describes artifact review and
 activation gates. Its workflow example is inactive outside `.github/workflows`.
 Normal source CI validates both profiles on Windows and Ubuntu and cannot deploy.
+The [first-launch checklist](ops/LAUNCH_CHECKLIST.md) separates the accepted API
+connection from pending website settings, browser acceptance and publication.
 
 ## Isolated community workflow review
 

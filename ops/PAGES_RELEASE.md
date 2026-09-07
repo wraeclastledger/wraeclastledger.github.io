@@ -5,6 +5,11 @@ run on GitHub. Copying/activating it and dispatching it are later reviewed steps
 No domain, Pages environment, certificate, DNS, header rule or live service is
 configured by local validation. Normal source CI remains read-only.
 
+Current state and the proposed first-launch settings are in
+[LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md). API infrastructure is accepted;
+the remaining canonical-browser, community-summary and website-host gates still
+apply. Organization domain verification does not configure the repository domain.
+
 ## Build profiles
 
 - `npm run validate` defaults to same-origin `/web/v1`, preserving local fixture
@@ -30,7 +35,9 @@ a universal privacy scanner. Review the staged source and final artifact too.
 ## Preconditions before activating the workflow
 
 1. The source SHA has passed both build profiles, Windows/Linux CI and the
-   remaining browser/import acceptance in PRODUCTION_READINESS. The hostname's
+   pre-publication browser/import checks in PRODUCTION_READINESS. Reserve actual
+   canonical-origin browser/header checks for the controlled launch acceptance;
+   they cannot pass before that origin serves the site. The API hostname's
    three safe read routes, exact CORS and exposed Retry-After are tested; private
    routes and browser credentials are not forwarded. Community production gaps
    remain independent launch blockers for those features.
@@ -43,7 +50,8 @@ a universal privacy scanner. Review the staged source and final artifact too.
    does not require approval. If a suitable review gate cannot be configured,
    keep the draft inactive and prepare an alternative review process first.
 4. Confirm the final API origin certificate, Cloudflare Full (strict), HTTPS
-   redirect and minimum TLS 1.2. Keep Origin CA API traffic proxied. Domain routing,
+   redirect (already accepted) and the proposed minimum TLS 1.2 (not yet applied).
+   Keep Origin CA API traffic proxied. Domain routing,
    publishing and origin changes retain their separate approvals.
 
 ## Reviewing one release

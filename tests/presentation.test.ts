@@ -2,26 +2,21 @@ import {displayedMod} from '../lib/presentation';
 import { displayedSetup, mapRequirementTiles } from '../lib/presentation';
 import { parseRoute, routeUrl } from '../lib/routes';
 import { CURRENT_LEAGUE, DEFAULT_QUERY } from '../lib/model';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
   recordedDivinePrice,
   relativeActivity,
   listedCostRows,
 } from '../lib/presentation';
-import { loadCommunitySummary } from '../lib/community-summary';
 import {
   detail as fixtureDetail,
   evidence as fixtureEvidence,
-  page as fixturePage,
-  row,
 } from './fixtures.mjs';
-import type { StrategyDetail, EvidencePage, ListPage } from '../lib/model';
+import type { StrategyDetail, EvidencePage } from '../lib/model';
 const detail = (...args: Parameters<typeof fixtureDetail>) =>
   fixtureDetail(...args) as StrategyDetail;
 const evidence = (...args: Parameters<typeof fixtureEvidence>) =>
   fixtureEvidence(...args) as EvidencePage;
-const page = (...args: Parameters<typeof fixturePage>) =>
-  fixturePage(...args) as ListPage;
 describe('recorded presentation', () => {
   it('converts only a complete matching revision with a common recorded rate', () => {
     const s = detail(),
@@ -54,65 +49,6 @@ describe('recorded presentation', () => {
     expect(relativeActivity('2026-09-07T11:17:00Z', now)).toBe('43m ago');
     expect(relativeActivity('2026-09-08T00:00:00Z', now)).toBe('just now');
     expect(relativeActivity(null, now)).toBe('date not recorded');
-  });
-  it('sums immutable Divine net values, including losses, and discloses coverage', async () => {
-    const api = {
-      list: vi.fn(async () => page([row(1), row(2)])),
-      detail: vi.fn(async (id: string) => {
-        const s = detail(id.endsWith('1') ? 1 : 2);
-        s.economics.historical_net_divines = id.endsWith('1') ? -7 : null;
-        return s;
-      }),
-    };
-    const result = await loadCommunitySummary(
-      api,
-      new AbortController().signal,
-    );
-    expect(result.net).toBe(-7);
-    expect(result.covered).toBe(1);
-    expect(result.strategies).toBe(2);
-  });
-  it('uses the selected league for every summary list read', async () => {
-    const api = {
-      list: vi.fn(async () => page([row(1)])),
-      detail: vi.fn(async () => detail()),
-    };
-    await loadCommunitySummary(api, new AbortController().signal, 'Mirage');
-    expect(api.list.mock.calls.length).toBe(2);
-    for (const call of vi.mocked(api.list).mock.calls as unknown as Array<
-      [{ league: string }]
-    >)
-      expect(call[0].league).toBe('Mirage');
-  });
-  it('rejects changed publications and bounds community reads', async () => {
-    const api = {
-      list: vi.fn(async () => page([row(1)])),
-      detail: vi.fn(async () => ({
-        ...detail(),
-        updated_at: '2026-09-07T00:00:00Z',
-      })),
-    };
-    await expect(
-      loadCommunitySummary(api, new AbortController().signal),
-    ).rejects.toMatchObject({ kind: 'changed' });
-    api.list.mockResolvedValue(page([row(1)], { total: 51 }));
-    api.detail.mockClear();
-    await expect(
-      loadCommunitySummary(api, new AbortController().signal),
-    ).rejects.toThrow('aggregate-needed');
-    expect(api.detail).not.toHaveBeenCalled();
-  });
-  it('stops a superseded community read before loading any details', async () => {
-    const ctrl = new AbortController();
-    const api = {
-      list: vi.fn(async () => {
-        ctrl.abort();
-        return page([row(1)]);
-      }),
-      detail: vi.fn(async () => detail()),
-    };
-    await expect(loadCommunitySummary(api, ctrl.signal)).rejects.toThrow();
-    expect(api.detail).not.toHaveBeenCalled();
   });
 });
 
