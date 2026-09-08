@@ -15,7 +15,9 @@ The suite covers:
   missing/count coverage, cancellation and no detail-fan-out fallback. Rendered
   league changes do not display the previous league's totals under the new label.
 - Synthetic historical cost itemization, including duplicate scarabs and exact
-  setup-code authority remaining unavailable for display-only legacy costs.
+  legacy Discord-code proof remaining unavailable for display-only legacy costs.
+  The separate website setup format accepts missing historical costs, retains
+  available preview values, and requires desktop 1.0.97 or later.
 - Browser Brotli output read by the vendored desktop parser and price-free Load.
 - Exact item artwork, normalized identity and visible ambiguous-name fallbacks.
 - Preferred layout at the plain root and direct detail links, with compatibility

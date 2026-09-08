@@ -64,6 +64,7 @@ beforeEach(() => {
 });
 afterEach(async () => {
   await act(async () => root.unmount());
+  vi.useRealTimers();
   host.remove();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
@@ -263,7 +264,7 @@ describe.each(['default', 'legacy prototype link'])(
       await settle();
       expect(fetcher).toHaveBeenCalledTimes(1);
     });
-    it('shows five tags and an accessible complete-tag dialog without navigating', async () => {
+    it('keeps five inline tags and labels the remaining-tag trigger for its strategy', async () => {
       vi.stubGlobal(
         'fetch',
         vi.fn(() => Promise.resolve(response(page([row(6)])))),
@@ -273,15 +274,10 @@ describe.each(['default', 'legacy prototype link'])(
       const tags = host.querySelector('.tags-compact')!;
       expect(tags.querySelectorAll('.tag')).toHaveLength(5);
       const opener = tags.querySelector('button') as HTMLButtonElement;
-      opener.focus();
-      await click(opener);
-      expect(
-        document.querySelector('[role=dialog]')?.querySelectorAll('.tag'),
-      ).toHaveLength(12);
+      expect(opener.getAttribute('aria-label')).toBe('Show 7 more tags for Community strategy 06');
+      expect(opener.getAttribute('aria-expanded')).toBe('false');
+      expect(document.querySelector('.tag-popover')).toBeNull();
       expect(location.hash).toBe(hash);
-      await click(document.querySelector('[data-slot="dialog-close"]'));
-      expect(document.querySelector('[role=dialog]')).toBeNull();
-      expect(document.activeElement).toBe(opener);
     });
     it('treats About and Privacy as one detour and restores expanded evidence on Back', async () => {
       history.replaceState(null, '', '#/strategy/' + id(1));

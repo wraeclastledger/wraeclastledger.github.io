@@ -5,6 +5,7 @@ import { CommunitySummary } from '../components/community-summary';
 import { CommunityChoices, CommunityDirectory, CommunityOverview, useCommunityPreferences } from '../components/community-discovery';
 import { relationship } from '../lib/community-preferences';
 import PrototypeDetail from '../components/prototype-detail';
+import { CopyNotice } from '../components/copy-notice';
 
 import {
   useEffectEvent,
@@ -22,7 +23,6 @@ import {
   Download,
   Search,
   Copy,
-  X,
   BookOpen,
 } from 'lucide-react';
 
@@ -43,9 +43,10 @@ import {
 
 import { parseRoute, routeUrl, routeLabel, type Route } from '../lib/routes';
 
-import { generatePublicStrategySetupCode } from '../lib/vendor/setup-code.js';
+import { encodeStrategySetupCode, publicStrategySetup, SETUP_CODE_MIN_APP_VERSION } from '../lib/vendor/strategy-setup.js';
 
-import { encodePayload, writeClipboard } from '../lib/copy';
+import { writeClipboard } from '../lib/copy';
+import { setupEvidence } from '../lib/setup-evidence';
 
 import { Table } from '../components/ui/table';
 
@@ -160,6 +161,8 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
   const opener = useRef<HTMLElement | null>(null);
 
   const [search, setSearch] = useState('');
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const composingSearch = useRef(false);
 
   const [league, setLeague] = useState('');
   const [refreshCooldown, setRefreshCooldown] = useState(0);
@@ -207,6 +210,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
   };
 
   const applyRoute = (next: Route) => {
+    clearTimeout(searchTimer.current);
     clearCopy();
     setDirectoryReady(false);
     setCommunityName('');
@@ -227,7 +231,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
     if (!communityReview || communityState.ready) void controller.open(next);
   };
 
-  const navigate = (next: Route, preservePosition = false) => {
+  const navigate = (next: Route, preservePosition = false, replace = false) => {
     if (routeUrl(next) === routeUrl(routeRef.current)) {
       if (next.view === 'about' || next.view === 'privacy') {
         document
@@ -239,6 +243,15 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       }
 
+      return;
+    }
+
+    if (replace) {
+      const updated = snapshot();
+      history.replaceState(updated, '', routeUrl(next));
+      setNav(updated);
+      restore.current = null;
+      applyRoute(next);
       return;
     }
 
@@ -371,6 +384,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
       window.removeEventListener('scroll', scroll);
 
       copyOwner.current.abort();
+      clearTimeout(searchTimer.current);
 
       controller.dispose();
     };
@@ -445,12 +459,25 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
     }
   };
 
-  const changeQuery = (patch: Partial<Query>) => {
+  const changeQuery = (patch: Partial<Query>, replace = false) => {
+    clearTimeout(searchTimer.current);
     if (route.view === 'list' || route.view === 'community')
       navigate(
-        { ...route, pages: 1, query: { ...route.query, ...patch } },
+        { ...route, pages: 1, query: { ...route.query, search, ...patch } },
         true,
+        replace,
       );
+  };
+
+  const scheduleSearch = (value: string) => {
+    setSearch(value);
+    clearTimeout(searchTimer.current);
+    if (composingSearch.current) return;
+    searchTimer.current = setTimeout(() => {
+      const current = routeRef.current;
+      if (current.view === 'list' || current.view === 'community')
+        navigate({ ...current, pages: 1, query: { ...current.query, search: value } }, true, true);
+    }, 300);
   };
 
   const changeSort = (sort: SortKey) => {
@@ -502,6 +529,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
 
   const copy = async (text: string) => {
     const owner = copyOwner.current;
+    setNotice('');
 
     opener.current = document.activeElement as HTMLElement;
 
@@ -530,8 +558,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
 
     const evidence = state.evidence;
 
-    if (!detail || !evidence || evidence.next_cursor || state.evidenceError)
-      return;
+    if (!detail) return;
 
     const owner = copyOwner.current;
 
@@ -539,29 +566,23 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
 
     setNotice('Preparing setup code…');
 
-    const result = await generatePublicStrategySetupCode(
-      detail,
-
-      evidence,
-
-      (payload) => encodePayload(payload, owner.signal),
-    );
-
-    if (owner.signal.aborted) return;
-
-    if (result.status === 'unavailable') {
+    try {
+      const completeEvidence = await setupEvidence(api, detail, state.evidenceError ? null : evidence, owner.signal);
+      if (owner.signal.aborted) return;
+      const setup = publicStrategySetup(detail, completeEvidence);
+      if (!setup) {
+        setCopyBusy(false);
+        setNotice('This publication does not contain a supported reusable setup. You can still inspect its recorded fields.');
+        return;
+      }
+      const code = encodeStrategySetupCode(setup);
+      if (!owner.signal.aborted) await copy(code);
+    } catch (error) {
+      if (owner.signal.aborted) return;
       setCopyBusy(false);
-
-      setNotice(
-        result.reason === 'incomplete_safe_source'
-          ? 'A setup code is unavailable: exact setup and price evidence is incomplete.'
-          : 'The setup code could not be prepared within its limits. Please retry.',
-      );
-
-      return;
+      setNotice(error instanceof ApiError ? errorText(error)
+        : 'This setup is too large or unsupported for a setup code. You can still inspect its recorded fields.');
     }
-
-    await copy(result.code);
   };
 
   const back = () => {
@@ -790,28 +811,44 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
               onSubmit={(e) => {
                 e.preventDefault();
 
-                changeQuery({ search, league });
+                if (!composingSearch.current) changeQuery({ search, league }, true);
               }}
             >
-              <label className="search">
-                <span>Search strategies</span>
+              <div className="search">
+                <label htmlFor="strategy-search">Search strategies</label>
 
                 <div>
                   <Search size={16} />
 
                   <input
+                    id="strategy-search"
+                    type="search"
+                    data-focus="strategy-search"
                     value={search}
 
                     maxLength={120}
 
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={(e) => scheduleSearch(e.target.value)}
+                    onCompositionStart={() => {
+                      composingSearch.current = true;
+                      clearTimeout(searchTimer.current);
+                    }}
+                    onCompositionEnd={(e) => {
+                      composingSearch.current = false;
+                      scheduleSearch(e.currentTarget.value);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.nativeEvent.isComposing && !composingSearch.current) {
+                        e.preventDefault();
+                        changeQuery({ search, league }, true);
+                      }
+                    }}
 
                     placeholder="Name, notes or setup…"
                   />
 
-                  <button type="submit">Search</button>
                 </div>
-              </label>
+              </div>
 
               <LeagueFilter
                 value={listRoute.query.league}
@@ -1232,7 +1269,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
                     <p className="footnote">
                       Desktop Import can inspect this history. Load applies only
                       reusable setup to a new run; enter your own current
-                      prices. Exact setup and cost proof is required for a code.
+                      prices. Available history is included for inspection; missing historical costs do not block reusable setup.
                     </p>
                     {state.loading && (
                       <output>Loading contributed evidence…</output>
@@ -1245,7 +1282,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
                     ))}
                     {state.evidence && !state.evidence.runs.length && (
                       <p className="muted">
-                        No structured runs available. A safe setup code cannot
+                        No structured runs available. Historical run details cannot
                         be generated.
                       </p>
                     )}
@@ -1262,8 +1299,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
                         </button>
 
                         <p className="footnote">
-                          Load the remaining evidence before copying the newest
-                          complete setup.
+                          Load the remaining evidence to inspect all recorded runs.
                         </p>
                       </>
                     )}
@@ -1278,6 +1314,10 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
                       Import this setup into WraeclastLedger to record your
                       maps, costs and returns. Enter your own current prices.
                     </p>
+                    <p id="setup-code-version" className="footnote">
+                      Requires WraeclastLedger {SETUP_CODE_MIN_APP_VERSION} or later.
+                      Inspect available historical results; loading applies only setup and leaves new-run prices empty.
+                    </p>
                   </div>
 
                   <div className="import-actions">
@@ -1285,11 +1325,9 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
                     <button
                       disabled={
                         copyBusy ||
-                        state.loading ||
-                        !!state.evidenceError ||
-                        !state.evidence ||
-                        !!state.evidence.next_cursor
+                        state.loading
                       }
+                      aria-describedby="setup-code-version"
 
                       onClick={() => void copySetup()}
                     >
@@ -1400,7 +1438,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
 
                 <p>
                   There is no website sign-in, vote casting or analytics
-                  integration in this frontend. Clearing browser storage removes
+                  integration in this frontend. Clearing browser storage removes{' '}
                   {communityReview ? 'your theme and community choices. ' : 'your theme choice. '} A storage failure is shown and your choice
                   applies only in the current tab.
                 </p>
@@ -1425,15 +1463,12 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
 
                 <p>
                   <a
-                    href="https://github.com/gund0lf/wraeclastledger_react/issues"
-
-                    target="_blank"
-
-                    rel="noopener noreferrer"
+                    href="mailto:wraeclastledger@gmail.com"
                   >
-                    Report a website or data concern
+                    wraeclastledger@gmail.com
                   </a>
-                  ; avoid posting private exports or credentials.
+                  {' '}— email us about privacy or data concerns. Do not include
+                  credentials or private exports.
                 </p>
               </>
             )}
@@ -1509,19 +1544,8 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
         </a>
       </footer>
 
-      {notice && (
-        <output className="toast">
-          <span>{notice}</span>
-
-          <button
-            aria-label="Dismiss copy notice"
-
-            onClick={() => setNotice('')}
-          >
-            <X size={16} />
-          </button>
-        </output>
-      )}
+      {notice && <CopyNotice key={notice} message={notice}
+        persistent={copyBusy || !!manual} onDismiss={() => setNotice('')} />}
 
       <Dialog
         open={!!manual}

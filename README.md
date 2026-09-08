@@ -1,7 +1,7 @@
 # WraeclastLedger website
 
 Read-only Path of Exile strategy browser with filtering, sorting, pagination,
-immutable run evidence and proof-checked setup codes for the desktop application.
+immutable run evidence and reusable setup codes for the desktop application.
 
 The website is live at [wraeclastledger.com](https://wraeclastledger.com).
 This repository contains the website source and synthetic tests. Source CI only
@@ -76,12 +76,20 @@ communities. It is not production tenancy, authentication or access control.
 
 ## Data and compatibility
 
-Historical values retain authored prices. Missing economics stays unavailable;
-display-only prices never grant setup-code authority. Copy requires matching
-strategy/revision evidence and uses the production wl3 codec. Desktop Load applies
-reusable setup with fresh new-run prices; website presentation does not reprice history.
+Historical values retain authored prices. Website codes use the shared `wls1`
+format and require desktop 1.0.97 or later. They carry reusable setup plus optional
+historical information for the import preview. Missing economics is unrecorded
+and does not block setup import. Load applies only reusable settings and leaves
+new-run prices empty; neither the website nor Load reprices history. Evidence used
+for the preview must match the strategy and revision, and pooled Chaos totals
+require complete run coverage. Codes convey no authorship or update authority.
+Recorded map guidance and Atlas modifier compatibility fields are retained across
+desktop and website loads. Copy reads all bounded evidence pages from one revision
+and recovers reusable options only when the matching runs agree.
+The legacy `wl2`/`wl3` Discord codecs retain their existing strict run requirements.
+Release the compatible desktop application before publishing the new website codes.
 
-`lib/vendor/provenance.json` and `tests/vendor/provenance.json` record source hashes
+`lib/vendor/provenance.json`, `lib/vendor/strategy-setup.provenance.json` and `tests/vendor/provenance.json` record source hashes
 for the vendored adapter and desktop compatibility reader. Normal builds and tests
 need no other checkout. Maintainer refresh commands accept explicit source paths:
 

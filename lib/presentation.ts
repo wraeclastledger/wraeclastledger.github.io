@@ -75,16 +75,19 @@ export function displayedSetup(
   e: EvidencePage | null | undefined,
 ) {
   const runs = matchingRuns(s, e);
-  const run = runs?.length === 1 ? runs[0] : null;
-  if (!run || run.observed.map_count !== s.coverage.map_count) return s.setup;
+  if (!runs?.length || runs.reduce((sum, run) => sum + (run.observed.map_count ?? 0), 0) !== s.coverage.map_count) return s.setup;
+  const normalize = (value: unknown) => JSON.stringify(value, (_key, item) => typeof item === 'string' ? item.trim().toLowerCase() : item);
+  const same = (field: 'astrolabe' | 'delirium' | 'multiplying_modifiers') =>
+    runs.every((run) => normalize(run.setup[field]) === normalize(runs[0].setup[field]));
+  const run = runs[0];
   return {
     ...s.setup,
-    astrolabe: s.setup.astrolabe ?? run.setup.astrolabe,
+    astrolabe: s.setup.astrolabe ?? (same('astrolabe') ? run.setup.astrolabe : null),
     delirium:
       s.setup.delirium ??
-      (run.setup.delirium?.type ? run.setup.delirium : null),
+      (same('delirium') && run.setup.delirium?.type ? run.setup.delirium : null),
     multiplying_modifiers:
-      s.setup.multiplying_modifiers ?? run.setup.multiplying_modifiers,
+      s.setup.multiplying_modifiers ?? (same('multiplying_modifiers') ? run.setup.multiplying_modifiers : null),
   };
 }
 

@@ -1,0 +1,15 @@
+{
+  "source": "gund0lf/wraeclastledger_react",
+  "minimumAppVersion": "1.0.97",
+  "bundleSha256": "d3669a9a98fbbacb466d3c279ffe9ab4c01faaa65546239270f034a2061bab4d",
+  "sources": [
+    {
+      "path": "src/shared/atlasReaderSafety.ts",
+      "sha256": "4ff755b199bdb5b499b72d469e68d7c75b5735cbfca8cb41365c249d2d2c1716"
+    },
+    {
+      "path": "src/shared/strategySetupCode.ts",
+      "sha256": "39a4e6902cde52150127b3fa988915a22668300deb7e419159a1dc1407a3215e"
+    }
+  ]
+}

@@ -8,7 +8,8 @@ import {
   relativeActivity,
 } from '../lib/presentation';
 import type { ReactNode } from 'react';
-import { Copy, ExternalLink, Globe, GitBranch, History } from 'lucide-react';
+import { Copy, ExternalLink, Globe, History } from 'lucide-react';
+import { AtlasTreeIcon } from './atlas-tree-icon';
 import { Tags, ItemName, LootEvidence } from './strategy-detail';
 import { useDisclosure } from '../lib/disclosures';
 import { isSafeStrategyAtlasUrl } from '../lib/vendor/setup-code.js';
@@ -124,7 +125,7 @@ export default function PrototypeDetail({
                 : 'Party not recorded'}
           </p>
           <p className="wl-expiryline">
-            <SemanticIcon name="updated" size={24} fallback={<History size={14} />} />
+            <History size={16} aria-hidden="true" />
             <time
               dateTime={date || undefined}
               title={date || 'Date not recorded'}
@@ -309,7 +310,7 @@ export default function PrototypeDetail({
             </div>
             <div className="wl-atlas-row">
               <span className="wl-atlas-summary">
-                <SemanticIcon name="atlas" size={44} className="wl-atlas-icon" fallback={<GitBranch className="wl-atlas-icon" />} />
+                <AtlasTreeIcon className="wl-atlas-icon" />
                 <span className="wl-atlas-copy">
                   <span className="wl-atlas-label">Atlas tree</span>
                   <span className="wl-atlas-points">

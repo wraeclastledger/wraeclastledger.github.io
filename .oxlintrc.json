@@ -31,6 +31,7 @@
     "coverage/**",
     "next-env.d.ts",
     "lib/vendor/setup-code.js",
+    "lib/vendor/strategy-setup.js",
     "components/ui/**",
     "hooks/**",
     ".npm-cache/**",

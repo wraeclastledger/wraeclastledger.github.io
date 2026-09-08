@@ -20,13 +20,15 @@ This document describes contributor-facing checks for release candidates.
 - Empty, missing, offline, timeout and rate-limit feedback.
 - Keyboard navigation, narrow layouts, zoom and explicit Light/Dark preferences.
 - Immutable historical prices, signed losses and visible missing-evidence coverage.
-- Exact-proof setup-code generation, browser compression, clipboard success and
-  selectable fallback. Desktop Load applies reusable setup with fresh run prices.
+- Setup-code generation with complete and incomplete history, clipboard success
+  and selectable fallback. Desktop 1.0.97+ displays available history for inspection;
+  Load applies reusable setup with empty new-run prices. Release desktop support first.
 - Atlas/artwork links, readable fallbacks and accurate About/Privacy disclosures.
 
 Community workflow fixtures are for isolated development. They do not provide
 production community access control. The public website has no authoring or
-vote-casting API. Missing financial proof keeps setup-code generation unavailable.
+vote-casting API. Missing historical economics does not block reusable setup codes;
+unsupported setup fields remain unavailable rather than being invented.
 
 ## Publication
 

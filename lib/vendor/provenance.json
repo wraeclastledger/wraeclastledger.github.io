@@ -1,5 +1,5 @@
 {
-  "clientVersion": "1.0.96",
+  "clientVersion": "1.0.97",
   "source": "gund0lf/wraeclastledger_react; public setup adapter",
   "exports": [
     "generatePublicStrategySetupCode",

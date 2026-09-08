@@ -249,6 +249,13 @@ p {
   font-size: 0.75rem;
   margin-bottom: 7px;
 }
+.search > label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-bottom: 7px;
+}
+.filters .search { min-width: 0; }
 .search > div {
   display: flex;
   align-items: center;
@@ -260,6 +267,19 @@ p {
 .search input {
   border: 0;
   background: transparent;
+  min-width: 0;
+  width: 100%;
+}
+.search > div:focus-within {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+.search input:focus-visible {
+  outline: none;
+}
+.search > div > svg {
+  flex-shrink: 0;
+  color: var(--muted);
 }
 .search button {
   border: 0;
@@ -1198,16 +1218,21 @@ footer > span {
   font-size: 10px;
   white-space: nowrap;
 }
-.tag-dialog .tags {
-  margin-top: 16px;
+.tag-popover[data-slot='popover-content'] {
+  width: max-content;
+  max-width: min(280px, calc(100vw - 24px));
+  padding: 9px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 14px #0003;
 }
-.tag-dialog .tag {
+.tag-popover .tags {
+  gap: 5px;
+}
+.tag-popover .tag {
   font-size: 13px;
   padding: 4px 8px;
-}
-.tag-dialog [data-slot='dialog-description'] {
-  overflow-wrap: anywhere;
-  padding-right: 24px;
 }
 .detail-heading {
   padding: 0 0 22px;

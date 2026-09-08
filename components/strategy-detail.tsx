@@ -14,12 +14,10 @@ import { useState } from 'react';
 import { useDisclosure } from '../lib/disclosures';
 
 import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from './ui/dialog';
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from './ui/popover';
 
 import {
   PackageOpen,
@@ -72,23 +70,21 @@ export function Tags({
       ))}
 
       {compact && tags.length > 5 && (
-        <Dialog>
-          <DialogTrigger
+        <Popover>
+          <PopoverTrigger
             className="tags-more"
 
-            aria-label={`Show all ${tags.length} tags for ${title}`}
+            aria-label={`Show ${tags.length - 5} more tags for ${title}`}
           >
             +{tags.length - 5} more
-          </DialogTrigger>
+          </PopoverTrigger>
 
-          <DialogContent className="manual-dialog tag-dialog">
-            <DialogTitle>All strategy tags</DialogTitle>
-
-            <DialogDescription>{title}</DialogDescription>
-
-            <Tags tags={tags} />
-          </DialogContent>
-        </Dialog>
+          <PopoverContent className="tag-popover" side="top" align="center" sideOffset={6}
+            initialFocus={false}
+            aria-label={`More tags for ${title}`}>
+            <Tags tags={tags.slice(5)} />
+          </PopoverContent>
+        </Popover>
       )}
     </span>
   );
