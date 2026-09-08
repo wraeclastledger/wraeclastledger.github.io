@@ -264,6 +264,24 @@ describe.each(['default', 'legacy prototype link'])(
       await settle();
       expect(fetcher).toHaveBeenCalledTimes(1);
     });
+    it('restores the same list entry after repeated strategy visits', async () => {
+      await mount();
+      const listHash = location.hash;
+      const listState = structuredClone(history.state);
+      for (let visit = 0; visit < 3; visit += 1) {
+        await click(host.querySelector(`a[href="#/strategy/${id(1)}"]`));
+        expect(host.querySelector('h1')?.textContent).toBe(detail().title);
+        // Browsers can emit both events for one traversal to the same saved entry.
+        history.replaceState(listState, '', listHash);
+        await act(async () => {
+          window.dispatchEvent(new PopStateEvent('popstate'));
+          window.dispatchEvent(new HashChangeEvent('hashchange'));
+        });
+        await settle();
+        expect(host.querySelector('#strategy-search')).not.toBeNull();
+        expect(host.querySelector('h1')?.textContent).toBe('Public strategies');
+      }
+    });
     it('keeps five inline tags and labels the remaining-tag trigger for its strategy', async () => {
       vi.stubGlobal(
         'fetch',

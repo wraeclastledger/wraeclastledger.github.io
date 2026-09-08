@@ -343,8 +343,10 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
 
     const pop = () => {
       const identity = location.hash + JSON.stringify(history.state);
+      const next = parseRoute(location.hash);
 
-      if (lastPop === identity) return;
+      // Paired events are duplicates only while their destination is still current.
+      if (lastPop === identity && routeUrl(routeRef.current) === routeUrl(next)) return;
 
       lastPop = identity;
 
@@ -354,7 +356,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
 
       restore.current = entry;
 
-      syncRoute(parseRoute(location.hash));
+      syncRoute(next);
     };
 
     const scroll = () => {
