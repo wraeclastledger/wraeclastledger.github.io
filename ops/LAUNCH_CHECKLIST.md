@@ -1,131 +1,34 @@
-# First website launch
+# Website release checklist
 
-Launch record and operational reference. This file is not a DNS import or permission to publish.
-The static host remains GitHub Pages. The existing API, desktop application,
-original prototype and isolated community preview retain their current roles.
+Use this checklist with the [Pages workflow guide](PAGES_RELEASE.md).
+It describes repeatable release checks, not account-specific operational settings.
 
-## Current state — September 8, 2026
+## Before publication
 
-| Area | Verified state | Remaining work |
-| --- | --- | --- |
-| Source | Published colour correction `b7900295788885831c3d23b6f97379648783678a`; 171 tests and four OS/profile CI jobs passed | Validate every subsequent candidate |
-| API | Public HTTPS, exact website CORS, no-store, safe-route isolation and HTTP 308 accepted; canonical browser reads work | Preserve existing desktop service |
-| Domain | Ownership verified, repository custom domain configured, apex/www DNS proxied; retain verification TXT | Observe future certificate renewal |
-| Pages | Manual publication/maintenance active; apex/www certificate approved and Enforce HTTPS enabled | Preserve protected artifact review |
-| Deployment environment | Main-only branch policy, required maintainer approval, self-review allowed, admin bypass disabled | Verify the actual waiting deployment before approving it |
-| Website policy | Exact deployed CSP, five security headers, no-store pages, cache bypass and canonical 308 verified; 30 live checks passed | Compare policy on each release |
-| Community totals | Single-request aggregate and canonical-origin league changes verified | Broader multi-community backend remains separate |
-| User acceptance | Local presentation provisionally accepted | Browser/clipboard/native-import checks; closer visual review deferred |
+- Identify the reviewed source revision on main and confirm successful validation
+  for both build profiles on Windows and Ubuntu.
+- Check the candidate's affected behavior against
+  [website build and release checks](../PRODUCTION_READINESS.md).
+- Review source and artifacts for content appropriate to this public repository.
+  Keep real user captures, personal information and private operational material out.
+- Retain the current artifact, manifest and compatible response policy for recovery.
+- Dispatch the manual Pages workflow with the full tested source SHA.
+- Compare the retained candidate and actual Pages package against the manifest;
+  review the generated header policy before authorizing publication.
 
-CI checks source. GitHub hosts the static files. Cloudflare handles DNS, edge TLS
-and response rules. The API server supplies safe strategy data. A source push
-does not deploy the application server or dispatch the manual Pages workflow.
+## After publication
 
-## Launch settings and remaining operations
+- Verify the served files match the approved artifact.
+- Check HTTPS, canonical links, API access and actual response-policy enforcement.
+- Check direct strategy links, list navigation, filters/sorts, missing/error states,
+  themes, keyboard/narrow layouts and browser compression/clipboard behavior.
+- Verify setup-code compatibility using disposable test state.
+- Record the outcome and retain the previous working artifact. A failed check
+  must remain visible to maintainers rather than being inferred from passing CI.
 
-**Execution target: maintainer workstation, GitHub/Cloudflare dashboards; these
-are account configuration reference, not commands for either server VM. Steps
-1–4 and 6–7 are applied. Step 5 remains a proposal; do not repeat the setup.**
+## Recovery
 
-1. In the website repository's `github-pages` environment, retain the exact
-   `main` branch policy. Add the repository owner as required reviewer, keep
-   self-review allowed so the owner can approve a run they requested, and disable
-   administrator bypass. This provides a deliberate second approval of the
-   generated artifact; it does not require another maintainer's code review.
-   Confirm the resolved reviewer account and resulting settings before activation.
-2. Set the Pages custom domain to `wraeclastledger.com` in repository settings,
-   retaining Actions/workflow mode. Preserve organization ownership verification.
-3. Add the following website records only after the repository domain is set.
-   Inspect existing records first and preserve unrelated records, especially the
-   accepted API and verification TXT. Do not create wildcard DNS.
-
-| Type | Name | Content | Certificate bootstrap | Final state |
-| --- | --- | --- | --- | --- |
-| A | @ | 185.199.108.153 | DNS-only, TTL 300 | Proxied, Auto |
-| A | @ | 185.199.109.153 | DNS-only, TTL 300 | Proxied, Auto |
-| A | @ | 185.199.110.153 | DNS-only, TTL 300 | Proxied, Auto |
-| A | @ | 185.199.111.153 | DNS-only, TTL 300 | Proxied, Auto |
-| CNAME | www | wraeclastledger.github.io | DNS-only, TTL 300 | Proxied, Auto |
-
-4. Wait for GitHub's certificate to cover the canonical domain and www, verify
-   normal CA/hostname validation directly against GitHub, and retain Enforce HTTPS.
-   Then enable website proxying while retaining Full (strict). Cloudflare's
-   visitor certificate and GitHub's origin certificate are separate; neither is
-   the API Origin CA certificate. Verify issuance and later renewal work through
-   the final proxy/redirect configuration; do not promise that first issuance
-   proves renewal. Never weaken TLS to work around a certificate error.
-5. Propose minimum visitor TLS 1.2 for this zone. This also affects the accepted
-   API, so recheck it after approval/application. Keep existing host ports/ACLs.
-6. The website-only edge redirect combines these two conditions:
-   `http.host eq "www.wraeclastledger.com"` redirects to the canonical HTTPS
-   hostname; `(http.host eq "wraeclastledger.com" and not ssl)` upgrades HTTP.
-   The combined rule uses status 308, target expression
-   `concat("https://wraeclastledger.com", http.request.uri.path)` and preserve
-   query string. Keep the API redirect unchanged. Exclude
-   `starts_with(http.request.uri.path, "/.well-known/acme-challenge/")` from
-   these website redirects so certificate validation reaches GitHub unchanged.
-7. Set the five response headers from the exact candidate's `release-policy.json`
-   on apex/www only. Add `Cache-Control: no-store` for HTML and route responses;
-   start with a website-only edge cache bypass. The policy report's five security
-   headers do not set cache eligibility. Do not enable Rocket Loader, HTML/script
-   rewriting, forced HTML caching or broad HSTS as part of this launch.
-
-Cloudflare rule edits must preserve other rules in each existing phase. Record
-new resource IDs and previous values privately for rollback. Public source must
-not contain account IDs, origin addresses, operator paths, private keys or logs.
-
-## Release sequence
-
-The approved scope keeps community totals; their backend acceptance is complete. Follow the remaining checks in
-[PRODUCTION_READINESS](../PRODUCTION_READINESS.md). Review the exact source diff
-and both CI profiles. Then, with explicit launch authorization, configure the
-approved settings as needed and use the active `.github/workflows/pages.yml`.
-It has only a manual trigger; regular CI remains validation-only.
-
-Dispatch from main with the full tested source SHA. The preparation job creates
-the final candidate; local build hashes are not a substitute for that artifact.
-Inspect the retained files, manifest and matching header proposal before approving
-the waiting deployment. Apply the matching approved edge policy and deploy those
-same packaged bytes. Capture source SHA, workflow run ID and manifest digest.
-
-After deployment verify public TLS, redirects with paths/queries, asset identity,
-security headers, API CORS, filters/sorts/pagination, direct hash links, Back/Forward,
-missing/error states, keyboard/narrow/zoom behavior, artwork and Brotli worker/WASM.
-Verify clipboard success and fallback, then inspect a website-generated setup code
-in the installed desktop app without overwriting valuable session work. A second
-browser check remains required. Canonical-origin browser checks necessarily happen
-after the controlled publication; do not describe them as already passed.
-
-## First-launch stop and recovery
-
-Stop on wrong content/host, TLS errors, broken CSP/worker/clipboard behavior,
-unexpected credential/private-route exposure or manifest mismatch. Before the
-first dispatch, record the current Pages/DNS/rules state and the exact unpublish
-operation available for this repository. Deleting Pages previously returned 422;
-do not assume that operation will work or call DNS removal alone an unpublish.
-Removing DNS may take time and does not remove a public github.io artifact.
-The active [maintenance workflow](../.github/workflows/maintenance.yml) provides a prepared
-replacement route: it packages only the two hash-checked documents in `maintenance/`,
-without installing application dependencies, and uses the same approval environment
-and publication concurrency group. Review its artifact before dispatch approval;
-then verify the notice on
-the canonical URL, github.io route and a missing path, with no stale application
-assets referenced by HTML. It is a replacement, not an unpublish or guaranteed
-removal of previously cached bytes. The notice needs no scripts, styles or API
-connection, so it works under the reviewed application CSP. Keep cache bypass and
-no-store during recovery. Do not weaken CSP or change the API/database.
-
-GitHub also documents a separate Settings > Pages > site menu > Unpublish site
-control after deployment. That control is now visible on this repository;
-do not equate the earlier DELETE-site 422 with failure of this distinct operation.
-No live withdrawal drill has yet occurred. If neither replacement nor unpublish
-can be used, stop the launch. Never include a secret in a candidate relying on later deletion.
-
-Later releases require retained exact prior artifacts and a reviewed restore
-dispatch as described in [PAGES_RELEASE](PAGES_RELEASE.md). Static rollback never
-rolls back the application database.
-
-Sources: [GitHub domain setup](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site),
-[GitHub unpublishing](https://docs.github.com/en/pages/getting-started-with-github-pages/unpublishing-a-github-pages-site),
-[environment protection](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments),
-[Cloudflare response-header behavior](https://developers.cloudflare.com/rules/transform/response-header-modification/).
+Use the identified previous artifact with its compatible policy, or the reviewed
+static maintenance workflow. Verify the result and keep recovery separate from
+application data. Maintenance replacement, unpublishing and removal of cached
+content are different operations; do not treat one as proof of another.

@@ -8,6 +8,8 @@ The suite covers:
 
 - Bounded API responses, deadlines, aborts and stale request ownership.
 - Query-bound pagination, route safety and Back/Forward restoration.
+- League choices on fresh filtered/empty pages, retaining supported historical,
+  observed and explicitly selected values independently of the loaded page.
 - Null/zero/negative economics and immutable per-run prices.
 - Single-request community totals beyond 50 strategies, exact aggregate schema,
   missing/count coverage, cancellation and no detail-fan-out fallback. Rendered

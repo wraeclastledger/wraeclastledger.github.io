@@ -1,110 +1,60 @@
-# Pages release runbook
+# Pages workflow guide
 
-The reviewed manual workflows are active as `.github/workflows/pages.yml` and
-`.github/workflows/maintenance.yml`. The `.example` files are reference copies.
-Local validation does not configure infrastructure. Normal source CI remains read-only.
-
-Current state and the first-launch settings are in
-[LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md). API infrastructure is accepted;
-remaining acceptance work is recorded there. Organization verification and the
-repository custom domain are both configured.
+Source CI validates without deploying. `.github/workflows/pages.yml` publishes a
+reviewed static artifact; `.github/workflows/maintenance.yml` publishes the bounded
+maintenance notice. Both are manual workflows. Files under `ops/*.yml.example`
+are reference copies, not active workflows.
 
 ## Build profiles
 
-- `npm run validate` defaults to same-origin `/web/v1`, preserving local fixture
-  review. Clear explicit profile/API overrides when returning to that default.
-- `npm run validate:pages` selects only
-  `https://api.wraeclastledger.com/web/v1`. Review flags, alternative addresses,
-  credentials, suffix hosts, query strings and trailing slashes are rejected.
-- Both validate source and build into `dist/client`. Only that directory is the
-  static artifact. Reports live separately in ignored `outputs/<profile>/`.
-  Preserve a Pages candidate before running another build; the next build replaces
-  `dist/client`. Dev/community previews keep their existing configuration.
-- The build performs no API requests. Passing proves a prepared client, not a
-  functioning production API or browser CORS connection.
+- `npm run validate` uses same-origin `/web/v1`.
+- `npm run validate:pages` uses `https://api.wraeclastledger.com/web/v1`.
+- Export builds reject local review flags and alternative API addresses.
+- Both write `dist/client`; preserve a candidate before building another profile.
+  Generated reports remain outside the website in `outputs/<profile>/`.
 
-The manifest hashes every static file. `release-policy.json` includes the profile,
-API base, manifest digest (`artifactId`) and proposed response headers. It includes
-hashes of actual inline scripts across every exported HTML file; new builds may
-change those hashes. Never reuse the previous build's CSP without comparison.
-Reports are not served or committed. The artifact scanner catches bounded known
-preview/private content, linked files, source maps and profile mix-ups; it is not
-a universal privacy scanner. Review the staged source and final artifact too.
-Vite build metadata is retained in the evidence directory before the website is
-hashed. Hidden entries are rejected in the final static directory because the
-GitHub Pages packaging action omits them. Downloaded release files and the actual
-Pages tar must both match the reviewed manifest before deployment approval.
+The build makes no API requests. Passing does not prove production CORS, headers
+or browser behavior. See [release checks](../PRODUCTION_READINESS.md).
 
-## Preconditions before activating the workflow
+## Artifact review
 
-1. The source SHA has passed both build profiles, Windows/Linux CI and the
-   pre-publication browser/import checks in PRODUCTION_READINESS. Reserve actual
-   canonical-origin browser/header checks for the controlled launch acceptance;
-   they cannot pass before that origin serves the site. The API hostname's
-   three safe read routes, exact CORS and exposed Retry-After are tested; private
-   routes and browser credentials are not forwarded. Community production gaps
-   remain independent launch blockers for those features.
-2. GitHub Pages is in Actions/workflow mode with `wraeclastledger.com` configured
-   through repository settings. This draft reads those settings and fails if they
-   differ; it never creates them. No `CNAME` file substitutes for this setup.
-3. Inspect and deliberately configure the `github-pages` environment protection:
-   required reviewer approval and main-only deployment. Confirm who can approve
-   and the effective self-approval/admin-bypass rules. An environment name by itself
-   does not require approval. If a suitable review gate cannot be configured,
-   keep the draft inactive and prepare an alternative review process first.
-4. Confirm the final API origin certificate, Cloudflare Full (strict), HTTPS
-   redirect (already accepted) and the proposed minimum TLS 1.2 (not yet applied).
-   Keep Origin CA API traffic proxied. Domain routing,
-   publishing and origin changes retain their separate approvals.
+`artifact-manifest.json` lists file sizes and SHA256 hashes. `release-policy.json`
+records the selected profile, public API URL, manifest digest and proposed headers.
+The header proposal derives inline-script hashes from the actual exported HTML;
+a rebuild may change those hashes even for the same source revision.
 
-## Reviewing one release
+Vite metadata remains in build evidence rather than the static directory. Hidden
+entries are rejected because Pages packaging omits them. Compare the downloaded
+release evidence and the actual Pages package with the manifest before publishing.
 
-After activation is approved, dispatch from main using one full tested source SHA.
-The read-only preparation job validates it, verifies main ancestry and retains the
-exact static files plus manifest/policy for 90 days. The separate deployment job
-has Pages/OIDC permissions and no checkout or application scripts.
+The scanner checks bounded known review/private content, linked files, source maps
+and profile mix-ups. It does not replace source/artifact review. Public repository
+content should be useful to users or contributors; internal planning, operational
+records and personal data belong outside this repository.
 
-Before approving the environment, download `release-evidence`, review the exact
-artifact and apply the separately authorized matching header policy. Scope the
-Cloudflare response rule to website apex/www. GitHub Pages does not apply these
-headers from a local `_headers` file. Generated CSP must stay within 4 KiB; it
-allows this API and official item artwork, self-hosted scripts/workers and browser
-WASM. Clipboard write is allowed for the website itself. Test actual enforcement.
+## Manual publication
 
-Plan old/new CSP hashes during deployment and cache turnover. Start HTML and the
-new API without forced edge caching; response headers alone do not control edge
-cache eligibility. Do not purge assets needed by an older approved HTML version.
-The deployment job uses the same packaged bytes, without rebuilding after approval.
-Inspect the deployed identity, direct/hash navigation, errors, clipboard/WASM,
-headers, redirects, HTTPS and CORS before calling the launch complete.
+Dispatch from main with the full tested source SHA. The preparation job verifies
+main ancestry and the configured website target, then validates and retains the
+candidate and manifest/policy evidence. Repository workflow definitions specify
+the exact permissions, pinned tools and artifact-retention period.
 
-## Rollback
+Review the generated artifact and compatible response policy before approving the
+protected deployment job. That job publishes the packaged bytes without rebuilding.
+Header proposals are evidence files; GitHub Pages does not apply them automatically.
 
-Before replacing a release, retain its exact static files, manifest, source SHA,
-header policy and workflow run ID. The first launch has no previous live version.
-A rebuild of an older SHA may produce new inline hashes and is not byte-identical
-rollback. A bounded artifact-restore dispatch must be prepared and reviewed before
-a replacement release: retain the bytes from the identified successful run,
-verify its manifest, restore matching headers and deploy without rebuilding.
-Do not enable an arbitrary-run downloader or restore database state for website
-rollback. Do not claim a tested rollback until the live artifact route is exercised.
+After publication, verify file identity, API/browser behavior and actual policy
+enforcement using the [release checklist](LAUNCH_CHECKLIST.md). Keep operational
+account configuration and internal acceptance records in maintainer documentation.
 
-The current bounded restore route is to rerun only the `deploy` job of the exact
-successful release run within GitHub's rerun window, after verifying its retained
-`github-pages` artifact and header policy. That job has no checkout/install/build;
-the pinned action selects the single Pages artifact in its own run. Stop if a
-preparation job is scheduled or the artifact is absent/expired. Inspect the
-protected environment again and verify the resulting live manifest. Do not rerun
-the whole workflow and call a rebuilt artifact byte-identical recovery.
-This route has been reviewed; a hosted recovery drill remains outstanding.
-See [GitHub job reruns](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs).
+## Recovery
 
-For maintenance recovery, `.github/workflows/maintenance.yml` is active. Its pinned
-manual workflow packages two reviewed inert documents, without application installs
-or builds, behind the same environment gate. `scripts/check-maintenance.mjs` rejects
-extra, changed or linked files. The ordinary test suite exercises those failures.
-This is a prepared website replacement; actual hosted recovery still needs a drill.
-See LAUNCH_CHECKLIST for replacement/unpublish distinctions and acceptance checks.
+Retain each accepted artifact, manifest, source revision and compatible policy.
+A rebuild of an older source revision is not necessarily byte-identical recovery.
+Use a reviewed path that restores the identified artifact without rerunning its
+build, and verify the resulting website. Recovery must not roll back application data.
 
-References: [GitHub custom workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages),
-[environment protection](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments).
+The maintenance workflow packages only the two checked static documents under
+`ops/maintenance/`, without application dependency installation or builds.
+`scripts/check-maintenance.mjs` rejects changed, extra or linked files. This is
+a static replacement, not proof that a site was unpublished or cached copies removed.

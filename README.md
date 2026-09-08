@@ -53,8 +53,8 @@ response headers are written outside the artifact in `outputs/<profile>/`.
 The [Pages release runbook](ops/PAGES_RELEASE.md) describes artifact review and
 the protected manual publication and maintenance workflows in `.github/workflows`.
 Normal source CI validates both profiles on Windows and Ubuntu and cannot deploy.
-The [first-launch checklist](ops/LAUNCH_CHECKLIST.md) separates the accepted API
-connection and website infrastructure from remaining browser/recovery acceptance.
+The [release checklist](ops/LAUNCH_CHECKLIST.md) covers candidate review,
+browser checks and artifact recovery.
 
 ## Isolated community workflow review
 
