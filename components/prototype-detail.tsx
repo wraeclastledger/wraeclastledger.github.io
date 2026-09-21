@@ -8,6 +8,7 @@ import {
   relativeActivity,
 } from '../lib/presentation';
 import type { ReactNode } from 'react';
+import { authorLabel } from '../lib/safe-api';
 import { Copy, ExternalLink, Globe, History } from 'lucide-react';
 import { AtlasTreeIcon } from './atlas-tree-icon';
 import { Tags, ItemName, LootEvidence } from './strategy-detail';
@@ -115,6 +116,7 @@ export default function PrototypeDetail({
             </button>
           )}
           <p className="wl-byline">
+            {authorLabel(s) && <><span style={{ overflowWrap: 'anywhere' }}>{authorLabel(s)}</span> ·{' '}</>}
             {number(s.coverage.run_count, 0)} contributed{' '}
             {s.coverage.run_count === 1 ? 'run' : 'runs'} ·{' '}
             {label(setup.map_type)} ·{' '}

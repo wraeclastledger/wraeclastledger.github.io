@@ -7,7 +7,7 @@ export function assertBuildEnvironment(env) {
   if (!['same-origin', 'pages'].includes(profile)) {
     throw new Error('Unknown WEBSITE_BUILD_PROFILE. Use same-origin or pages.');
   }
-  for (const key of ['C1_LOCAL_API', 'VITE_COMMUNITY_REVIEW']) {
+  for (const key of ['C1_LOCAL_API', 'VITE_COMMUNITY_REVIEW', 'VITE_SAFE_READER_REVIEW']) {
     if (env[key] && env[key] !== '0') {
       throw new Error(`Cannot export a review build: clear ${key}. Use the review dev command instead.`);
     }

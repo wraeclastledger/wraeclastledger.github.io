@@ -1,0 +1,30 @@
+{
+  "source": "gund0lf/wraeclastledger_react",
+  "bundleSha256": "7035bd3595be1ccf071749ca3fe7f8bf9ad6da80cfa7d541ccac38c6bd92f3cb",
+  "fixture": {
+    "path": "src/renderer/src/utils/__fixtures__/safe-strategy-v2.json",
+    "sha256": "598be73da92f6a69d959c1737bbeda727a0bf2d929dfcd3b7d06c37e52a7f2d9"
+  },
+  "sources": [
+    {
+      "path": "src/shared/atlasReaderSafety.ts",
+      "sha256": "4ff755b199bdb5b499b72d469e68d7c75b5735cbfca8cb41365c249d2d2c1716"
+    },
+    {
+      "path": "src/shared/authorHandoff.ts",
+      "sha256": "80c92f0615eadc6bc8f72573bc3ea70d5fe99b1175de41ba391b9f2a5160e9eb"
+    },
+    {
+      "path": "src/shared/authorNames.ts",
+      "sha256": "333cbe423ca56871fb53fcd36a9ae14086282df294c58107d74035f9fb58a7e9"
+    },
+    {
+      "path": "src/shared/safeStrategy.ts",
+      "sha256": "886302fef0612b274f46cfdca72a24bc8c5206d58804a2a905c679295b76f3ec"
+    },
+    {
+      "path": "src/shared/strategySetupCode.ts",
+      "sha256": "39a4e6902cde52150127b3fa988915a22668300deb7e419159a1dc1407a3215e"
+    }
+  ]
+}

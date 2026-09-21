@@ -7,6 +7,7 @@ export function matchingRuns(
   return e &&
     e.strategy_id === s.id &&
     e.revision === s.revision &&
+    e.schema_version === s.schema_version && e.read_version === s.read_version &&
     !e.next_cursor &&
     e.runs.length === s.coverage.run_count
     ? e.runs

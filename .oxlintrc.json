@@ -32,6 +32,7 @@
     "next-env.d.ts",
     "lib/vendor/setup-code.js",
     "lib/vendor/strategy-setup.js",
+    "lib/vendor/safe-reader.js",
     "components/ui/**",
     "hooks/**",
     ".npm-cache/**",

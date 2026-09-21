@@ -1,4 +1,10 @@
+import type { SafeDetail, SafeRow } from './vendor/safe-reader';
 export type Metric = number | null;
+export interface ReadIdentity {
+  scope?: 'current' | 'frozen';
+  snapshot_key?: string | null;
+  read_version?: string;
+}
 export interface Observed {
   map_count: Metric;
   mod_average: Metric;
@@ -79,14 +85,14 @@ export interface Loot {
   omitted_manual_rows: Metric;
   omitted_manual_value_chaos: Metric;
 }
-export interface StrategyRow {
-  schema_version: 1;
+export interface StrategyRow extends ReadIdentity {
+  schema_version: 1 | 2;
   id: string;
   title: string | null;
   tags: string[];
   league: string | null;
   community: { id: string; name: string } | null;
-  attribution: null;
+  attribution: SafeRow['attribution'];
   published_at: string | null;
   updated_at: string | null;
   score: Metric;
@@ -108,6 +114,8 @@ export interface StrategyDetail extends Omit<
   'results' | 'map_type' | 'evidence'
 > {
   revision: Metric;
+  /** Validated successor contract; never an author credential. */
+  safe?: SafeDetail;
   notes: string | null;
   setup: Setup;
   economics: StrategyEconomics;
@@ -123,7 +131,7 @@ export interface StrategyDetail extends Omit<
   loot: Loot | null;
 }
 export interface EvidenceRun {
-  schema_version: 1;
+  schema_version: 1 | 2;
   ordinal: number;
   contributed_on: string | null;
   setup: Setup;
@@ -149,8 +157,8 @@ export interface EvidenceRun {
   } | null;
   loot: Loot | null;
 }
-export interface ListPage {
-  schema_version: 1;
+export interface ListPage extends ReadIdentity {
+  schema_version: 1 | 2;
   total: number;
   limit: number;
   sort: SortKey;
@@ -159,7 +167,8 @@ export interface ListPage {
   next_cursor: string | null;
 }
 export interface EvidencePage {
-  schema_version: 1;
+  schema_version: 1 | 2;
+  read_version?: string;
   strategy_id: string;
   revision: number;
   runs: EvidenceRun[];

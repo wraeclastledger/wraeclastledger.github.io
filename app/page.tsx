@@ -43,7 +43,8 @@ import {
 
 import { parseRoute, routeUrl, routeLabel, type Route } from '../lib/routes';
 
-import { encodeStrategySetupCode, publicStrategySetup, SETUP_CODE_MIN_APP_VERSION } from '../lib/vendor/strategy-setup.js';
+import { encodeStrategySetupCode, SETUP_CODE_MIN_APP_VERSION } from '../lib/vendor/strategy-setup.js';
+import { authorLabel, websiteSetup, safeReaderReviewEnabled } from '../lib/safe-api';
 
 import { writeClipboard } from '../lib/copy';
 import { setupEvidence } from '../lib/setup-evidence';
@@ -121,7 +122,11 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
   const [initialized, setInitialized] = useState(false);
 
   const communityState = useCommunityPreferences(communityReview, defaultCommunity);
-  const [api] = useState(() => new PublicApi(import.meta.env.VITE_PUBLIC_API_URL || '/web/v1', undefined, 15000, communityReview));
+  const [api] = useState(() => {
+    const v2 = safeReaderReviewEnabled(import.meta.env.DEV, import.meta.env.VITE_SAFE_READER_REVIEW,
+      typeof window === 'undefined' ? '' : window.location.hostname);
+    return new PublicApi(import.meta.env.VITE_PUBLIC_API_URL || (v2 ? '/web/v2' : '/web/v1'), undefined, 15000, communityReview, v2);
+  });
   api.preferences = communityState.preferences;
   const [controller] = useState(
     () =>
@@ -571,7 +576,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
     try {
       const completeEvidence = await setupEvidence(api, detail, state.evidenceError ? null : evidence, owner.signal);
       if (owner.signal.aborted) return;
-      const setup = publicStrategySetup(detail, completeEvidence);
+      const setup = websiteSetup(detail, completeEvidence);
       if (!setup) {
         setCopyBusy(false);
         setNotice('This publication does not contain a supported reusable setup. You can still inspect its recorded fields.');
@@ -1092,6 +1097,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
                             </a>
 
                             <small>
+                              {authorLabel(s) && <><span style={{ overflowWrap: 'anywhere' }}>{authorLabel(s)}</span> ·{' '}</>}
                               {s.league || 'League not recorded'} ·{' '}
                               {number(s.evidence.run_count, 0)}{' '}
                               {s.evidence.run_count === 1 ? 'run' : 'runs'}

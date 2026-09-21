@@ -103,7 +103,7 @@ export class BrowserController {
         if (detail.id !== route.id) throw new ApiError('invalid');
         this.set({ detail });
         try {
-          const evidence = await this.api.evidence(route.id, null, signal);
+          const evidence = await this.api.evidence(route.id, null, signal, detail);
           if (!owns()) return;
           this.validateEvidence(detail, evidence);
           this.set({ evidence });
@@ -123,6 +123,8 @@ export class BrowserController {
   private mergePage(page: ListPage, next: ListPage) {
     if (
       next.sort !== page.sort ||
+      next.schema_version !== page.schema_version || next.read_version !== page.read_version ||
+      next.scope !== page.scope || next.snapshot_key !== page.snapshot_key ||
       next.order !== page.order ||
       next.total !== page.total ||
       (!!next.next_cursor && next.next_cursor === page.next_cursor) ||
@@ -133,7 +135,8 @@ export class BrowserController {
     return { ...next, strategies: [...page.strategies, ...next.strategies] };
   }
   private validateEvidence(detail: StrategyDetail, page: EvidencePage) {
-    if (page.strategy_id !== detail.id || page.revision !== detail.revision)
+    if (page.strategy_id !== detail.id || page.revision !== detail.revision
+      || page.schema_version !== detail.schema_version || page.read_version !== detail.read_version)
       throw new ApiError('changed');
     const ordinals = page.runs.map((r) => r.ordinal);
     if (
@@ -172,6 +175,7 @@ export class BrowserController {
           detail.id,
           evidence.next_cursor,
           signal,
+          detail,
         );
         if (!owns()) return;
         this.validateEvidence(detail, next);

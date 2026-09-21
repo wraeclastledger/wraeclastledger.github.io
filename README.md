@@ -50,6 +50,14 @@ not connect or publish that service. Each build replaces `dist/client`, so prese
 a candidate before building the other profile. Generated manifests and proposed
 response headers are written outside the artifact in `outputs/<profile>/`.
 
+The successor reader adapter can be reviewed only on a loopback development
+origin with `VITE_SAFE_READER_REVIEW=1` and a compatible `/web/v2` fixture
+service. Export builds reject this flag; the published reader remains v1.
+The adapter uses the desktop's closed response validators, pins evidence to its
+revision and read generation, and renders public author names as plain text.
+Names convey no ownership or permission. Frozen reads have a separate namespace
+and never fetch current evidence.
+
 The [Pages release runbook](ops/PAGES_RELEASE.md) describes artifact review and
 the protected manual publication and maintenance workflows in `.github/workflows`.
 Normal source CI validates both profiles on Windows and Ubuntu and cannot deploy.
@@ -95,6 +103,7 @@ need no other checkout. Maintainer refresh commands accept explicit source paths
 
 ```sh
 npm run codec:sync -- /path/to/desktop-source
+node scripts/sync-safe-reader.mjs /path/to/desktop-source
 node tests/sync-upstream.mjs /path/to/desktop-source /path/to/api-source
 ```
 

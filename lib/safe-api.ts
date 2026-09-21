@@ -1,0 +1,74 @@
+import { parseSafeDetail, parseSafeEvidence, parseSafeList, parseSafeCatalogue } from './vendor/safe-reader';
+import type { EvidencePage, ListPage, StrategyDetail, StrategyRow } from './model';
+import { publicStrategySetup, type StrategySetupCode } from './vendor/strategy-setup';
+
+export function safeList(value: unknown, snapshot: string | null = null): ListPage {
+  const page = parseSafeList(value);
+  if (page.scope !== (snapshot ? 'frozen' : 'current') || page.snapshot_key !== snapshot
+    || page.strategies.length > page.limit || page.strategies.length > page.total
+    || new Set(page.strategies.map(r => r.id)).size !== page.strategies.length
+    || page.strategies.some(r => r.community !== null || r.scope !== page.scope || r.snapshot_key !== snapshot))
+    throw Error('Invalid strategy page identity');
+  return page as ListPage;
+}
+export function safeDetail(value: unknown, id: string, snapshot: string | null = null): StrategyDetail {
+  const detail = parseSafeDetail(value);
+  if (detail.id !== id || detail.community !== null || detail.scope !== (snapshot ? 'frozen' : 'current')
+    || detail.snapshot_key !== snapshot || detail.lifecycle.state !== detail.scope
+    || (snapshot !== null && (detail.continuation_setup.status !== 'unavailable'
+      || detail.continuation_setup.reason !== 'frozen' || detail.lifecycle.continuation_reason !== 'frozen')))
+    throw Error('Invalid strategy identity');
+  return { ...detail, safe: detail } as StrategyDetail;
+}
+export function safeEvidence(value: unknown, detail: StrategyDetail): EvidencePage {
+  const page = parseSafeEvidence(value);
+  if (detail.schema_version !== 2 || detail.scope !== 'current' || page.strategy_id !== detail.id
+    || page.revision !== detail.revision || page.read_version !== detail.read_version
+    || page.runs.some((r, i) => i > 0 && r.ordinal <= page.runs[i - 1].ordinal))
+    throw Error('Invalid evidence identity');
+  return page as EvidencePage;
+}
+export function safeCatalogue(value: unknown) {
+  const catalogue = parseSafeCatalogue(value);
+  if (new Set(catalogue.snapshots.map(s => s.snapshot_key)).size !== catalogue.snapshots.length)
+    throw Error('Duplicate snapshot identity');
+  return catalogue;
+}
+export const safeReaderReviewEnabled = (development: boolean, flag: unknown, hostname: string) =>
+  development && flag === '1' && ['127.0.0.1', 'localhost', '[::1]'].includes(hostname);
+
+/** Public names are display text, not links to an identity directory. */
+export function authorLabel(row: Pick<StrategyRow, 'schema_version' | 'attribution'>): string | null {
+  if (row.schema_version !== 2) return null;
+  const author = row.attribution;
+  if (!author) return 'Author name not set';
+  if (author.status === 'active' && author.display_name) return `By ${author.display_name}`;
+  return 'Author name unavailable';
+}
+
+/** Keep the canonical price-free setup; adapt only optional inspection history. */
+export function websiteSetup(detail: StrategyDetail, evidence: EvidencePage | null): StrategySetupCode | null {
+  if (detail.schema_version === 1) return publicStrategySetup(detail, evidence);
+  if (!detail.safe || detail.safe.reusable_setup.status !== 'available') return null;
+  const reusable = detail.safe.reusable_setup.value;
+  if (evidence && (detail.scope !== 'current' || evidence.strategy_id !== detail.id
+    || evidence.revision !== detail.revision || evidence.read_version !== detail.read_version)) return null;
+  // The existing history adapter consumes v1 vocabulary. This explicit projection
+  // changes no recorded number and never manufactures an evidence run for a snapshot.
+  const projected = publicStrategySetup({ ...detail, schema_version: 1 }, evidence && !evidence.next_cursor ? {
+    ...evidence, schema_version: 1, runs: evidence.runs.map(r => ({ ...r, schema_version: 1 })),
+  } : null);
+  if (!projected?.history) return reusable;
+  const history = { ...projected.history };
+  if (detail.scope === 'frozen') {
+    // These are complete-only snapshot totals, never a live evidence lookup.
+    history.totalInvest = detail.safe.economics.total_invest_chaos;
+    history.netProfit = detail.safe.economics.net_profit_chaos;
+    const authored = detail.safe.authored_history;
+    history.divinePrice = detail.coverage.run_count === 1
+      && authored?.observed.map_count === detail.coverage.map_count
+      && authored.economics.divine_price_chaos !== null && authored.economics.divine_price_chaos > 0
+      ? authored.economics.divine_price_chaos : null;
+  }
+  return { ...reusable, history };
+}

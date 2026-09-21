@@ -2,6 +2,7 @@ import type { EvidencePage, ListPage, StrategyDetail, Query } from './model';
 import type { CommunitySummary } from './community-summary';
 import { queryParams, UUID } from './routes';
 import { SORTS } from './model';
+import { safeList, safeDetail, safeEvidence, safeCatalogue } from './safe-api';
 import { emptyPreferences, type Preferences } from './community-preferences';
 import { preferenceParams, validateCommunity, validateCommunityPage, validateDiscoveryResponse, type Community, type CommunityPage } from './discovery';
 export class ApiError extends Error {
@@ -298,6 +299,7 @@ export class PublicApi {
     private fetcher: typeof fetch = globalThis.fetch,
     private timeout = 15000,
     readonly discovery = false,
+    readonly v2 = false,
   ) {
     if (
       base.startsWith('//') ||
@@ -322,11 +324,13 @@ export class PublicApi {
         throw new Error('API URL must be public HTTPS or local loopback');
     }
     this.base = base.replace(/\/$/, '');
+    if (v2 && (discovery || !this.base.endsWith('/web/v2'))) throw new Error('Invalid successor reader configuration');
   }
   private async read<T>(
     path: string,
     kind: 'list' | 'detail' | 'evidence' | ((value: unknown) => void),
     signal: AbortSignal,
+    maxBytes = 2 * 1024 * 1024,
   ): Promise<T> {
     const ctrl = new AbortController();
     const abort = () => ctrl.abort();
@@ -347,6 +351,7 @@ export class PublicApi {
           referrerPolicy: 'no-referrer',
           redirect: 'error',
           headers: { Accept: 'application/json' },
+          ...(this.v2 ? { cache: 'no-store' as const } : {}),
         }),
         ctrl.signal,
       );
@@ -378,7 +383,7 @@ export class PublicApi {
         const chunk = await withAbort(reader.read(), ctrl.signal);
         if (chunk.done) break;
         size += chunk.value.length;
-        if (size > 2 * 1024 * 1024) {
+        if (size > maxBytes) {
           void reader.cancel().catch(() => {});
           throw new ApiError('invalid');
         }
@@ -396,7 +401,9 @@ export class PublicApi {
       } catch {
         throw new ApiError('invalid');
       }
-      if (typeof kind === 'function') kind(data);
+      if (typeof kind === 'function') {
+        try { kind(data); } catch (error) { throw error instanceof ApiError ? error : new ApiError('invalid'); }
+      }
       else if (this.discovery) validateDiscoveryResponse(data, kind);
       else validateResponse(data, kind);
       return data as T;
@@ -417,7 +424,8 @@ export class PublicApi {
     else if (query.scope || query.community_id) throw new ApiError('unavailable');
     p.set('limit', '25');
     if (cursor) p.set('cursor', cursor);
-    const page = await this.read<ListPage>((this.discovery ? '/discovery' : '') + '/strategies?' + p, 'list', signal);
+    const page = await this.read<ListPage>((this.discovery ? '/discovery' : '') + '/strategies?' + p,
+      this.v2 ? value => { safeList(value); } : 'list', signal);
     if (
       page.sort !== query.sort ||
       page.order !== query.order ||
@@ -427,12 +435,14 @@ export class PublicApi {
       throw new ApiError('invalid');
     return page;
   }
-  detail(id: string, signal: AbortSignal) {
+  async detail(id: string, signal: AbortSignal) {
     if (!UUID.test(id)) throw new ApiError('invalid');
-    return this.read<StrategyDetail>((this.discovery ? '/discovery' : '') + '/strategies/' + id, 'detail', signal);
+    const value = await this.read<StrategyDetail>((this.discovery ? '/discovery' : '') + '/strategies/' + id,
+      this.v2 ? v => { safeDetail(v, id); } : 'detail', signal);
+    return this.v2 ? safeDetail(value, id) : value;
   }
   async summary(league: string, signal: AbortSignal): Promise<CommunitySummary> {
-    if (this.discovery) throw new ApiError('unavailable');
+    if (this.discovery || this.v2) throw new ApiError('unavailable');
     if (league.length > 80 || league.split('').some(c => c.charCodeAt(0) < 32 || c.charCodeAt(0) === 127)) throw new ApiError('invalid');
     const params = new URLSearchParams({ summary: 'community' });
     if (league.trim()) params.set('league', league);
@@ -455,15 +465,38 @@ export class PublicApi {
     );
     return response.summary;
   }
-  evidence(id: string, cursor: string | null, signal: AbortSignal) {
+  evidence(id: string, cursor: string | null, signal: AbortSignal, detail?: StrategyDetail) {
     if (!UUID.test(id)) throw new ApiError('invalid');
     const p = new URLSearchParams({ limit: '50' });
+    if (this.v2) {
+      if (!detail || detail.id !== id || detail.schema_version !== 2 || detail.scope !== 'current'
+        || !detail.read_version || !UUID.test(detail.read_version) || !Number.isSafeInteger(detail.revision)) throw new ApiError('invalid');
+      p.set('revision', String(detail.revision)); p.set('read_version', detail.read_version);
+    }
     if (cursor) p.set('cursor', cursor);
     return this.read<EvidencePage>(
       (this.discovery ? '/discovery' : '') + '/strategies/' + id + '/evidence?' + p,
-      'evidence',
+      this.v2 ? v => { safeEvidence(v, detail!); } : 'evidence',
       signal,
     );
+  }
+  catalogue(signal: AbortSignal) {
+    if (!this.v2) throw new ApiError('unavailable');
+    return this.read<ReturnType<typeof safeCatalogue>>('/retrospectives', value => { safeCatalogue(value); }, signal, 256 * 1024);
+  }
+  frozenList(snapshot: string, sort: 'score' | 'profit_per_map', signal: AbortSignal) {
+    if (!this.v2 || !UUID.test(snapshot) || !['score', 'profit_per_map'].includes(sort)) throw new ApiError('invalid');
+    return this.read<ListPage>(`/retrospectives/${snapshot}/strategies?limit=10&sort=${sort}&order=desc`,
+      value => {
+        const page = safeList(value, snapshot);
+        if (page.limit !== 10 || page.sort !== sort || page.order !== 'desc') throw new ApiError('invalid');
+      }, signal);
+  }
+  async frozenDetail(snapshot: string, id: string, signal: AbortSignal) {
+    if (!this.v2 || !UUID.test(snapshot) || !UUID.test(id)) throw new ApiError('invalid');
+    const value = await this.read<StrategyDetail>(`/retrospectives/${snapshot}/strategies/${id}`,
+      v => { safeDetail(v, id, snapshot); }, signal);
+    return safeDetail(value, id, snapshot);
   }
   communities(search: string, league: string, cursor: string | null, signal: AbortSignal) {
     if (!this.discovery) throw new ApiError('unavailable');
