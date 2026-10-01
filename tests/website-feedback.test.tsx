@@ -5,7 +5,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import Home from '../app/page';
 import { CopyNotice } from '../components/copy-notice';
 import { decodeStrategySetupCode } from '../lib/vendor/strategy-setup';
-import { detail, evidence, id, page, row } from './fixtures.mjs';
+import { detail, evidence, id, page, row } from './safe-fixtures.mjs';
 
 let root: Root;
 let host: HTMLDivElement;

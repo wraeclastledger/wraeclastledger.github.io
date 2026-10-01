@@ -44,7 +44,7 @@ import {
 import { parseRoute, routeUrl, routeLabel, type Route } from '../lib/routes';
 
 import { encodeStrategySetupCode, SETUP_CODE_MIN_APP_VERSION } from '../lib/vendor/strategy-setup.js';
-import { authorLabel, websiteSetup, safeReaderReviewEnabled } from '../lib/safe-api';
+import { authorLabel, websiteSetup } from '../lib/safe-api';
 
 import { writeClipboard } from '../lib/copy';
 import { setupEvidence } from '../lib/setup-evidence';
@@ -106,9 +106,11 @@ function ErrorNotice({ error, retry }: { error: ApiError; retry: () => void }) {
       <span>{errorText(error)}</span>
 
       {error.kind !== 'unavailable' && (
-        <button disabled={remaining > 0} onClick={retry}>
+        <button disabled={remaining > 0} onClick={error.kind === 'update_required' ? () => window.location.reload() : retry}>
           {remaining
             ? `Retry in ${remaining}s`
+            : error.kind === 'update_required'
+              ? 'Reload website'
             : error.kind === 'changed'
               ? 'Reload latest'
               : 'Retry'}
@@ -123,8 +125,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
 
   const communityState = useCommunityPreferences(communityReview, defaultCommunity);
   const [api] = useState(() => {
-    const v2 = safeReaderReviewEnabled(import.meta.env.DEV, import.meta.env.VITE_SAFE_READER_REVIEW,
-      typeof window === 'undefined' ? '' : window.location.hostname);
+    const v2 = !communityReview;
     return new PublicApi(import.meta.env.VITE_PUBLIC_API_URL || (v2 ? '/web/v2' : '/web/v1'), undefined, 15000, communityReview, v2);
   });
   api.preferences = communityState.preferences;
@@ -534,7 +535,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
     }
   };
 
-  const copy = async (text: string) => {
+  const copy = async (text: string, explanation = '') => {
     const owner = copyOwner.current;
     setNotice('');
 
@@ -550,10 +551,10 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
 
     setCopyBusy(false);
 
-    if (ok) setNotice('Copied to clipboard.');
+    if (ok) setNotice(`Copied to clipboard.${explanation ? ' ' + explanation : ''}`);
     else {
       setNotice(
-        'Automatic copy was unavailable. Select and copy the text below.',
+        `Automatic copy was unavailable. Select and copy the text below.${explanation ? ' ' + explanation : ''}`,
       );
 
       setManual(text);
@@ -574,16 +575,28 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
     setNotice('Preparing setup code…');
 
     try {
-      const completeEvidence = await setupEvidence(api, detail, state.evidenceError ? null : evidence, owner.signal);
+      let completeEvidence: typeof evidence = null;
+      let omittedHistory = false;
+      try {
+        if (state.evidenceError && ['changed', 'invalid', 'unavailable', 'update_required'].includes(state.evidenceError.kind)) throw state.evidenceError;
+        completeEvidence = await setupEvidence(api, detail, state.evidenceError ? null : evidence, owner.signal);
+      } catch (error) {
+        if (owner.signal.aborted) return;
+        if (detail.schema_version !== 2 || detail.safe?.reusable_setup.status !== 'available'
+          || !(error instanceof ApiError)
+          || !['offline', 'timeout', 'temporary', 'server', 'rate_limit'].includes(error.kind)) throw error;
+        omittedHistory = true;
+      }
       if (owner.signal.aborted) return;
-      const setup = websiteSetup(detail, completeEvidence);
+      const setup = omittedHistory && detail.safe?.reusable_setup.status === 'available'
+        ? detail.safe.reusable_setup.value : websiteSetup(detail, completeEvidence);
       if (!setup) {
         setCopyBusy(false);
         setNotice('This publication does not contain a supported reusable setup. You can still inspect its recorded fields.');
         return;
       }
       const code = encodeStrategySetupCode(setup);
-      if (!owner.signal.aborted) await copy(code);
+      if (!owner.signal.aborted) await copy(code, omittedHistory ? 'Optional run history was unavailable; this code contains only the reusable setup.' : '');
     } catch (error) {
       if (owner.signal.aborted) return;
       setCopyBusy(false);

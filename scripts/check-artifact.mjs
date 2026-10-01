@@ -16,7 +16,7 @@ const result = inspectArtifact(root, profile);
 const manifestText = JSON.stringify(result.manifest, null, 2) + '\n';
 fs.writeFileSync(new URL('artifact-manifest.json', output), manifestText);
 fs.writeFileSync(new URL('release-policy.json', output), JSON.stringify({
-  profile, apiUrl: result.apiUrl,
+  profile, apiUrl: result.apiUrl, summaryApiUrl: result.summaryApiUrl,
   artifactId: createHash('sha256').update(manifestText).digest('hex'),
   headers: result.headers,
   deploymentStatus: 'prepared-only',

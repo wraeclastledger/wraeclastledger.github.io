@@ -1,4 +1,5 @@
-export const PAGES_API_URL = 'https://api.wraeclastledger.com/web/v1';
+export const PAGES_API_URL = 'https://api.wraeclastledger.com/web/v2';
+export const PAGES_SUMMARY_API_URL = 'https://api.wraeclastledger.com/web/v1';
 export const WEBSITE_ORIGIN = 'https://wraeclastledger.com';
 
 // Profile selection prepares an artifact; it never authorizes publication.
@@ -15,9 +16,13 @@ export function assertBuildEnvironment(env) {
   if (env.VITE_REVIEW_HOME_COMMUNITY) {
     throw new Error('Cannot export review community identity: clear VITE_REVIEW_HOME_COMMUNITY.');
   }
-  const apiUrl = profile === 'pages' ? PAGES_API_URL : '/web/v1';
+  const apiUrl = profile === 'pages' ? PAGES_API_URL : '/web/v2';
+  const summaryApiUrl = profile === 'pages' ? PAGES_SUMMARY_API_URL : '/web/v1';
   if (env.VITE_PUBLIC_API_URL && env.VITE_PUBLIC_API_URL !== apiUrl) {
     throw new Error(`The ${profile} export requires exactly ${apiUrl}.`);
   }
-  return { profile, apiUrl };
+  if (env.VITE_SUMMARY_API_URL && env.VITE_SUMMARY_API_URL !== summaryApiUrl) {
+    throw new Error(`The ${profile} summary requires exactly ${summaryApiUrl}.`);
+  }
+  return { profile, apiUrl, summaryApiUrl };
 }

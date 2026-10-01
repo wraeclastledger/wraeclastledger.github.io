@@ -6,7 +6,12 @@ after a clean locked install. `npm run validate:pages` selects the Pages profile
 
 The suite covers:
 
-- Bounded API responses, deadlines, aborts and stale request ownership.
+- Bounded API responses, deadlines, aborts and stale request ownership. The v2
+  reader and independent closed v1 summary are exercised together without review flags.
+- Approved, absent, retired and long public author names, without identity links.
+- Explicit temporary-unavailability (503) and update-required (410) feedback with
+  no legacy-read fallback. Real loopback tests cover slow, hanging, dropped and
+  recovered connections without contacting production.
 - Query-bound pagination, route safety and Back/Forward restoration.
 - League choices on fresh filtered/empty pages, retaining supported historical,
   observed and explicitly selected values independently of the loaded page.
@@ -19,6 +24,8 @@ The suite covers:
   The separate website setup format accepts missing historical costs, retains
   available preview values, and requires desktop 1.0.97 or later.
 - Browser Brotli output read by the vendored desktop parser and price-free Load.
+- Canonical v2 setup copying when optional history is unavailable, with a visible
+  omission notice; changed or invalid evidence still prevents the copy.
 - Exact item artwork, normalized identity and visible ambiguous-name fallbacks.
 - Preferred layout at the plain root and direct detail links, with compatibility
   for old prototype-query bookmarks; clipboard fallback and disclosures.
@@ -36,7 +43,7 @@ reports or original local Git history are included in this public repository.
 
 Artifact validation requires an index and Brotli WASM, rejects known fixture and
 review content, and produces a SHA256 manifest and proposed response headers in
-`outputs/<profile>/`. It verifies the Pages API is compiled into the Pages profile
+`outputs/<profile>/`. It verifies both required API URLs are compiled into the Pages profile
 and absent from the same-origin artifact. The scanner is a bounded check,
 not a general security guarantee. Logs and manifests are ignored generated files.
 

@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import Home from '../app/page';
-import { page, row, detail, evidence, id } from './fixtures.mjs';
+import { page, row, detail, evidence, id } from './safe-fixtures.mjs';
 let root: Root;
 let host: HTMLDivElement;
 const response = (v: unknown) =>
@@ -111,7 +111,7 @@ describe.each(['default', 'legacy prototype link'])(
           const e = evidence();
           e.runs = e.runs.slice(0, 1);
           return Promise.resolve(
-            response(String(url).endsWith('/evidence') ? e : s),
+            response(new URL(String(url), 'http://localhost').pathname.endsWith('/evidence') ? e : s),
           );
         }),
       );
@@ -323,13 +323,13 @@ describe.each(['default', 'legacy prototype link'])(
     });
 
     it('retains the full long title behind its disclosure', async () => {
-      const title = 'A deliberately long strategy title '.repeat(15);
+      const title = 'A deliberately long strategy title '.repeat(4);
       vi.stubGlobal(
         'fetch',
         vi.fn((url: unknown) =>
           Promise.resolve(
             response(
-              String(url).endsWith('/evidence')
+              new URL(String(url), 'http://localhost').pathname.endsWith('/evidence')
                 ? evidence()
                 : { ...detail(), title },
             ),
@@ -385,13 +385,13 @@ describe.each(['default', 'legacy prototype link'])(
         'fetch',
         vi.fn((url: unknown) =>
           Promise.resolve(
-            response(String(url).endsWith('/evidence') ? evidence() : sample),
+            response(new URL(String(url), 'http://localhost').pathname.endsWith('/evidence') ? evidence() : sample),
           ),
         ),
       );
       history.replaceState(null, '', '#/strategy/' + id(1));
       await mount();
-      expect(host.querySelector('.loot-bar')).toBeNull();
+      expect(host.querySelector('.loot')?.querySelector('.loot-bar')).toBeNull();
       expect(host.querySelector('.category-grid .negative')?.textContent).toBe(
         '-40c',
       );

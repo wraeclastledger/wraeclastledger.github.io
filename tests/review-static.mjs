@@ -11,7 +11,7 @@ const csp=`default-src 'self'; script-src 'self' 'wasm-unsafe-eval' ${hashes.joi
 http.createServer(async(req,res)=>{
  if(req.method!=='GET'){res.writeHead(405);return res.end();}
  const url=new URL(req.url,'http://127.0.0.1');
- if(url.pathname.startsWith('/web/v1/')){try{const response=await fetch('http://127.0.0.1:43121'+url.pathname+url.search,{signal:AbortSignal.timeout(20000)});res.writeHead(response.status,{'Content-Type':'application/json','Cache-Control':'no-store',...(response.headers.has('retry-after')?{'Retry-After':response.headers.get('retry-after')}:{})});return res.end(Buffer.from(await response.arrayBuffer()));}catch{res.writeHead(503,{'Content-Type':'application/json'});return res.end('{}');}}
+ if(url.pathname.startsWith('/web/v2/')||(url.pathname==='/web/v1/strategies'&&url.searchParams.get('summary')==='community')){try{const response=await fetch('http://127.0.0.1:43121'+url.pathname+url.search,{signal:AbortSignal.timeout(20000)});res.writeHead(response.status,{'Content-Type':'application/json','Cache-Control':'no-store',...(response.headers.has('retry-after')?{'Retry-After':response.headers.get('retry-after')}:{})});return res.end(Buffer.from(await response.arrayBuffer()));}catch{res.writeHead(503,{'Content-Type':'application/json'});return res.end('{}');}}
  if(url.pathname==='/compare'){res.writeHead(302,{'Location':'/','Cache-Control':'no-store'});return res.end();}
  const filename=path.resolve(root,'.'+decodeURIComponent(url.pathname==='/'?'/index.html':url.pathname));
  if(!filename.startsWith(root)||!fs.existsSync(filename)||!fs.statSync(filename).isFile()){res.writeHead(404);return res.end('Not found');}

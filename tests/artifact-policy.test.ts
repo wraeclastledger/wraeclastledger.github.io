@@ -4,14 +4,14 @@ import os from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { artifactHeaders, inspectArtifact } from '../scripts/artifact-policy.mjs';
-import { PAGES_API_URL } from '../scripts/build-policy.mjs';
+import { PAGES_API_URL, PAGES_SUMMARY_API_URL } from '../scripts/build-policy.mjs';
 import { retainBuildMetadata } from '../scripts/static-metadata.mjs';
 const roots: string[] = [];
-function artifact(api = PAGES_API_URL) {
+function artifact(api = PAGES_API_URL, summary = PAGES_SUMMARY_API_URL) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'wl-artifact-'));
   roots.push(root);
   fs.writeFileSync(path.join(root, 'index.html'), '<script>window.example=1;</script>');
-  fs.writeFileSync(path.join(root, 'app.js'), `const api=${JSON.stringify(api)};`);
+  fs.writeFileSync(path.join(root, 'app.js'), `const api=${JSON.stringify(api)};const summary=${JSON.stringify(summary)};`);
   fs.writeFileSync(path.join(root, 'codec.wasm'), Buffer.from([0, 97, 115, 109]));
   return root;
 }
@@ -55,11 +55,18 @@ describe('artifact and response policy', () => {
     expect(after.manifest).not.toEqual(before.manifest);
   });
   it('rejects either profile being mistaken for the other', () => {
-    expect(() => inspectArtifact(artifact('/web/v1'), 'pages')).toThrow('Pages API missing');
+    expect(() => inspectArtifact(artifact('/web/v2', '/web/v1'), 'pages')).toThrow('API missing');
     expect(() => inspectArtifact(artifact(), 'same-origin')).toThrow();
-    expect(inspectArtifact(artifact('/web/v1'), 'same-origin').apiUrl).toBe('/web/v1');
+    expect(inspectArtifact(artifact('/web/v2', '/web/v1'), 'same-origin')).toMatchObject({ apiUrl: '/web/v2', summaryApiUrl: '/web/v1' });
   });
-  it.each(['http://127.0.0.1:43128/web/v1', 'http://localhost:9999/web/v1', 'https://unapproved.test/web/v1', 'DROP-DISCORD', '-----BEGIN PRIVATE KEY-----'])('rejects sensitive/review payload %s', (payload) => {
+  it('requires both compiled endpoints', () => {
+    expect(() => inspectArtifact(artifact(PAGES_API_URL, ''), 'pages')).toThrow('API missing');
+    expect(() => inspectArtifact(artifact('', PAGES_SUMMARY_API_URL), 'pages')).toThrow('API missing');
+    expect(() => inspectArtifact(artifact('/web/v2', ''), 'same-origin')).toThrow('API missing');
+  });
+  it.each(['http://127.0.0.1:43128/web/v1', 'http://localhost:9999/web/v2', 'http://[::1]:43121/web/v2',
+    'https://unapproved.test/web/v1', 'https://unapproved.test/web/v2', 'https://api.wraeclastledger.com/web/v3',
+    'VITE_SAFE_READER_REVIEW', 'VITE_COMMUNITY_REVIEW', 'DROP-DISCORD', '-----BEGIN PRIVATE KEY-----'])('rejects sensitive/review payload %s', (payload) => {
     const root = artifact();
     fs.writeFileSync(path.join(root, 'unexpected.txt'), payload);
     expect(() => inspectArtifact(root, 'pages')).toThrow();

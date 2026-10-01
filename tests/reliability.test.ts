@@ -162,7 +162,8 @@ describe('HTTP and untrusted responses', () => {
     [404, 'unavailable'],
     [409, 'changed'],
     [429, 'rate_limit'],
-    [503, 'server'],
+    [503, 'temporary'],
+    [410, 'update_required'],
   ] as const)('classifies HTTP %s', async (status, kind) => {
     const api = new PublicApi(
       '/web/v1',

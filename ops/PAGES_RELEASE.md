@@ -7,8 +7,9 @@ are reference copies, not active workflows.
 
 ## Build profiles
 
-- `npm run validate` uses same-origin `/web/v1`.
-- `npm run validate:pages` uses `https://api.wraeclastledger.com/web/v1`.
+- `npm run validate` uses same-origin `/web/v2` for strategy reads and `/web/v1`
+  only for the closed community summary.
+- `npm run validate:pages` uses those same paths at `https://api.wraeclastledger.com`.
 - Export builds reject local review flags and alternative API addresses.
 - Both write `dist/client`; preserve a candidate before building another profile.
   Generated reports remain outside the website in `outputs/<profile>/`.
@@ -19,7 +20,7 @@ or browser behavior. See [release checks](../PRODUCTION_READINESS.md).
 ## Artifact review
 
 `artifact-manifest.json` lists file sizes and SHA256 hashes. `release-policy.json`
-records the selected profile, public API URL, manifest digest and proposed headers.
+records the selected profile, strategy and summary API URLs, manifest digest and proposed headers.
 The header proposal derives inline-script hashes from the actual exported HTML;
 a rebuild may change those hashes even for the same source revision.
 

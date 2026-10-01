@@ -26,7 +26,7 @@ export function CommunitySummary({ league }: { league: string }) {
           error: 'The community summary took too long. Please retry.',
         });
     }, 25000);
-    const api = new PublicApi(import.meta.env.VITE_PUBLIC_API_URL || '/web/v1');
+    const api = new PublicApi(import.meta.env.VITE_SUMMARY_API_URL || '/web/v1');
     void loadCommunitySummary(api, ctrl.signal, league)
       .then((data) => {
         if (active && !ctrl.signal.aborted) setState({ league, data, error: null });

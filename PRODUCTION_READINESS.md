@@ -17,7 +17,10 @@ This document describes contributor-facing checks for release candidates.
 ## Behavior to verify
 
 - Filters, sorting, pagination, direct links, Back/Forward and reload.
-- Empty, missing, offline, timeout and rate-limit feedback.
+- Empty, missing, offline, timeout, rate-limit, temporarily unavailable and
+  update-required feedback; no fallback to older strategy reads.
+- Approved public bylines, absent/unavailable names, and independent community
+  totals while the strategy reader uses v2.
 - Keyboard navigation, narrow layouts, zoom and explicit Light/Dark preferences.
 - Immutable historical prices, signed losses and visible missing-evidence coverage.
 - Setup-code generation with complete and incomplete history, clipboard success

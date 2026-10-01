@@ -4,12 +4,15 @@ import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import Home from '../app/page';
 import fixture from './safe-strategy-v2.json';
+import { decodeStrategySetupCode } from '../lib/vendor/strategy-setup';
 let root: Root;
 let host: HTMLDivElement;
 const settle = () => act(async () => { await new Promise(r => setTimeout(r, 60)); });
+const requestUrl = (url: RequestInfo | URL) => new URL(typeof url === 'string' ? url : url instanceof URL ? url.href : url.url, 'http://localhost');
 beforeEach(() => {
-  vi.stubEnv('DEV', true); vi.stubEnv('VITE_SAFE_READER_REVIEW', '1');
+  vi.stubEnv('DEV', false); vi.stubEnv('VITE_SAFE_READER_REVIEW', '');
   vi.stubEnv('VITE_PUBLIC_API_URL', '/web/v2');
+  vi.stubEnv('VITE_SUMMARY_API_URL', '/web/v1');
   vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
   vi.stubGlobal('scrollTo', vi.fn());
   Object.defineProperty(window, 'matchMedia', { configurable: true,
@@ -18,7 +21,9 @@ beforeEach(() => {
   const name = 'किं'.repeat(32);
   vi.stubGlobal('fetch', vi.fn(async (url: unknown) => {
     const u = new URL(String(url), 'http://localhost');
-    const value = u.pathname.endsWith('/evidence') ? {
+    const value = u.searchParams.get('summary') === 'community' ? {
+      schema_version: 1, summary: { strategies: 75, covered: 70, net: -17.125, maps: 1500, runs: 150, map_covered: 75, run_covered: 75 },
+    } : u.pathname.endsWith('/evidence') ? {
       schema_version: 2, strategy_id: fixture.detail.id, revision: fixture.detail.revision,
       read_version: fixture.detail.read_version, runs: [fixture.run], next_cursor: null,
     } : u.pathname.endsWith('/' + fixture.detail.id) ? {
@@ -56,4 +61,58 @@ it('renders the successor detail and pins its evidence generation', async () => 
       && u.searchParams.get('read_version') === fixture.detail.read_version;
   })).toBe(true);
   expect(host.textContent).not.toContain('unsupported response');
+});
+it('uses the production reader and independent summary together without review activation', async () => {
+  history.replaceState(null, '', '#/community/home');
+  await act(async () => root.render(<Home />)); await settle();
+  expect(host.textContent).toContain('By ' + 'किं'.repeat(32));
+  expect(host.textContent).toContain('-17.125d');
+  const reads = vi.mocked(fetch).mock.calls.map(([url]) => requestUrl(url));
+  expect(reads.some(u => u.pathname === '/web/v2/strategies')).toBe(true);
+  expect(reads.filter(u => u.pathname.startsWith('/web/v1'))).toHaveLength(1);
+  expect(reads.find(u => u.pathname.startsWith('/web/v1'))?.searchParams.get('summary')).toBe('community');
+});
+it.each([[null, 'Author name not set'], [{ ...fixture.detail.attribution, status: 'retired', display_name: null }, 'Author name unavailable']])
+  ('renders an explicit absent/unavailable author state', async (attribution, label) => {
+    vi.mocked(fetch).mockResolvedValue(Response.json({ ...fixture.detail, attribution }));
+    history.replaceState(null, '', '#/strategy/' + fixture.detail.id);
+    await act(async () => root.render(<Home />)); await settle();
+    expect(host.textContent).toContain(label);
+    expect(host.textContent).not.toContain(fixture.detail.attribution.display_name);
+  });
+it.each([[503, 'temporarily unavailable', 'Retry'], [410, 'no longer supported', 'Reload website']])
+  ('explains HTTP %i without fallback requests', async (status, label, button) => {
+    vi.mocked(fetch).mockImplementation(async () => Response.json({error:'held'}, {status:Number(status)}));
+    await act(async () => root.render(<Home />)); await settle();
+    expect(host.querySelector('[role="alert"]')?.textContent).toContain(label);
+    expect([...host.querySelectorAll('button')].some(b => b.textContent === button)).toBe(true);
+    expect(vi.mocked(fetch).mock.calls.every(([url]) => requestUrl(url).pathname.startsWith('/web/v2/'))).toBe(true);
+  });
+it.each(['complete', 'unavailable', 'changed', 'invalid', 'removed'])('copies only safe setup/history for %s evidence', async (mode) => {
+  vi.mocked(fetch).mockImplementation(async (url: unknown) => {
+    if (!new URL(String(url), 'http://localhost').pathname.endsWith('/evidence')) return Response.json(fixture.detail);
+    if (mode === 'unavailable') return Response.json({error:'held'}, {status:503});
+    if (mode === 'removed') return Response.json({error:'unavailable'}, {status:404});
+    if (mode === 'changed') return Response.json({error:'changed'}, {status:409});
+    return Response.json({ schema_version: 2, strategy_id: fixture.detail.id, revision: fixture.detail.revision,
+      read_version: fixture.detail.read_version, runs: [fixture.run], next_cursor: null,
+      ...(mode === 'invalid' ? {private_field:'must reject'} : {}) });
+  });
+  const writeText = vi.fn(async (_value: string) => {});
+  Object.defineProperty(navigator, 'clipboard', { configurable:true, value:{writeText} });
+  history.replaceState(null, '', '#/strategy/' + fixture.detail.id);
+  await act(async () => root.render(<Home />)); await settle();
+  const button = [...host.querySelectorAll('button')].find(b => b.textContent?.includes('Copy setup code'))!;
+  await act(async () => button.click()); await settle();
+  if (mode === 'changed' || mode === 'invalid' || mode === 'removed') {
+    expect(writeText).not.toHaveBeenCalled();
+    expect(host.textContent).toContain(mode === 'changed' ? 'results changed' : mode === 'removed' ? 'no longer available' : 'unsupported response');
+  } else {
+    const result = decodeStrategySetupCode(writeText.mock.calls[0][0]);
+    if (mode === 'complete') expect(result?.history).toMatchObject({totalInvest:0, netProfit:-2, divinePrice:200});
+    else {
+      expect(result).toEqual(fixture.detail.reusable_setup.value);
+      expect(host.textContent).toContain('Optional run history was unavailable');
+    }
+  }
 });

@@ -11,6 +11,8 @@ export class ApiError extends Error {
       | 'offline'
       | 'timeout'
       | 'unavailable'
+      | 'temporary'
+      | 'update_required'
       | 'rate_limit'
       | 'changed'
       | 'invalid'
@@ -26,6 +28,8 @@ export const errorText = (error: ApiError) =>
       'Could not reach the strategy service. Check your connection and retry.',
     timeout: 'The strategy service took too long to respond. Please retry.',
     unavailable: 'This strategy is no longer available.',
+    temporary: 'The strategy service is temporarily unavailable. Please try again shortly.',
+    update_required: 'This website version is no longer supported. Reload the page to get the latest version.',
     rate_limit: error.retryAfter
       ? `Too many requests. Retry in ${error.retryAfter} seconds.`
       : 'Too many requests. Please wait before retrying.',
@@ -361,7 +365,11 @@ export class PublicApi {
           ? Number(retry) || Math.ceil((Date.parse(retry) - Date.now()) / 1000)
           : 0;
         throw new ApiError(
-          response.status === 404
+          response.status === 503
+            ? 'temporary'
+            : response.status === 410
+              ? 'update_required'
+            : response.status === 404
             ? 'unavailable'
             : response.status === 429
               ? 'rate_limit'

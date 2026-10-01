@@ -8,6 +8,9 @@ This repository contains the website source and synthetic tests. Source CI only
 validates; the separate manual Pages workflow publishes a reviewed artifact.
 The website reads a safe public API. It does not include the database, private
 server implementation, Discord credentials or desktop session storage.
+Strategy lists, details and evidence use `/web/v2`, with approved public author
+names or an explicit absent/unavailable label. Names are plain display text, not
+identity links. Failed reads never fall back to older strategy endpoints.
 The community totals card uses one server aggregate at
 `/web/v1/strategies?summary=community` (optional `league`). Historical losses and
 missing coverage remain visible; the frontend does not enumerate detail records
@@ -43,20 +46,27 @@ switch is required. The former alternate layout has been retired.
 
 For development with live reloading, set `C1_LOCAL_API=1` in the process environment
 and run `npm run dev` (loopback port 43120). A development-only HTTPS API endpoint
-may be supplied through `VITE_PUBLIC_API_URL`. Export builds reject preview flags.
-The default export uses same-origin `/web/v1`. `npm run validate:pages` prepares
-a separate profile using only `https://api.wraeclastledger.com/web/v1`; it does
+may be supplied through `VITE_PUBLIC_API_URL`; `VITE_SUMMARY_API_URL` independently
+selects the closed summary endpoint. Export builds reject preview flags and pin
+both addresses. The default export uses same-origin `/web/v2` for strategies and
+`/web/v1` for summary totals. `npm run validate:pages` prepares a separate profile
+using those same paths at `https://api.wraeclastledger.com`; it does
 not connect or publish that service. Each build replaces `dist/client`, so preserve
 a candidate before building the other profile. Generated manifests and proposed
 response headers are written outside the artifact in `outputs/<profile>/`.
 
-The successor reader adapter can be reviewed only on a loopback development
-origin with `VITE_SAFE_READER_REVIEW=1` and a compatible `/web/v2` fixture
-service. Export builds reject this flag; the published reader remains v1.
-The adapter uses the desktop's closed response validators, pins evidence to its
+The normal reader uses the desktop's closed response validators, pins evidence to its
 revision and read generation, and renders public author names as plain text.
 Names convey no ownership or permission. Frozen reads have a separate namespace
-and never fetch current evidence.
+and never fetch current evidence; this release adds no frozen-navigation interface.
+The old `VITE_SAFE_READER_REVIEW` flag is unnecessary and still rejected by exports.
+
+The loopback fixture service supports `normal`, `offline`, `update`, `rate`,
+`delay`, `hanging`, `dropped`, `empty`, `changed`, `history-unavailable` and
+`history-changed` modes. Select one with a local POST, for example
+`curl -X POST 'http://127.0.0.1:43121/control?mode=offline'`; return to `normal`
+after the check. No mode connects to production. Use the same-origin artifact for
+this preview; the Pages artifact deliberately retains its production addresses.
 
 The [Pages release runbook](ops/PAGES_RELEASE.md) describes artifact review and
 the protected manual publication and maintenance workflows in `.github/workflows`.
@@ -92,8 +102,10 @@ new-run prices empty; neither the website nor Load reprices history. Evidence us
 for the preview must match the strategy and revision, and pooled Chaos totals
 require complete run coverage. Codes convey no authorship or update authority.
 Recorded map guidance and Atlas modifier compatibility fields are retained across
-desktop and website loads. Copy reads all bounded evidence pages from one revision
-and recovers reusable options only when the matching runs agree.
+desktop and website loads. Copy reads bounded evidence pages from one exact
+revision before adding historical information. If optional history is unavailable,
+the validated v2 reusable setup can still be copied, with an explicit notice that
+history was omitted. Changed or invalid evidence is rejected, never mixed into a code.
 The legacy `wl2`/`wl3` Discord codecs retain their existing strict run requirements.
 Release the compatible desktop application before publishing the new website codes.
 

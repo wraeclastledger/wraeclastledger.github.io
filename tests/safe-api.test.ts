@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import fixture from './safe-strategy-v2.json';
-import { safeDetail, safeList, safeEvidence, safeCatalogue, authorLabel, websiteSetup, safeReaderReviewEnabled } from '../lib/safe-api';
+import { safeDetail, safeList, safeEvidence, safeCatalogue, authorLabel, websiteSetup } from '../lib/safe-api';
 import { PublicApi, validateResponse } from '../lib/api';
 import { DEFAULT_QUERY, type EvidencePage } from '../lib/model';
 import { BrowserController } from '../lib/browser-controller';
@@ -16,7 +16,7 @@ const evidence = (): EvidencePage => ({ schema_version: 2, strategy_id: fixture.
   read_version: fixture.detail.read_version, runs: [{ ...structuredClone(fixture.run), schema_version: 2 }], next_cursor: null });
 const response = (v: unknown) => new Response(JSON.stringify(v), { headers: { 'Content-Type': 'application/json' } });
 
-describe('inactive shared safe website reader', () => {
+describe('shared safe website reader', () => {
   it('verifies generated bundle provenance and keeps the released validator closed to v2', () => {
     const root = new URL('../lib/vendor/', import.meta.url);
     const provenance = JSON.parse(readFileSync(new URL('safe-reader.provenance.json', root), 'utf8'));
@@ -116,10 +116,7 @@ describe('inactive shared safe website reader', () => {
     const fetcher = vi.fn().mockResolvedValue(response({ schema_version: 2, snapshots: [], padding: 'x'.repeat(256 * 1024) }));
     await expect(new PublicApi('/web/v2', fetcher, 15000, false, true).catalogue(signal())).rejects.toMatchObject({ kind: 'invalid' });
   });
-  it('cannot enable the review from a production build or public dev hostname', () => {
-    expect(safeReaderReviewEnabled(true, '1', '127.0.0.1')).toBe(true);
-    for (const [dev, flag, host] of [[false, '1', '127.0.0.1'], [true, '1', 'website.test'], [true, '0', 'localhost']] as const)
-      expect(safeReaderReviewEnabled(dev, flag, host)).toBe(false);
+  it('continues rejecting obsolete review flags in exports', () => {
     expect(() => assertBuildEnvironment({ VITE_SAFE_READER_REVIEW: '1' })).toThrow();
   });
 });

@@ -34,9 +34,6 @@ export function safeCatalogue(value: unknown) {
     throw Error('Duplicate snapshot identity');
   return catalogue;
 }
-export const safeReaderReviewEnabled = (development: boolean, flag: unknown, hostname: string) =>
-  development && flag === '1' && ['127.0.0.1', 'localhost', '[::1]'].includes(hostname);
-
 /** Public names are display text, not links to an identity directory. */
 export function authorLabel(row: Pick<StrategyRow, 'schema_version' | 'attribution'>): string | null {
   if (row.schema_version !== 2) return null;
