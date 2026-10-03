@@ -98,7 +98,13 @@ export interface StrategyRow extends ReadIdentity {
   score: Metric;
   map_type: string | null;
   observed: Observed;
+  group_play?: boolean | null;
+  party_size?: Metric;
   results: {
+    historical_net_divines?: Metric;
+    historical_invest_divines?: Metric;
+    total_invest_chaos?: Metric;
+    net_profit_chaos?: Metric;
     all_in_cost_per_map_chaos: Metric;
     net_per_map_divines: Metric;
     net_divines_per_hour: Metric;

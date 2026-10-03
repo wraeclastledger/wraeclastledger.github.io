@@ -1,9 +1,17 @@
 {
   "source": "gund0lf/wraeclastledger_react",
-  "bundleSha256": "7035bd3595be1ccf071749ca3fe7f8bf9ad6da80cfa7d541ccac38c6bd92f3cb",
+  "bundleSha256": "c7d563070719479dc1bb684a644e590df2acd2dd3745b9a4634fc865d050f516",
   "fixture": {
     "path": "src/renderer/src/utils/__fixtures__/safe-strategy-v2.json",
-    "sha256": "598be73da92f6a69d959c1737bbeda727a0bf2d929dfcd3b7d06c37e52a7f2d9"
+    "sha256": "6e04d8ec8c3063a09c46190414d3509d6bac28a9bd2867bb0cf047baaec3e5fd"
+  },
+  "listFixture": {
+    "path": "src/renderer/src/utils/__fixtures__/safe-strategy-list-v2.json",
+    "sha256": "5cce2b3803224855789d1d3f21388d4160f44c5418c1e7336bb0cf1923b3ad36"
+  },
+  "presentation": {
+    "path": "src/renderer/src/utils/__fixtures__/safe-strategy-presentation.mjs",
+    "sha256": "3e9b1960217f05414d5bd9ab6fa3e43a9cf2d82bbc1b4d4923fc35e0893b38f4"
   },
   "sources": [
     {
@@ -20,7 +28,7 @@
     },
     {
       "path": "src/shared/safeStrategy.ts",
-      "sha256": "886302fef0612b274f46cfdca72a24bc8c5206d58804a2a905c679295b76f3ec"
+      "sha256": "c272d10650f1b331c6c52daa931fbb6b4444a602ed360b7d994286e1f4c11cbf"
     },
     {
       "path": "src/shared/strategySetupCode.ts",

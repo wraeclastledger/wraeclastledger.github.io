@@ -27,8 +27,9 @@ export const detail = (n = 1) => {
 };
 export const row = n => {
   const r = legacy.row(n), d = detail(n);
-  return { ...r, ...identity, attribution: d.attribution,
-    results: { ...r.results, total_invest_chaos: d.economics.total_invest_chaos, net_profit_chaos: d.economics.net_profit_chaos } };
+  return { ...r, ...identity, attribution: d.attribution, group_play: d.setup.group_play, party_size: d.setup.party_size,
+    results: { ...r.results, total_invest_chaos: d.economics.total_invest_chaos, net_profit_chaos: d.economics.net_profit_chaos,
+      historical_net_divines: d.economics.historical_net_divines, historical_invest_divines: d.economics.historical_invest_divines } };
 };
 export const evidence = (n = 1) => ({ schema_version: 2, strategy_id: id(n), revision: 3, read_version: readVersion,
   runs: [run(1), { ...run(2), loot: safeLoot(legacy.loot), cost_breakdown: n === 3 ? null : run(2).cost_breakdown }], next_cursor: null });

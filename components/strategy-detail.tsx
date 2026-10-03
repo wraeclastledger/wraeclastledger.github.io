@@ -263,7 +263,8 @@ function CategoryArtwork({
   category: string;
   fallback: React.ReactNode;
 }) {
-  const url = artwork(categoryRepresentatives[category] || '');
+  const url = artwork(Object.hasOwn(categoryRepresentatives, category)
+    ? categoryRepresentatives[category] : '');
   const [failed, setFailed] = useState<string | null>(null);
   if (category === 'League' || category === 'Other') {
     return <SemanticIcon name={category === 'League' ? 'loot_league' : 'loot_other'} size={32} fallback={fallback} />;
@@ -421,9 +422,9 @@ export function LootEvidence({
 
       <div className="category-grid">
         {loot.categories.map((c) => {
-          const Icon =
-            categoryIcons[c.category as keyof typeof categoryIcons] ||
-            PackageOpen;
+          const Icon = Object.hasOwn(categoryIcons, c.category)
+            ? categoryIcons[c.category as keyof typeof categoryIcons]
+            : PackageOpen;
 
           return (
             <div key={c.category} className="loot-category">

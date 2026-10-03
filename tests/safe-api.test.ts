@@ -2,6 +2,9 @@ import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import fixture from './safe-strategy-v2.json';
+import listContract from './safe-strategy-list-v2.json';
+import { buildPresentationFixtures } from './safe-strategy-presentation.mjs';
+import { anonymousAuthor } from '../lib/safe-api';
 import { safeDetail, safeList, safeEvidence, safeCatalogue, authorLabel, websiteSetup } from '../lib/safe-api';
 import { PublicApi, validateResponse } from '../lib/api';
 import { DEFAULT_QUERY, type EvidencePage } from '../lib/model';
@@ -22,6 +25,8 @@ describe('shared safe website reader', () => {
     const provenance = JSON.parse(readFileSync(new URL('safe-reader.provenance.json', root), 'utf8'));
     expect(createHash('sha256').update(readFileSync(new URL('safe-reader.js', root))).digest('hex')).toBe(provenance.bundleSha256);
     expect(createHash('sha256').update(readFileSync(new URL('./safe-strategy-v2.json', import.meta.url))).digest('hex')).toBe(provenance.fixture.sha256);
+    expect(createHash('sha256').update(readFileSync(new URL('./safe-strategy-list-v2.json', import.meta.url))).digest('hex')).toBe(provenance.listFixture.sha256);
+    expect(createHash('sha256').update(readFileSync(new URL('./safe-strategy-presentation.mjs', import.meta.url))).digest('hex')).toBe(provenance.presentation.sha256);
     expect(() => validateResponse(list(), 'list')).toThrow();
     expect(() => validateResponse(fixture.detail, 'detail')).toThrow();
   });
@@ -58,8 +63,24 @@ describe('shared safe website reader', () => {
     raw.attribution.display_name = 'किं'.repeat(32);
     expect(authorLabel(safeDetail(raw, raw.id))).toBe('By ' + raw.attribution.display_name);
     expect(authorLabel({ schema_version: 1, attribution: null })).toBeNull();
-    expect(authorLabel({ schema_version: 2, attribution: null })).toBe('Author name not set');
-    expect(authorLabel({ schema_version: 2, attribution: { ...raw.attribution, status: 'retired' } })).toBe('Author name unavailable');
+    expect(authorLabel({ schema_version: 2, attribution: null })).toBe('By Anonymous');
+    expect(authorLabel({ schema_version: 2, attribution: { ...raw.attribution, status: 'retired' } })).toBe('By Anonymous');
+    expect(anonymousAuthor({ schema_version: 2, attribution: { ...raw.attribution, status: 'active', display_name: 'Anonymous' } })).toBe(false);
+  });
+  it('accepts the exact shared server/desktop list contract, including frozen unknowns', () => {
+    for (const { expected } of listContract.cases) {
+      const page = { ...list(), scope: expected.scope, snapshot_key: expected.snapshot_key, strategies: [expected] };
+      const { snapshot_schema_version: _snapshotVersion, ...display } = expected;
+      expect(safeList(page, expected.snapshot_key).strategies[0]).toEqual(display);
+      expect(() => safeList({ ...page, strategies: [{ ...expected, discord_username: 'PRIVATE' }] }, expected.snapshot_key)).toThrow();
+    }
+  });
+  it('validates the same realistic presentation data as the desktop', () => {
+    for (const { row, detail, runs } of buildPresentationFixtures().entries) {
+      expect(safeList({ ...list(), strategies: [row] }).strategies[0]).toEqual(row);
+      const d = safeDetail(detail, detail.id);
+      expect(safeEvidence({ ...evidence(), strategy_id: d.id, revision: d.revision, read_version: d.read_version, runs }, d).runs).toEqual(runs);
+    }
   });
   it('pins evidence requests to the current detail and never falls back to v1', async () => {
     const fetcher = vi.fn().mockResolvedValueOnce(response(list())).mockResolvedValueOnce(response(fixture.detail)).mockResolvedValueOnce(response(evidence()));

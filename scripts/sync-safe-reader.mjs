@@ -26,6 +26,12 @@ if (/from ['"]\.\/(?!strategy-setup['"])/.test(declaration)) throw Error('Unexpe
 const output = path.join(site, 'lib/vendor');
 const fixturePath = 'src/renderer/src/utils/__fixtures__/safe-strategy-v2.json';
 const fixture = fs.readFileSync(path.join(client, fixturePath));
+const listFixturePath = 'src/renderer/src/utils/__fixtures__/safe-strategy-list-v2.json';
+const listFixture = fs.readFileSync(path.join(client, listFixturePath));
+fs.writeFileSync(path.join(site, 'tests/safe-strategy-list-v2.json'), listFixture);
+const presentationPath = 'src/renderer/src/utils/__fixtures__/safe-strategy-presentation.mjs';
+const presentation = fs.readFileSync(path.join(client, presentationPath));
+fs.writeFileSync(path.join(site, 'tests/safe-strategy-presentation.mjs'), presentation);
 fs.writeFileSync(path.join(site, 'tests/safe-strategy-v2.json'), fixture);
 fs.writeFileSync(path.join(output, 'safe-reader.js'), result.outputFiles[0].contents);
 fs.writeFileSync(path.join(output, 'safe-reader.d.ts'), declaration);
@@ -33,6 +39,8 @@ fs.writeFileSync(path.join(output, 'safe-reader.provenance.json'), JSON.stringif
   source: 'gund0lf/wraeclastledger_react',
   bundleSha256: createHash('sha256').update(result.outputFiles[0].contents).digest('hex'),
   fixture: { path: fixturePath, sha256: createHash('sha256').update(fixture).digest('hex') },
+  listFixture: { path: listFixturePath, sha256: createHash('sha256').update(listFixture).digest('hex') },
+  presentation: { path: presentationPath, sha256: createHash('sha256').update(presentation).digest('hex') },
   sources: Object.keys(result.metafile.inputs).sort().map(file => ({ path: file.replaceAll('\\', '/'),
     sha256: createHash('sha256').update(fs.readFileSync(path.resolve(client, file))).digest('hex') })),
 }, null, 2) + '\n');

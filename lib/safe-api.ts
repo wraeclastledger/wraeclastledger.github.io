@@ -35,12 +35,15 @@ export function safeCatalogue(value: unknown) {
   return catalogue;
 }
 /** Public names are display text, not links to an identity directory. */
+export const ANONYMOUS_AUTHOR_TOOLTIP = 'No public author name displayed';
+export function anonymousAuthor(row: Pick<StrategyRow, 'schema_version' | 'attribution'>): boolean {
+  return row.schema_version === 2 && !(row.attribution?.status === 'active' && row.attribution.display_name);
+}
 export function authorLabel(row: Pick<StrategyRow, 'schema_version' | 'attribution'>): string | null {
   if (row.schema_version !== 2) return null;
   const author = row.attribution;
-  if (!author) return 'Author name not set';
-  if (author.status === 'active' && author.display_name) return `By ${author.display_name}`;
-  return 'Author name unavailable';
+  if (author?.status === 'active' && author.display_name) return `By ${author.display_name}`;
+  return 'By Anonymous';
 }
 
 /** Keep the canonical price-free setup; adapt only optional inspection history. */

@@ -9,6 +9,7 @@ import {
 } from '../lib/presentation';
 import type { ReactNode } from 'react';
 import { authorLabel } from '../lib/safe-api';
+import { PublicAuthor } from './public-author';
 import { Copy, ExternalLink, Globe, History } from 'lucide-react';
 import { AtlasTreeIcon } from './atlas-tree-icon';
 import { Tags, ItemName, LootEvidence } from './strategy-detail';
@@ -116,14 +117,14 @@ export default function PrototypeDetail({
             </button>
           )}
           <p className="wl-byline">
-            {authorLabel(s) && <><span style={{ overflowWrap: 'anywhere' }}>{authorLabel(s)}</span> ·{' '}</>}
+            {authorLabel(s) && <><PublicAuthor row={s} /> ·{' '}</>}
             {number(s.coverage.run_count, 0)} contributed{' '}
             {s.coverage.run_count === 1 ? 'run' : 'runs'} ·{' '}
             {label(setup.map_type)} ·{' '}
             {setup.group_play === false
               ? 'Solo'
               : setup.group_play === true
-                ? `Group (${number(setup.party_size, 0)} players)`
+                ? setup.party_size === null ? 'Group' : `Group (${number(setup.party_size, 0)} players)`
                 : 'Party not recorded'}
           </p>
           <p className="wl-expiryline">

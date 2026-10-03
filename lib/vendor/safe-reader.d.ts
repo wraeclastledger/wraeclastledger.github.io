@@ -2,6 +2,8 @@ import { type StrategySetupCode } from './strategy-setup';
 type Check<T> = (v: unknown) => T;
 export declare const parseSafeRow: Check<{
     map_type: string | null;
+    group_play: boolean | null;
+    party_size: number | null;
     observed: {
         map_count: number | null;
         mod_average: number | null;
@@ -13,6 +15,8 @@ export declare const parseSafeRow: Check<{
         net_divines_per_hour: number | null;
         total_invest_chaos: number | null;
         net_profit_chaos: number | null;
+        historical_net_divines: number | null;
+        historical_invest_divines: number | null;
     };
     evidence: {
         run_count: number | null;
@@ -437,6 +441,8 @@ export declare const parseSafeList: Check<{
     order: "asc" | "desc";
     strategies: {
         map_type: string | null;
+        group_play: boolean | null;
+        party_size: number | null;
         observed: {
             map_count: number | null;
             mod_average: number | null;
@@ -448,6 +454,8 @@ export declare const parseSafeList: Check<{
             net_divines_per_hour: number | null;
             total_invest_chaos: number | null;
             net_profit_chaos: number | null;
+            historical_net_divines: number | null;
+            historical_invest_divines: number | null;
         };
         evidence: {
             run_count: number | null;

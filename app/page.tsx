@@ -45,6 +45,7 @@ import { parseRoute, routeUrl, routeLabel, type Route } from '../lib/routes';
 
 import { encodeStrategySetupCode, SETUP_CODE_MIN_APP_VERSION } from '../lib/vendor/strategy-setup.js';
 import { authorLabel, websiteSetup } from '../lib/safe-api';
+import { PublicAuthor } from '../components/public-author';
 
 import { writeClipboard } from '../lib/copy';
 import { setupEvidence } from '../lib/setup-evidence';
@@ -1110,7 +1111,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
                             </a>
 
                             <small>
-                              {authorLabel(s) && <><span style={{ overflowWrap: 'anywhere' }}>{authorLabel(s)}</span> ·{' '}</>}
+                              {authorLabel(s) && <><PublicAuthor row={s} /> ·{' '}</>}
                               {s.league || 'League not recorded'} ·{' '}
                               {number(s.evidence.run_count, 0)}{' '}
                               {s.evidence.run_count === 1 ? 'run' : 'runs'}
