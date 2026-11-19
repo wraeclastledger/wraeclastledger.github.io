@@ -33,6 +33,90 @@ describe('artifact and response policy', () => {
     expect(fs.existsSync(path.join(root, '.vite'))).toBe(false);
     expect(inspectArtifact(root, 'pages').manifest.map(row => row.file)).not.toContain('.vite/manifest.json');
   });
+  it('retains both exact metadata files byte-for-byte outside the artifact', () => {
+    const root = artifact(), reports = artifact();
+    fs.mkdirSync(path.join(root, '.vite'));
+    const manifest = Buffer.from('{ "entry": "app.js" }\r\n');
+    const references = Buffer.from('{"references":["client.tsx"]}\n');
+    fs.writeFileSync(path.join(root, '.vite', 'manifest.json'), manifest);
+    fs.writeFileSync(path.join(root, '.vite', 'vinext-client-reference-sources.json'), references);
+    retainBuildMetadata(root, reports);
+    expect(fs.readFileSync(path.join(reports, 'vite-build-manifest.json')).equals(manifest)).toBe(true);
+    expect(fs.readFileSync(path.join(reports, 'vinext-client-reference-sources.json')).equals(references)).toBe(true);
+    expect(fs.existsSync(path.join(root, '.vite'))).toBe(false);
+    expect(inspectArtifact(root, 'pages').manifest.map(row => path.basename(row.file))).not.toContain('manifest.json');
+    expect(inspectArtifact(root, 'pages').manifest.map(row => path.basename(row.file))).not.toContain('vinext-client-reference-sources.json');
+  });
+  it.each(['unknown', 'malformed-primary', 'malformed-secondary', 'hardlink', 'directory', 'missing-required'])('refuses %s metadata without copying or removing either file', (mode) => {
+    const root = artifact(), reports = artifact();
+    const directory = path.join(root, '.vite');
+    fs.mkdirSync(directory);
+    const first = path.join(directory, 'manifest.json');
+    const second = path.join(directory, 'vinext-client-reference-sources.json');
+    if (mode !== 'missing-required') fs.writeFileSync(first, mode === 'malformed-primary' ? '{' : '{"entry":"app.js"}');
+    if (mode === 'hardlink') fs.linkSync(first, second);
+    else if (mode === 'directory') fs.mkdirSync(second);
+    else fs.writeFileSync(second, mode === 'malformed-secondary' ? '{' : '{"references":[]}');
+    if (mode === 'unknown') fs.writeFileSync(path.join(directory, 'unexpected.json'), '{}');
+    const names = fs.readdirSync(directory).sort();
+    const bytes = names.filter(name => fs.lstatSync(path.join(directory, name)).isFile())
+      .map(name => [name, fs.readFileSync(path.join(directory, name))] as const);
+    expect(() => retainBuildMetadata(root, reports)).toThrow();
+    expect(fs.readdirSync(directory).sort()).toEqual(names);
+    for (const [name, before] of bytes) expect(fs.readFileSync(path.join(directory, name)).equals(before)).toBe(true);
+    expect(fs.existsSync(path.join(reports, 'vite-build-manifest.json'))).toBe(false);
+    expect(fs.existsSync(path.join(reports, 'vinext-client-reference-sources.json'))).toBe(false);
+  });
+  it('refuses a symlinked metadata entry before moving the valid manifest', () => {
+    const root = artifact(), reports = artifact();
+    const directory = path.join(root, '.vite');
+    fs.mkdirSync(directory);
+    const first = path.join(directory, 'manifest.json');
+    const second = path.join(directory, 'vinext-client-reference-sources.json');
+    fs.writeFileSync(first, '{"entry":"app.js"}');
+    // Directory junctions exercise lstat's symlink rejection on Windows without
+    // requiring the privilege needed to create a file symbolic link.
+    fs.symlinkSync(reports, second, 'junction');
+    expect(() => retainBuildMetadata(root, reports)).toThrow('Linked Vite metadata');
+    expect(fs.readFileSync(first, 'utf8')).toBe('{"entry":"app.js"}');
+    expect(fs.lstatSync(second).isSymbolicLink()).toBe(true);
+    expect(fs.existsSync(path.join(reports, 'vite-build-manifest.json'))).toBe(false);
+  });
+  it.each(['manifest.json', 'vinext-client-reference-sources.json'])('refuses retained metadata %s anywhere in the published artifact', (name) => {
+    const root = artifact();
+    fs.mkdirSync(path.join(root, 'assets'));
+    fs.writeFileSync(path.join(root, 'assets', name), '{}');
+    expect(() => inspectArtifact(root, 'pages')).toThrow('Build metadata must remain outside');
+  });
+  it('refuses an artifact-local retention destination before copying or removing metadata', () => {
+    const root = artifact();
+    fs.mkdirSync(path.join(root, '.vite'));
+    const first = path.join(root, '.vite', 'manifest.json');
+    fs.writeFileSync(first, '{}');
+    expect(() => retainBuildMetadata(root, root)).toThrow('outside the artifact');
+    expect(fs.readFileSync(first, 'utf8')).toBe('{}');
+    expect(fs.existsSync(path.join(root, 'vite-build-manifest.json'))).toBe(false);
+  });
+  it('refuses dangling metadata directory links instead of treating them as absent', () => {
+    const root = artifact(), reports = artifact();
+    fs.symlinkSync(path.join(reports, 'absent'), path.join(root, '.vite'), 'junction');
+    expect(() => retainBuildMetadata(root, reports)).toThrow('Invalid Vite metadata directory');
+    expect(fs.lstatSync(path.join(root, '.vite')).isSymbolicLink()).toBe(true);
+  });
+  it.each(['hardlink', 'dangling-link'])('refuses a %s destination without partial copies or removals', (mode) => {
+    const root = artifact(), reports = artifact();
+    const directory = path.join(root, '.vite');
+    fs.mkdirSync(directory);
+    fs.writeFileSync(path.join(directory, 'manifest.json'), '{"entry":"app.js"}');
+    fs.writeFileSync(path.join(directory, 'vinext-client-reference-sources.json'), '{}');
+    const destination = path.join(reports, 'vinext-client-reference-sources.json');
+    if (mode === 'hardlink') fs.linkSync(path.join(reports, 'app.js'), destination);
+    else fs.symlinkSync(path.join(reports, 'absent'), destination, 'junction');
+    expect(() => retainBuildMetadata(root, reports)).toThrow('Linked retained Vite metadata');
+    expect(fs.readFileSync(path.join(directory, 'manifest.json'), 'utf8')).toBe('{"entry":"app.js"}');
+    expect(fs.readFileSync(path.join(directory, 'vinext-client-reference-sources.json'), 'utf8')).toBe('{}');
+    expect(fs.existsSync(path.join(reports, 'vite-build-manifest.json'))).toBe(false);
+  });
   it('rejects unexpected hidden assets and refuses to remove unknown metadata', () => {
     const root = artifact();
     fs.mkdirSync(path.join(root, '.private'));
