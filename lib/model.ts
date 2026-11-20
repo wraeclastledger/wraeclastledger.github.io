@@ -205,12 +205,12 @@ export interface Query {
   sort: SortKey;
   order: 'asc' | 'desc';
 }
-// Release configuration: keep aligned with the desktop current-league fallback.
+// Put the current release league first and retain earlier leagues for browsing.
+const releaseLeagues = ['Covens', 'Allflame', 'Mirage'] as const;
 export const CURRENT_LEAGUE =
-  import.meta.env.VITE_CURRENT_LEAGUE?.trim() || 'Allflame';
+  import.meta.env.VITE_CURRENT_LEAGUE?.trim() || releaseLeagues[0];
 // Supported catalogue, independent of filtered/paginated strategy results.
-// Retain historical entries when adding a new league at rollover.
-export const KNOWN_LEAGUES = [...new Set([CURRENT_LEAGUE, 'Allflame', 'Mirage'])];
+export const KNOWN_LEAGUES = [...new Set([CURRENT_LEAGUE, ...releaseLeagues])];
 export const DEFAULT_QUERY: Query = {
   search: '',
   league: CURRENT_LEAGUE,

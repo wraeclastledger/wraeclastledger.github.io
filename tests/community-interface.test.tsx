@@ -50,7 +50,7 @@ beforeEach(() => {
     }),
   });
   localStorage.clear();
-  history.replaceState(null, '', '/?design=prototype#/communities');
+  history.replaceState(null, '', '/?design=prototype#/communities?league=Allflame');
   vi.stubGlobal(
     'fetch',
     vi.fn(async (url: unknown) => {
@@ -140,7 +140,7 @@ it('keeps changes usable in the tab when browser storage rejects writes', async 
   expect(host.querySelectorAll('tbody tr')).toHaveLength(17);
 });
 it('updates a displayed feed when another tab changes the saved relationships', async () => {
-  history.replaceState(null, '', '/?design=prototype#/my-feed');
+  history.replaceState(null, '', '/?design=prototype#/my-feed?league=Allflame');
   await mount();
   expect(host.querySelectorAll('tbody tr')).toHaveLength(9);
   await act(async () => {

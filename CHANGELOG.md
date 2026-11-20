@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Open the Strategy Browser on Covens by default. Allflame and Mirage remain selectable.
 - Match the coordinated v2 list contract for recorded historical Divine totals
   and party context. Show Anonymous for absent/withdrawn public names, with a
   distinct muted italic label and explanatory tooltip, never for a load failure.

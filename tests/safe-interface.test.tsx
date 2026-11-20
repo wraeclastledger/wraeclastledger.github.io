@@ -47,6 +47,25 @@ afterEach(async () => {
   await act(async () => root.unmount()); host.remove();
   vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.restoreAllMocks();
 });
+it('keeps a fresh visit on Covens when only older league strategies exist', async () => {
+  const fixtureFetch = vi.mocked(fetch).getMockImplementation()!;
+  vi.mocked(fetch).mockImplementation(async (input, init) => {
+    const url = requestUrl(input);
+    const response = await fixtureFetch(input, init);
+    if (url.pathname !== '/web/v2/strategies' || url.searchParams.get('league') !== 'Covens') return response;
+    return Response.json({ ...await response.json(), strategies: [], total: 0 });
+  });
+
+  await act(async () => root.render(<Home />)); await settle();
+  const leagueReads = vi.mocked(fetch).mock.calls.map(([input]) => requestUrl(input))
+    .filter(url => url.pathname === '/web/v2/strategies').map(url => url.searchParams.get('league'));
+  expect(leagueReads.length).toBeGreaterThan(0);
+  expect(new Set(leagueReads)).toEqual(new Set(['Covens']));
+  expect(host.querySelector('button[aria-label="League: Covens"]')).toBeTruthy();
+  expect(host.querySelector('tbody tr')).toBeNull();
+  expect(host.querySelector('.empty h2')?.textContent).toBe('No matching strategies');
+  expect(host.querySelector('.empty p')?.textContent).toBe('Try another league or clear your filters.');
+});
 it('renders the successor list name as wrapping text, without an identity link', async () => {
   await act(async () => root.render(<Home />)); await settle();
   const name = [...host.querySelectorAll('span')].find(el => el.textContent === 'By ' + 'किं'.repeat(32));

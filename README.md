@@ -18,7 +18,7 @@ or impose a 50-strategy total limit. A matching API deployment is required.
 
 League choices include the supported catalogue even on a fresh filtered or empty
 page. Additional observed or explicitly entered leagues remain selectable. At
-rollover, update `CURRENT_LEAGUE` and retain historical `KNOWN_LEAGUES` entries in
+rollover, put the new league first in `releaseLeagues` and retain historical entries in
 `lib/model.ts`; never derive the whole catalogue from a filtered result page.
 
 ## Development
@@ -124,8 +124,8 @@ retains verified official image URLs and source-family information, never econom
 prices. Unknown items retain visible fallbacks. Game artwork remains attributed
 to its respective owner; portrait provenance is beside the bundled asset.
 
-The release league defaults to Allflame; `VITE_CURRENT_LEAGUE` is the bounded
-release-time override. An explicit empty league route means All leagues.
+The release league defaults to Covens. `VITE_CURRENT_LEAGUE` can override it
+at build time. An explicit empty league route means All leagues.
 
 ## Related project
 

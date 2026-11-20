@@ -213,7 +213,7 @@ describe('local discovery adapter and service contract', () => {
     a.preferences = { home: cid(1), following: [] };
     const route: Route = {
       view: 'list',
-      query: { ...DEFAULT_QUERY, scope: 'feed' },
+      query: { ...DEFAULT_QUERY, league: 'Allflame', scope: 'feed' },
       pages: 1,
     };
     await c.open(route);
