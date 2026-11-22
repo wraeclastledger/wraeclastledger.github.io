@@ -12,17 +12,17 @@ describe('league choices across filtered result pages', () => {
   });
   it.each([{observed: []}, {observed: ['Covens']}, {observed: ['Allflame']}, {observed: ['Mirage']}])('retains the supported catalogue with observed rows $observed', ({observed}) => {
     for (const selected of ['Covens', 'Allflame', 'Mirage', '']) {
-      expect(leagueOptions(observed, selected)).toEqual(['Allflame', 'Covens', 'Mirage']);
+      expect(leagueOptions(observed, selected)).toEqual(['Covens', 'Allflame', 'Mirage']);
     }
   });
   it('retains additional discovered and bookmarked leagues without duplicating options', () => {
-    expect(leagueOptions(['Mirage', 'Historical event', 'Mirage', ''], 'Bookmarked event'))
-      .toEqual(['Allflame', 'Bookmarked event', 'Covens', 'Historical event', 'Mirage']);
+    expect(leagueOptions(['Mirage', 'Historical event', 'Mirage', 'Historical event', ''], 'Bookmarked event'))
+      .toEqual(['Covens', 'Allflame', 'Mirage', 'Bookmarked event', 'Historical event']);
   });
   it.each([
     ['', 'Covens', ['Covens', 'Allflame', 'Mirage']],
     [' Event ', 'Event', ['Event', 'Covens', 'Allflame', 'Mirage']],
-    ['Allflame', 'Allflame', ['Allflame', 'Covens', 'Mirage']],
+    ['Allflame', 'Allflame', ['Covens', 'Allflame', 'Mirage']],
   ] as const)('keeps the catalogue when the build-time override is %j', async (override, current, catalogue) => {
     vi.stubEnv('VITE_CURRENT_LEAGUE', override);
     vi.resetModules();
@@ -31,6 +31,8 @@ describe('league choices across filtered result pages', () => {
       expect(CURRENT_LEAGUE).toBe(current);
       expect(DEFAULT_QUERY.league).toBe(current);
       expect(KNOWN_LEAGUES).toEqual(catalogue);
+      const { leagueOptions: configuredOptions } = await import('../lib/league-options');
+      expect(configuredOptions(['Mirage', 'Challenge event'], 'Allflame')).toEqual([...catalogue, 'Challenge event']);
     } finally {
       vi.unstubAllEnvs();
       vi.resetModules();

@@ -206,11 +206,13 @@ export interface Query {
   order: 'asc' | 'desc';
 }
 // Put the current release league first and retain earlier leagues for browsing.
-const releaseLeagues = ['Covens', 'Allflame', 'Mirage'] as const;
+const releaseLeagues = ['Covens', 'Allflame', 'Mirage'];
 export const CURRENT_LEAGUE =
   import.meta.env.VITE_CURRENT_LEAGUE?.trim() || releaseLeagues[0];
 // Supported catalogue, independent of filtered/paginated strategy results.
-export const KNOWN_LEAGUES = [...new Set([CURRENT_LEAGUE, ...releaseLeagues])];
+export const KNOWN_LEAGUES = releaseLeagues.includes(CURRENT_LEAGUE)
+  ? releaseLeagues
+  : [CURRENT_LEAGUE, ...releaseLeagues];
 export const DEFAULT_QUERY: Query = {
   search: '',
   league: CURRENT_LEAGUE,
