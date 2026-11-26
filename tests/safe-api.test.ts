@@ -88,6 +88,7 @@ describe('shared safe website reader', () => {
     await api.list(DEFAULT_QUERY, null, signal());
     const d = await api.detail(fixture.detail.id, signal());
     await api.evidence(d.id, null, signal(), d);
+    expect(String(fetcher.mock.calls[2][0])).toContain('format=covens-v1');
     expect(String(fetcher.mock.calls[2][0])).toContain('revision=2&read_version=' + d.read_version);
     for (const [url, options] of fetcher.mock.calls) {
       expect(url).toMatch(/^\/web\/v2\//); expect(options).toMatchObject({ cache: 'no-store', credentials: 'omit', redirect: 'error' });
@@ -118,8 +119,14 @@ describe('shared safe website reader', () => {
       .mockResolvedValueOnce(response(fixture.frozen));
     const api = new PublicApi('/web/v2', fetcher, 15000, false, true);
     await api.catalogue(signal()); const d = await api.frozenDetail(fixture.snapshot, fixture.frozen.id, signal());
-    expect(d.scope).toBe('frozen'); expect(() => api.evidence(d.id, null, signal(), d)).toThrow();
-    expect(fetcher.mock.calls[1][0]).toBe(`/web/v2/retrospectives/${fixture.snapshot}/strategies/${d.id}`);
+    expect(d.scope).toBe('frozen');
+    const page = { ...evidence(), strategy_id: d.id, revision: d.revision, read_version: d.read_version };
+    fetcher.mockResolvedValueOnce(response(page));
+    await expect(api.evidence(d.id, null, signal(), d)).resolves.toMatchObject({ strategy_id: d.id });
+    expect(fetcher.mock.calls[2][0]).toContain(`/retrospectives/${fixture.snapshot}/strategies/${d.id}/evidence?`);
+    fetcher.mockResolvedValueOnce(response({ ...page, read_version: fixture.snapshot }));
+    await expect(api.evidence(d.id, null, signal(), d)).rejects.toMatchObject({ kind: 'invalid' });
+    expect(fetcher.mock.calls[1][0]).toBe(`/web/v2/retrospectives/${fixture.snapshot}/strategies/${d.id}?format=covens-v1`);
   });
   it('retains only recorded frozen totals and never assigns one quote to a pool', () => {
     const raw = structuredClone(fixture.frozen);
@@ -129,6 +136,22 @@ describe('shared safe website reader', () => {
     d.coverage.run_count = 2;
     expect(websiteSetup(d, null)?.history?.divinePrice).toBeNull();
     expect(() => safeDetail({ ...raw, continuation_setup: fixture.detail.continuation_setup }, raw.id, raw.snapshot_key)).toThrow();
+  });
+  it('validates opt-in Covens observations while preserving the closed legacy projection', () => {
+    const raw = structuredClone(fixture.detail);
+    const base = raw.reusable_setup.value;
+    const next = { ...base, league: 'Covens', scarabs: [], delirium: null,
+      covens: { version: 1, atlas: null, ember: 'allflame-ember-of-resplendence', threads: [] } };
+    const enrichedDetail = safeDetail({ ...raw, league: 'Covens', reusable_setup: { status: 'available', value: next } }, raw.id);
+    expect(websiteSetup(enrichedDetail, null)?.covens?.ember).toBe('allflame-ember-of-resplendence');
+    const d = safeDetail(fixture.detail, fixture.detail.id);
+    const original = evidence();
+    const run = original.runs[0];
+    const fields = { version: 1, atlas_drops: { sum: 0, count: 1 }, more_threads: null,
+      threads: [], atlas: null, ember: null, orbs: [], delirium: null, encounters: null };
+    const enriched = (covens: unknown) => ({ ...original, runs: [{ ...run, covens }] });
+    expect(safeEvidence(enriched(fields), d).runs[0]).toHaveProperty('covens', fields);
+    expect(() => safeEvidence(enriched({ ...fields, internal_note: 'synthetic' }), d)).toThrow();
   });
   it('bounds the catalogue and rejects repeated snapshot identities', async () => {
     const snapshot = { snapshot_key: fixture.snapshot, read_version: fixture.detail.read_version,

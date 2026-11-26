@@ -1,5 +1,7 @@
 import type { EvidencePage, StrategyDetail } from './model';
 import { setupItemName } from './artwork';
+import { covensItemName } from './covens-labels';
+import type { CovensFields } from './vendor/covens-reader.mjs';
 export function matchingRuns(
   s: StrategyDetail,
   e: EvidencePage | null | undefined,
@@ -96,10 +98,19 @@ export function displayedCosts(
   s: StrategyDetail,
   e: EvidencePage | null | undefined,
 ) {
-  const runs = matchingRuns(s, e);
-  const run = runs?.length === 1 ? runs[0] : null;
-  if (!run || run.observed.map_count !== s.coverage.map_count) return null;
-  return run.cost_breakdown ?? run.display_cost_breakdown ?? null;
+  const run = matchingSingleRun(s, e);
+  return run?.cost_breakdown ?? run?.display_cost_breakdown ?? null;
+}
+
+export function matchingSingleRun(s: StrategyDetail, evidence: EvidencePage | null | undefined) {
+  const runs = matchingRuns(s, evidence);
+  return runs?.length === 1 && runs[0].observed.map_count === s.coverage.map_count ? runs[0] : null;
+}
+
+export function quoteInChaos(quote: NonNullable<CovensFields['ember']>['price_each'], rate: number | null) {
+  if (!quote) return null;
+  if (quote.unit === 'chaos' || quote.amount === 0) return quote.amount;
+  return rate !== null && rate > 0 ? quote.amount * rate : null;
 }
 
 export function displayedDelirium(
@@ -123,19 +134,22 @@ export function historicalCostRows(
     setup = displayedSetup(s, e);
   const maps = s.coverage.map_count,
     allIn = s.economics.all_in_cost_per_map_chaos;
-  if (!costs || !maps || allIn == null) return listedCostRows(s);
+  const run = matchingSingleRun(s, e);
+  const covens = run?.covens;
+  if ((!costs && !covens) || !maps || allIn == null) return listedCostRows(s);
   const rows: Array<{ name: string; value: number }> = [];
   const names = (items: Array<string | { name: string }>) =>
     items
       .map((i) => (typeof i === 'string' ? i : i.name).trim().toLowerCase())
       .sort()
       .join('|');
-  let complete = names(costs.scarabs) === names(setup.scarabs);
-  const preservation = costs.scarabs.some(
+  const scarabCosts = costs?.scarabs ?? [];
+  let complete = !!costs && !covens && s.league !== 'Covens' && names(scarabCosts) === names(setup.scarabs);
+  const preservation = scarabCosts.some(
     (i) => i.name.toLowerCase() === 'horned scarab of preservation',
   );
   let scarabs = 0;
-  for (const item of costs.scarabs) {
+  for (const item of scarabCosts) {
     if (item.price_each_chaos == null) {
       complete = false;
       continue;
@@ -147,25 +161,31 @@ export function historicalCostRows(
         ? maps
         : 1);
   }
-  if (costs.scarabs.length) rows.push({ name: 'Scarabs', value: scarabs });
-  if (costs.chisel?.price_each_chaos != null)
+  if (scarabCosts.length) rows.push({ name: 'Scarabs', value: scarabs });
+  if (costs?.chisel?.price_each_chaos != null)
     rows.push({
       name: setupItemName('chisel', costs.chisel.name)!,
       value: costs.chisel.price_each_chaos,
     });
   else if (setupItemName('chisel', setup.chisel)) complete = false;
-  if (costs.delirium)
+  if (costs?.delirium)
     rows.push({
       name: setupItemName('delirium', costs.delirium.type)!,
       value: costs.delirium.count_per_map * costs.delirium.price_each_chaos,
     });
   else if (setup.delirium?.type) complete = false;
-  if (costs.astrolabe)
+  if (costs?.astrolabe)
     rows.push({
       name: setupItemName('astrolabe', costs.astrolabe.type)!,
       value: (costs.astrolabe.count * costs.astrolabe.price_each_chaos) / maps,
     });
   else if (setup.astrolabe) complete = false;
+  if (covens?.ember && run) {
+    const ember = quoteInChaos(covens.ember.price_each, run.economics.divine_price_chaos);
+    if (ember !== null) rows.push({ name: covensItemName(covens.ember.id), value: ember });
+  }
+  // Thread quotes are gross. The wire does not record the applied Atlas saving.
+  const includesThreads = covens?.threads?.some(slot => !slot.paused && slot.paid > 0);
   const remainder = allIn - rows.reduce((sum, r) => sum + r.value, 0);
   // Conflicting or impossible prices must not manufacture a negative map cost.
   if (!Number.isFinite(remainder) || remainder < -0.01)
@@ -174,7 +194,7 @@ export function historicalCostRows(
     {
       name: complete
         ? 'Base map + rolling costs'
-        : 'Other costs · not itemized',
+        : includesThreads ? 'Threads and other unitemized costs' : 'Other costs · not itemized',
       value: Math.max(0, remainder),
     },
     ...rows,

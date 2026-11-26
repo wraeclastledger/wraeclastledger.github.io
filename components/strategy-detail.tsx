@@ -26,6 +26,7 @@ import {
   Shapes,
   Bug,
   Puzzle,
+  Spool,
   Boxes,
   Shield,
   Swords,
@@ -266,6 +267,7 @@ function CategoryArtwork({
   const url = artwork(Object.hasOwn(categoryRepresentatives, category)
     ? categoryRepresentatives[category] : '');
   const [failed, setFailed] = useState<string | null>(null);
+  if (category === 'Threads') return <SemanticIcon name="thread" size={32} fallback={fallback} />;
   if (category === 'League' || category === 'Other') {
     return <SemanticIcon name={category === 'League' ? 'loot_league' : 'loot_other'} size={32} fallback={fallback} />;
   }
@@ -330,6 +332,7 @@ export function LootEvidence({
     League: Shapes,
     Scarabs: Bug,
     Fragments: Puzzle,
+    Threads: Spool,
     Other: Boxes,
     'Unique Armour': Shield,
     'Unique Armours': Shield,

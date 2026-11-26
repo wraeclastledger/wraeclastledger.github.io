@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 
-export type SemanticIconName = 'updated' | 'atlas' | 'public' | 'home' | 'loot_league' | 'loot_other';
+export type SemanticIconName = 'updated' | 'atlas' | 'public' | 'home' | 'loot_league' | 'loot_other' | 'thread';
 
 /** Decorative artwork: the adjacent text supplies the accessible label. */
 export function SemanticIcon({ name, size = 20, fallback, className }: {

@@ -72,6 +72,7 @@ import { DisclosureContext } from '../lib/disclosures';
 import { MechanicFilter } from '../components/mechanic-filter';
 
 import { Tags, RunEvidence } from '../components/strategy-detail';
+import { CovensEvidence } from '../components/covens-evidence';
 
 const initialRoute: Route = {
   view: 'list',
@@ -1283,6 +1284,10 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
                   copyBusy={copyBusy}
                 />
 
+                {state.evidence && <CovensEvidence evidence={state.evidence} />}
+                {state.evidenceError && (
+                  <ErrorNotice error={state.evidenceError} retry={reload} />
+                )}
                 {state.detail.coverage.run_count !== 1 && (
                   <section className="section">
                     <div className="section-heading">
@@ -1296,9 +1301,6 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
                     {state.loading && (
                       <output>Loading contributed evidence…</output>
                     )}
-                    {state.evidenceError && (
-                      <ErrorNotice error={state.evidenceError} retry={reload} />
-                    )}{' '}
                     {state.evidence?.runs.map((run) => (
                       <RunEvidence key={run.ordinal} run={run} />
                     ))}
@@ -1337,7 +1339,8 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
                       maps, costs and returns. Enter your own current prices.
                     </p>
                     <p id="setup-code-version" className="footnote">
-                      Requires WraeclastLedger {SETUP_CODE_MIN_APP_VERSION} or later.
+                      Requires WraeclastLedger {state.detail.safe?.reusable_setup.status === 'available' &&
+                        'covens' in state.detail.safe.reusable_setup.value ? '1.0.100' : SETUP_CODE_MIN_APP_VERSION} or later.
                       Inspect available historical results; loading applies only setup and leaves new-run prices empty.
                     </p>
                   </div>

@@ -135,6 +135,24 @@ it('waits for composition completion and lets Enter flush a pending search once'
   expect(requests().at(-1)?.searchParams.get('search')).toBe('Bestiary');
 });
 
+it('identifies the required desktop version and copies the Covens fields', async () => {
+  const base = detail();
+  const covens = { version: 1, threads: [], ember: null, atlas: null };
+  const enriched = { ...base, league: 'Covens', setup: { ...base.setup, scarabs: [], delirium: null },
+    reusable_setup: { status: 'available', value: {
+    ...base.reusable_setup.value, league: 'Covens', scarabs: [], delirium: null, covens,
+  } } };
+  vi.mocked(fetch).mockImplementation(async url => respond(requestUrl(url).pathname.endsWith('/evidence') ? evidence() : enriched));
+  history.replaceState(null, '', '#/strategy/' + id(1));
+  await mount();
+  expect(host.querySelector('#setup-code-version')?.textContent).toContain('1.0.100');
+  const writeText = vi.fn(async (_text: string) => {});
+  vi.stubGlobal('navigator', { clipboard: { writeText } });
+  const copy = [...host.querySelectorAll('button')].find(b => b.textContent?.includes('Copy setup code'))!;
+  await act(async () => copy.click());
+  expect(decodeStrategySetupCode(writeText.mock.calls[0][0])?.covens).toEqual(covens);
+});
+
 it('copies reusable setup and available history even when structured run costs are missing', async () => {
   const e = evidence();
   e.runs = e.runs.map((run) => ({ ...run, cost_breakdown: null })) as never;

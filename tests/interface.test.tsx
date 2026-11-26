@@ -73,6 +73,29 @@ const mount = async () => {
   await act(async () => root.render(<Home />));
   await settle();
 };
+
+it('retries evidence for one run and keeps the strategy visible', async () => {
+  history.replaceState(null, '', '#/strategy/' + id(1));
+  let attempts = 0;
+  vi.mocked(fetch).mockImplementation(async url => {
+    const target = url instanceof Request ? url.url : url;
+    if (!new URL(target, 'http://localhost').pathname.endsWith('/evidence')) {
+      const single = detail();
+      single.coverage.run_count = 1;
+      return response(single);
+    }
+    if (++attempts === 1) return new Response(null, { status: 503 });
+    return response({ ...evidence(), runs: evidence().runs.slice(0, 1) });
+  });
+  await mount();
+  expect(host.querySelector('.wl-metric')).not.toBeNull();
+  const retry = host.querySelector('[role="alert"] button');
+  expect(retry?.textContent).toBe('Retry');
+  await click(retry);
+  expect(attempts).toBe(2);
+  expect(host.querySelector('[role="alert"]')).toBeNull();
+  expect(host.textContent).not.toContain('Contributed runs');
+});
 describe.each(['default', 'legacy prototype link'])(
   '%s rendered browser interactions',
   (design) => {

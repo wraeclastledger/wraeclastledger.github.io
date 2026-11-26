@@ -4,6 +4,8 @@ import {
   displayedSetup,
   mapRequirementTiles,
   historicalCostRows,
+  matchingSingleRun,
+  quoteInChaos,
   displayedCosts,
   relativeActivity,
 } from '../lib/presentation';
@@ -24,6 +26,7 @@ import {
   type EvidencePage,
 } from '../lib/model';
 import { setupItemName } from '../lib/artwork';
+import { covensItemName } from '../lib/covens-labels';
 import { ObservedDelirium } from './observed-delirium';
 import { SemanticIcon } from './semantic-icon';
 
@@ -88,6 +91,7 @@ export default function PrototypeDetail({
   const price = recordedDivinePrice(s, evidence);
   const costs = displayedCosts(s, evidence);
   const costRows = historicalCostRows(s, evidence);
+  const covens = matchingSingleRun(s, evidence)?.covens;
   const chisel = setupItemName('chisel', setup.chisel),
     astro = setupItemName('astrolabe', setup.astrolabe);
   const deli = setupItemName('delirium', setup.delirium?.type ?? null);
@@ -230,7 +234,23 @@ export default function PrototypeDetail({
       <Section title="Strategy setup" meta="Authored values">
         <div className="wl-setup-columns">
           <div className="wl-setup-pane">
-            <span className="wl-field-label">Scarabs and map setup</span>
+            <span className="wl-field-label">{s.league === 'Covens' ? 'Map setup' : 'Scarabs and map setup'}</span>
+            {covens?.threads?.map(slot => {
+              const each = quoteInChaos(slot.price_each, price);
+              return <div className="wl-setup-line" key={slot.slot}>
+                <span>{covensItemName(slot.id)} · {slot.paid} paid · {slot.granted} granted</span>
+                <strong>{slot.paused ? 'Paused' : slot.paid === 0 ? '0c/map'
+                  : each === null ? 'Price unknown' : `${money(slot.paid * each)}/map before Atlas savings`}</strong>
+              </div>;
+            })}
+            {covens?.ember && (
+              <div className="wl-setup-line">
+                <span>{covensItemName(covens.ember.id)}</span>
+                <strong>{covens.ember.price_each
+                  ? `${money(covens.ember.price_each.amount, covens.ember.price_each.unit === 'divine' ? 'd' : 'c')} each`
+                  : 'Price unknown'}</strong>
+              </div>
+            )}
             {setup.scarabs.map((item, i) => (
               <div className={`wl-setup-line${i === setup.scarabs.length - 1 && (chisel || deli || astro) ? ' setup-scarabs-end' : ''}`} key={i}>
                 <ItemName name={typeof item === 'string' ? item : item.name} />
@@ -268,8 +288,8 @@ export default function PrototypeDetail({
               </div>
             )}
             </div>}
-            {!setup.scarabs.length && !chisel && !astro && !deli && (
-              <p className="wl-note">No item setup recorded.</p>
+            {!setup.scarabs.length && !chisel && !astro && !deli && !covens?.threads?.length && !covens?.ember && (
+              <p className="wl-note">{s.league === 'Covens' ? 'See the available item setup for each run below.' : 'No item setup recorded.'}</p>
             )}
             {setup.chisel?.toLowerCase() === 'none' && (
               <p className="wl-item-metadata">No chisel</p>
@@ -295,7 +315,7 @@ export default function PrototypeDetail({
               <strong>{money(e.all_in_cost_per_map_chaos)}</strong>
             </div>
             <p className="footnote">
-              Historical prices. Base map and rolling costs remain combined.
+              {s.league === 'Covens' ? 'Historical prices. The all-in cost includes paid Threads after any Atlas savings.' : 'Historical prices. Base map and rolling costs remain combined.'}
             </p>
           </div>
           <div className="wl-setup-pane">

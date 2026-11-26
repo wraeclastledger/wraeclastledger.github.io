@@ -445,7 +445,7 @@ export class PublicApi {
   }
   async detail(id: string, signal: AbortSignal) {
     if (!UUID.test(id)) throw new ApiError('invalid');
-    const value = await this.read<StrategyDetail>((this.discovery ? '/discovery' : '') + '/strategies/' + id,
+    const value = await this.read<StrategyDetail>((this.discovery ? '/discovery' : '') + '/strategies/' + id + (this.v2 ? '?format=covens-v1' : ''),
       this.v2 ? v => { safeDetail(v, id); } : 'detail', signal);
     return this.v2 ? safeDetail(value, id) : value;
   }
@@ -476,14 +476,20 @@ export class PublicApi {
   evidence(id: string, cursor: string | null, signal: AbortSignal, detail?: StrategyDetail) {
     if (!UUID.test(id)) throw new ApiError('invalid');
     const p = new URLSearchParams({ limit: '50' });
+    let prefix = this.discovery ? '/discovery' : '';
     if (this.v2) {
-      if (!detail || detail.id !== id || detail.schema_version !== 2 || detail.scope !== 'current'
+      if (!detail || detail.id !== id || detail.schema_version !== 2 || !['current', 'frozen'].includes(detail.scope ?? '')
         || !detail.read_version || !UUID.test(detail.read_version) || !Number.isSafeInteger(detail.revision)) throw new ApiError('invalid');
+      if (detail.scope === 'frozen') {
+        if (!detail.snapshot_key || !UUID.test(detail.snapshot_key)) throw new ApiError('invalid');
+        prefix = '/retrospectives/' + detail.snapshot_key;
+      }
       p.set('revision', String(detail.revision)); p.set('read_version', detail.read_version);
+      p.set('format', 'covens-v1');
     }
     if (cursor) p.set('cursor', cursor);
     return this.read<EvidencePage>(
-      (this.discovery ? '/discovery' : '') + '/strategies/' + id + '/evidence?' + p,
+      prefix + '/strategies/' + id + '/evidence?' + p,
       this.v2 ? v => { safeEvidence(v, detail!); } : 'evidence',
       signal,
     );
@@ -502,7 +508,7 @@ export class PublicApi {
   }
   async frozenDetail(snapshot: string, id: string, signal: AbortSignal) {
     if (!this.v2 || !UUID.test(snapshot) || !UUID.test(id)) throw new ApiError('invalid');
-    const value = await this.read<StrategyDetail>(`/retrospectives/${snapshot}/strategies/${id}`,
+    const value = await this.read<StrategyDetail>(`/retrospectives/${snapshot}/strategies/${id}?format=covens-v1`,
       v => { safeDetail(v, id, snapshot); }, signal);
     return safeDetail(value, id, snapshot);
   }

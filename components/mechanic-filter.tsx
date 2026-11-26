@@ -23,8 +23,22 @@ export const MECHANICS = [
   'strongbox',
   'essence',
   'beyond',
+  'sentinel',
+  'mirage',
+  'mirage-rush',
+  'wildwood',
+  'shrine',
+  'torment',
+  'harbinger',
+  'metamorph',
+  'titanic',
+  'astrolabe-immortal',
+  'astrolabe-feral',
+  'astrolabe-royal',
+  'astrolabe-cryptic',
 ];
-const name = (tag: string) => tag.charAt(0).toUpperCase() + tag.slice(1);
+const name = (tag: string) =>
+  tag.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 export function MechanicFilter({
   value,
   onChange,

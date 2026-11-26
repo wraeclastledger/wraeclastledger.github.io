@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Strategy details show Thread costs, each Ember’s quoted price beside its name, partial Delirium Orb spending and Atlas choice names. Evidence can be retried on a single-run strategy.
+
+- Threads have a painted spool loot category icon.
+
+- Covens evidence shows recorded map encounters and Delirium separately from investment. Compatible setup codes copy Thread slots, an Ember, Atlas choices and orb types into WraeclastLedger 1.0.100.
+- The retrospective evidence reader uses the board’s own revision and cutoff.
+- Filter strategies by Sentinel, Mirage, Wildwood, Shrine and the four new Astrolabes. Mirage Rush has its own filter.
+
 - Open the Strategy Browser on Covens by default. Allflame and Mirage remain selectable.
 - List the release leagues from newest to oldest after “All leagues” in the Strategy Browser.
 - Match the coordinated v2 list contract for recorded historical Divine totals

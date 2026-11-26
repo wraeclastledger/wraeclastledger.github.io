@@ -137,6 +137,7 @@ export interface StrategyDetail extends Omit<
   loot: Loot | null;
 }
 export interface EvidenceRun {
+  covens?: import('./vendor/covens-reader.mjs').CovensFields | null;
   schema_version: 1 | 2;
   ordinal: number;
   contributed_on: string | null;

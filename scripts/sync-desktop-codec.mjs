@@ -25,6 +25,10 @@ const declarations = ts.transpileDeclaration(fs.readFileSync(path.join(client,se
   { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } });
 if (declarations.diagnostics?.length) throw Error('Setup-code declarations could not be generated.');
 fs.writeFileSync(path.join(output,'strategy-setup.d.ts'),declarations.outputText);
+const covensDeclarations = ts.transpileDeclaration(fs.readFileSync(path.join(client,'src/shared/covensImport.ts'),'utf8'),
+  { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } });
+if (covensDeclarations.diagnostics?.length) throw Error('Covens setup declarations could not be generated.');
+fs.writeFileSync(path.join(output,'covensImport.d.ts'),covensDeclarations.outputText);
 fs.writeFileSync(path.join(output,'strategy-setup.provenance.json'),JSON.stringify({
   source:'gund0lf/wraeclastledger_react', minimumAppVersion:'1.0.97',
   bundleSha256:createHash('sha256').update(setupResult.outputFiles[0].contents).digest('hex'),

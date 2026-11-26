@@ -1,0 +1,653 @@
+{
+  "items": {
+    "abyss-thread": "Abyss Thread",
+    "bestiary-thread": "Bestiary Thread",
+    "betrayal-thread": "Betrayal Thread",
+    "blight-thread": "Blight Thread",
+    "breach-thread": "Breach Thread",
+    "expedition-thread": "Expedition Thread",
+    "incursion-thread": "Incursion Thread",
+    "legion-thread": "Legion Thread",
+    "ritual-thread": "Ritual Thread",
+    "ultimatum-thread": "Ultimatum Thread",
+    "allflame-ember-of-flesh": "Allflame Ember of Flesh",
+    "allflame-ember-of-propagation": "Allflame Ember of Propagation",
+    "allflame-ember-of-the-cloister": "Allflame Ember of the Cloister",
+    "allflame-ember-of-the-divine": "Allflame Ember of the Divine",
+    "allflame-ember-of-the-gilded": "Allflame Ember of the Gilded",
+    "allflame-ember-of-kulemak": "Allflame Ember of Kulemak",
+    "allflame-ember-of-resplendence": "Allflame Ember of Resplendence",
+    "allflame-ember-of-the-ethereal": "Allflame Ember of the Ethereal",
+    "allflame-ember-of-the-multitude": "Allflame Ember of the Multitude",
+    "allflame-ember-of-the-wildwood": "Allflame Ember of the Wildwood",
+    "allflame-ember-of-toads": "Allflame Ember of Toads",
+    "deli-armoursmith": "Armoursmith's Delirium Orb",
+    "deli-blacksmith": "Blacksmith's Delirium Orb",
+    "deli-blighted": "Blighted Delirium Orb",
+    "deli-cartographer": "Cartographer's Delirium Orb",
+    "deli-diviner": "Diviner's Delirium Orb",
+    "deli-fine": "Fine Delirium Orb",
+    "deli-jeweller": "Jeweller's Delirium Orb",
+    "deli-singular": "Singular Delirium Orb",
+    "deli-thaumaturge": "Thaumaturge's Delirium Orb",
+    "deli-whispering": "Whispering Delirium Orb",
+    "deli-threaded": "Threaded Delirium Orb"
+  },
+  "choices": {
+    "712": {
+      "name": "Outside Entities",
+      "options": [
+        {
+          "id": "17864",
+          "text": "Your Maps have 40% increased chance to contain a Mirror of Delirium"
+        },
+        {
+          "id": "40579",
+          "text": "Your Maps have 40% increased chance to contain a Demonic Evocator"
+        },
+        {
+          "id": "61631",
+          "text": "Your Maps have 40% increased chance to contain the Viridian Wildwood"
+        },
+        {
+          "id": "8618",
+          "text": "Your Maps have 40% increased chance to contain a Mirage"
+        },
+        {
+          "id": "50999",
+          "text": "Your Maps have 40% increased chance to contain a Buried Sentinel"
+        }
+      ]
+    },
+    "3926": {
+      "name": "Suffused with Darkness",
+      "options": [
+        {
+          "id": "2215",
+          "text": "Abyss Jewels found in your Maps have 25% chance to be Corrupted\nand have 5 or 6 random Modifiers"
+        },
+        {
+          "id": "38495",
+          "text": "Abyss Jewels found in your Maps have 25% chance to have a Veiled Modifier"
+        }
+      ]
+    },
+    "5138": {
+      "name": "Trialmaster's Boon",
+      "options": [
+        {
+          "id": "27227",
+          "text": "Inscribed Ultimatums found in your Maps have 80% increased chance to reward Currency Items · Ultimatum Rewards in your Maps have 80% increased chance to be Currency Items"
+        },
+        {
+          "id": "7876",
+          "text": "Inscribed Ultimatums found in your Maps have 80% increased chance to reward Unique Items · Ultimatum Rewards in your Maps have 80% increased chance to be Unique Items"
+        },
+        {
+          "id": "904",
+          "text": "Inscribed Ultimatums found in your Maps have 80% increased chance to reward Divination Cards · Ultimatum Rewards in your Maps have 80% increased chance to be Divination Cards"
+        }
+      ]
+    },
+    "7018": {
+      "name": "Hunting Grounds",
+      "options": [
+        {
+          "id": "16876",
+          "text": "The Deep"
+        },
+        {
+          "id": "36075",
+          "text": "The Wilds"
+        },
+        {
+          "id": "31688",
+          "text": "The Caverns"
+        },
+        {
+          "id": "31858",
+          "text": "The Sands"
+        }
+      ]
+    },
+    "7788": {
+      "name": "Kalguuran Companionship",
+      "options": [
+        {
+          "id": "15072",
+          "text": "Expeditions in your Maps have 150% increased chance to be led by Rog"
+        },
+        {
+          "id": "23532",
+          "text": "Expeditions in your Maps have 150% increased chance to be led by Gwennen"
+        },
+        {
+          "id": "131",
+          "text": "Expeditions in your Maps have 150% increased chance to be led by Tujen"
+        },
+        {
+          "id": "53929",
+          "text": "Expeditions in your Maps have 75% increased chance to be led by Dannig"
+        }
+      ]
+    },
+    "12826": {
+      "name": "Arboriculture",
+      "options": [
+        {
+          "id": "10181",
+          "text": "Vivid Roots"
+        },
+        {
+          "id": "47548",
+          "text": "Wild Roots"
+        },
+        {
+          "id": "13897",
+          "text": "Primal Roots"
+        }
+      ]
+    },
+    "12887": {
+      "name": "Blended Realities",
+      "options": [
+        {
+          "id": "51599",
+          "text": "Your Maps have +30% Surpassing Chance to contain Sacred Flora"
+        },
+        {
+          "id": "57448",
+          "text": "Your Maps have +50% Surpassing Chance to be haunted by a Tormented Spirit"
+        },
+        {
+          "id": "33096",
+          "text": "Your Maps have +50% Surpassing Chance to contain an Imprisoned Monster"
+        },
+        {
+          "id": "20818",
+          "text": "Your Maps have +50% Surpassing Chance to contain a Shrine"
+        }
+      ]
+    },
+    "16487": {
+      "name": "Trarthan Policy",
+      "options": [
+        {
+          "id": "64303",
+          "text": "Strength aligned"
+        },
+        {
+          "id": "29138",
+          "text": "Dexterity aligned"
+        },
+        {
+          "id": "9802",
+          "text": "Intelligence aligned"
+        }
+      ]
+    },
+    "19729": {
+      "name": "Divide and Conquer",
+      "options": [
+        {
+          "id": "22188",
+          "text": "Hives"
+        },
+        {
+          "id": "5397",
+          "text": "Unstable Breaches"
+        }
+      ]
+    },
+    "23538": {
+      "name": "Time Dilation",
+      "options": [
+        {
+          "id": "49708",
+          "text": "Time gained from Kills is Doubled for Incursions in your Maps"
+        },
+        {
+          "id": "3497",
+          "text": "Time gained from Kills is Halved for Incursions in your Maps · Incursions in your Maps have 25% increased Pack Size"
+        }
+      ]
+    },
+    "28029": {
+      "name": "Path of Worship",
+      "options": [
+        {
+          "id": "40883",
+          "text": "Covetous Shrine"
+        },
+        {
+          "id": "36379",
+          "text": "Acceleration Shrine"
+        },
+        {
+          "id": "9032",
+          "text": "Gloom Shrine"
+        }
+      ]
+    },
+    "28477": {
+      "name": "Malignant Modifiers",
+      "options": [
+        {
+          "id": "49076",
+          "text": "25% increased effect of Prefix Modifiers on your Maps"
+        },
+        {
+          "id": "17503",
+          "text": "25% increased effect of Suffix Modifiers on your Maps"
+        }
+      ]
+    },
+    "33916": {
+      "name": "House Supremacy",
+      "options": [
+        {
+          "id": "14632",
+          "text": "Marauder"
+        },
+        {
+          "id": "11906",
+          "text": "Duelist"
+        },
+        {
+          "id": "9199",
+          "text": "Templar"
+        },
+        {
+          "id": "43936",
+          "text": "Witch"
+        },
+        {
+          "id": "46989",
+          "text": "Shadow"
+        },
+        {
+          "id": "65122",
+          "text": "Ranger"
+        },
+        {
+          "id": "30397",
+          "text": "Scion"
+        }
+      ]
+    },
+    "36870": {
+      "name": "Controlled Detonation",
+      "options": [
+        {
+          "id": "3172",
+          "text": "Expedition Detonation Chains in your Maps travel 50% slower"
+        },
+        {
+          "id": "8905",
+          "text": "Expedition Detonation Chains in your Maps travel 50% faster"
+        }
+      ]
+    },
+    "37454": {
+      "name": "Power Struggle",
+      "options": [
+        {
+          "id": "32542",
+          "text": "Killing non-resident Architects in your Maps adds an additional Upgrade Tier\nto the surviving Architect's Room"
+        },
+        {
+          "id": "54543",
+          "text": "Killing resident Architects in your Maps adds their Upgrade Tier\nto the surviving Architect's Room"
+        }
+      ]
+    },
+    "39977": {
+      "name": "Blood Feud",
+      "options": [
+        {
+          "id": "61534",
+          "text": "Legion Encounters in your Maps have 100% increased chance to include a Karui army · Legion Generals in your Maps have 30% increased chance to drop\na Karui Enshrouding Crystal"
+        },
+        {
+          "id": "34298",
+          "text": "Legion Encounters in your Maps have 100% increased chance to include an Eternal Empire army · Legion Generals in your Maps have 30% increased chance to drop\nan Imperial Enshrouding Crystal"
+        },
+        {
+          "id": "35722",
+          "text": "Legion Encounters in your Maps have 100% increased chance to include a Vaal army · Legion Generals in your Maps have 30% increased chance to drop\na Vaal Enshrouding Crystal"
+        },
+        {
+          "id": "35281",
+          "text": "Legion Encounters in your Maps have 80% increased chance to include a Templar army · Legion Generals in your Maps have 30% increased chance to drop\na Templar Enshrouding Crystal"
+        },
+        {
+          "id": "64739",
+          "text": "Legion Encounters in your Maps have 60% increased chance to include a Maraketh army · Legion Generals in your Maps have 30% increased chance to drop\na Maraketh Enshrouding Crystal"
+        }
+      ]
+    },
+    "41332": {
+      "name": "Repressed Emotion",
+      "options": [
+        {
+          "id": "39523",
+          "text": "Anguish"
+        },
+        {
+          "id": "46511",
+          "text": "Torment"
+        },
+        {
+          "id": "6505",
+          "text": "Suffering"
+        },
+        {
+          "id": "50056",
+          "text": "Fear"
+        },
+        {
+          "id": "31550",
+          "text": "Zeal"
+        },
+        {
+          "id": "45357",
+          "text": "Loathing"
+        }
+      ]
+    },
+    "42092": {
+      "name": "Ill Feeling",
+      "options": [
+        {
+          "id": "42547",
+          "text": "Misery"
+        },
+        {
+          "id": "30259",
+          "text": "Scorn"
+        },
+        {
+          "id": "3743",
+          "text": "Dread"
+        },
+        {
+          "id": "2272",
+          "text": "Envy"
+        }
+      ]
+    },
+    "42725": {
+      "name": "Controlled Chaos",
+      "options": [
+        {
+          "id": "24969",
+          "text": "Ultimatum Encounters in your Maps have 100% increased chance to\nrequire you to protect the Altar · Ultimatum Altars in your Maps have 75% increased Life"
+        },
+        {
+          "id": "34210",
+          "text": "Ultimatum Encounters in your Maps have 100% increased chance to\nrequire you to defeat waves of Enemies · Ultimatum Encounters in your Maps requiring you to Defeat waves of Enemies\nrequire killing 30% reduced number of Enemies"
+        },
+        {
+          "id": "41920",
+          "text": "Ultimatum Encounters in your Maps have 100% increased chance to\nrequire you to Stand in the Stone Circles · Ultimatum Stone Circles in your Maps have 40% increased radius"
+        },
+        {
+          "id": "14502",
+          "text": "Ultimatum Encounters in your Maps have 100% increased chance to\nonly require you to Survive · Ultimatum Encounters in your Maps only requiring you to Survive\nhave 30% reduced duration"
+        }
+      ]
+    },
+    "44063": {
+      "name": "Augured Cache",
+      "options": [
+        {
+          "id": "35745",
+          "text": "Diviner's"
+        },
+        {
+          "id": "57438",
+          "text": "Cartographer's"
+        },
+        {
+          "id": "20208",
+          "text": "Arcanist's · Artisan's"
+        }
+      ]
+    },
+    "45404": {
+      "name": "Secrets Unveiled",
+      "options": [
+        {
+          "id": "55878",
+          "text": "Immortal Syndicate Members in your Maps have 25% chance to\ndrop an additional Double-Veiled Item"
+        },
+        {
+          "id": "5301",
+          "text": "4% chance for Veiled Items found in your Maps to drop as Allflames instead"
+        }
+      ]
+    },
+    "48364": {
+      "name": "Fertile Ground",
+      "options": [
+        {
+          "id": "1963",
+          "text": "Provisioning"
+        },
+        {
+          "id": "56958",
+          "text": "Lavish"
+        },
+        {
+          "id": "64808",
+          "text": "Ancient"
+        },
+        {
+          "id": "62656",
+          "text": "Mysterious"
+        }
+      ]
+    },
+    "50917": {
+      "name": "Buried Feeling",
+      "options": [
+        {
+          "id": "53191",
+          "text": "Anger"
+        },
+        {
+          "id": "56739",
+          "text": "Hatred"
+        },
+        {
+          "id": "13246",
+          "text": "Wrath"
+        },
+        {
+          "id": "22534",
+          "text": "Contempt"
+        }
+      ]
+    },
+    "54685": {
+      "name": "Dextral Threads",
+      "options": [
+        {
+          "id": "52289",
+          "text": "Breach"
+        },
+        {
+          "id": "36845",
+          "text": "Ritual"
+        },
+        {
+          "id": "64463",
+          "text": "Ultimatum"
+        },
+        {
+          "id": "46985",
+          "text": "Expedition"
+        },
+        {
+          "id": "56313",
+          "text": "Incursion"
+        }
+      ]
+    },
+    "55213": {
+      "name": "Fated Meeting",
+      "options": [
+        {
+          "id": "64586",
+          "text": "Tormented Smuggler"
+        },
+        {
+          "id": "59843",
+          "text": "Tormented Embezzler"
+        },
+        {
+          "id": "35863",
+          "text": "Tormented Heretic"
+        }
+      ]
+    },
+    "56429": {
+      "name": "Unbecoming Emotion",
+      "options": [
+        {
+          "id": "5899",
+          "text": "Woe"
+        },
+        {
+          "id": "52262",
+          "text": "Greed"
+        },
+        {
+          "id": "13574",
+          "text": "Doubt"
+        },
+        {
+          "id": "53137",
+          "text": "Rage"
+        },
+        {
+          "id": "22483",
+          "text": "Spite"
+        },
+        {
+          "id": "41971",
+          "text": "Sorrow"
+        }
+      ]
+    },
+    "61484": {
+      "name": "Sinistral Threads",
+      "options": [
+        {
+          "id": "47843",
+          "text": "Abyss"
+        },
+        {
+          "id": "29857",
+          "text": "Bestiary"
+        },
+        {
+          "id": "14897",
+          "text": "Blight"
+        },
+        {
+          "id": "1451",
+          "text": "Betrayal"
+        },
+        {
+          "id": "44328",
+          "text": "Legion"
+        }
+      ]
+    },
+    "61620": {
+      "name": "Unthreaded",
+      "options": [
+        {
+          "id": "30960",
+          "text": "Abyss"
+        },
+        {
+          "id": "31094",
+          "text": "Bestiary"
+        },
+        {
+          "id": "59208",
+          "text": "Blight"
+        },
+        {
+          "id": "57958",
+          "text": "Betrayal"
+        },
+        {
+          "id": "6251",
+          "text": "Legion"
+        }
+      ]
+    },
+    "61698": {
+      "name": "Merged Worlds",
+      "options": [
+        {
+          "id": "9590",
+          "text": "Your Maps have +20% chance to contain Ore Deposits"
+        },
+        {
+          "id": "60065",
+          "text": "Your Maps have +50% Surpassing Chance to contain a Strongbox"
+        },
+        {
+          "id": "50909",
+          "text": "Your Maps have +20% chance to be inhabited by a Mercenary"
+        },
+        {
+          "id": "11679",
+          "text": "Your Maps have +50% Surpassing Chance to contain a Rogue Exile"
+        }
+      ]
+    },
+    "63533": {
+      "name": "Reality Tether",
+      "options": [
+        {
+          "id": "57043",
+          "text": "Tormented Spirits in your Maps have 100% increased Duration"
+        },
+        {
+          "id": "42022",
+          "text": "Tormented Spirits in your Maps cannot be Damaged"
+        }
+      ]
+    },
+    "64980": {
+      "name": "Threadbare",
+      "options": [
+        {
+          "id": "53700",
+          "text": "Breach"
+        },
+        {
+          "id": "44382",
+          "text": "Ritual"
+        },
+        {
+          "id": "48744",
+          "text": "Ultimatum"
+        },
+        {
+          "id": "43149",
+          "text": "Expedition"
+        },
+        {
+          "id": "8451",
+          "text": "Incursion"
+        }
+      ]
+    }
+  }
+}

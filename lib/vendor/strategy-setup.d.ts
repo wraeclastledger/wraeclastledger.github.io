@@ -1,3 +1,4 @@
+import { type CovensImport } from './covensImport';
 export declare const SETUP_CODE_PREFIX = "wls1.";
 export declare const SETUP_CODE_MIN_APP_VERSION = "1.0.97";
 export declare const SETUP_CODE_MAX_LENGTH = 32768;
@@ -15,6 +16,8 @@ export interface StrategySetupCode {
         type: string;
         countPerMap: number | null;
     } | null;
+    deliriumOrbTypes?: string[];
+    covens?: CovensImport;
     astrolabe: string | null;
     atlasTreeUrl: string | null;
     runRegex: string;

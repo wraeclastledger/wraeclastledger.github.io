@@ -1,15 +1,27 @@
 {
   "source": "gund0lf/wraeclastledger_react",
   "minimumAppVersion": "1.0.97",
-  "bundleSha256": "d3669a9a98fbbacb466d3c279ffe9ab4c01faaa65546239270f034a2061bab4d",
+  "bundleSha256": "b62a578978e0253f313875765a54c9c5df1d2a57d3144a8a9b0165fed6fed4fa",
   "sources": [
     {
       "path": "src/shared/atlasReaderSafety.ts",
       "sha256": "4ff755b199bdb5b499b72d469e68d7c75b5735cbfca8cb41365c249d2d2c1716"
     },
     {
+      "path": "src/shared/covensImport.ts",
+      "sha256": "37301f840371c26683c3c0a86baf54b757a5745c327ff8f212b3e459f219e05a"
+    },
+    {
+      "path": "src/shared/deliriumOrbs.ts",
+      "sha256": "50aff52867493406e76b7d60b1fec655f9481adb9cf411855aa67443064bbc32"
+    },
+    {
+      "path": "src/shared/gameData/manifest.ts",
+      "sha256": "996b966d9e301349476fd1569a6ad0085dca756f4ce8203e84b34933c6c38422"
+    },
+    {
       "path": "src/shared/strategySetupCode.ts",
-      "sha256": "39a4e6902cde52150127b3fa988915a22668300deb7e419159a1dc1407a3215e"
+      "sha256": "bfbfffc2c74e8a4577ff189e7ddac37a12d33f539dd889bb78e4b7e8330063f6"
     }
   ]
 }

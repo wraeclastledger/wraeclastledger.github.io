@@ -1,12 +1,16 @@
 {
-  "clientVersion": "1.0.97",
+  "clientVersion": "1.0.99",
   "source": "gund0lf/wraeclastledger_react; public setup adapter",
   "exports": [
     "generatePublicStrategySetupCode",
     "isSafeStrategyAtlasUrl"
   ],
-  "bundleSha256": "1598680333bb64f0e631963bbf8ce4fe52d14b6b6d3f20f67b5862d28d86c991",
+  "bundleSha256": "7f7f9c4f9a7243a5c180b93fcd6b89d3969993aee99bbc0aa137eefaa4c25d88",
   "sources": [
+    {
+      "path": "website/node_modules/fflate/esm/browser.js",
+      "sha256": "b7ca4450b19559a1d50eb381adcee94b82449674be4cd17789d9beba7e6122a1"
+    },
     {
       "path": "node_modules/uuid/dist/index.js",
       "sha256": "65e9fae8f22278e6c9ac5b016dbe1ead01b8014f66ce08a807741885d4bf01f1"
@@ -92,24 +96,32 @@
       "sha256": "5a43d6eb8496806fd5e152f92edda603dbb1f77108045edcf034f22c9e320ce8"
     },
     {
+      "path": "src/renderer/src/utils/atlasChoices.ts",
+      "sha256": "798ddfa65a13b2f19bbae9f8703bb24380e4810767608d36b603cc1372b449de"
+    },
+    {
       "path": "src/renderer/src/utils/atlasStatsSync.ts",
-      "sha256": "1d226b323d195f7480c8acdd54286a035de594730f6c6f0f6dec831ee042706d"
+      "sha256": "6be7448adc31e8c3dfe5ca5a238d58afb69976fc43a456cc60180995acb4a6f5"
     },
     {
       "path": "src/renderer/src/utils/atlasTags.ts",
-      "sha256": "f2a892d091515a31a421a4adee6d0d890316447e7c5a001987403805cdd9eee3"
+      "sha256": "4becbac6547357dade4b127203683d4f80df10af69be3e6f89eb02bd79fa14fa"
     },
     {
       "path": "src/renderer/src/utils/atlasUrl.ts",
-      "sha256": "62f7a4e37705c7ce1fa86b9f06f3accfe5a0b782e29fe37034ef46245883d335"
+      "sha256": "d09eea78a4a8ad06b7a4e8ac396badf102cef5435d8a1642026398e4747a575f"
     },
     {
       "path": "src/renderer/src/utils/discordShareWire.ts",
-      "sha256": "b33b6cdd62d807629612aa808469426e4e29440cacded5a0530c5bdab3e05015"
+      "sha256": "bf3873c0715b72d5026e4dd27026224dd8e0b3d8322491fa1d86e7ffc7dac6ca"
+    },
+    {
+      "path": "src/renderer/src/utils/gameData.ts",
+      "sha256": "7df3dbdb39d0b265c74721c2f1e97d2a749401f43d597435a772a57157524b64"
     },
     {
       "path": "src/renderer/src/utils/lootCategories.ts",
-      "sha256": "358a6633dbb84b4fefb63ec27715881e9334dace6c5f52b258d0f5d2c1007f66"
+      "sha256": "468ea7908d3793fcb5f47f4f716a2933680f0b93af96db4e25194dd602bb2378"
     },
     {
       "path": "src/renderer/src/utils/lootSummary.ts",
@@ -121,7 +133,15 @@
     },
     {
       "path": "src/renderer/src/utils/manualStatistics.ts",
-      "sha256": "c32bdd8d275debdc20f07f1f6d13f922b81bae469846b6be8f258dd0e1c98790"
+      "sha256": "12b58e8fce7cfffe32c7622c5c277ea518bca5e2b1ab57650f4ace7fc8d5634a"
+    },
+    {
+      "path": "src/renderer/src/utils/mapParser.ts",
+      "sha256": "6c907637e37300283c326c808dabb01e8a44142affe98eeab15567664c17e364"
+    },
+    {
+      "path": "src/renderer/src/utils/profit.ts",
+      "sha256": "5ee6886632348302b23a88f5e93e861b1704bed089089d016ec15b7462728f09"
     },
     {
       "path": "src/renderer/src/utils/publicStrategySetupCode.ts",
@@ -129,7 +149,11 @@
     },
     {
       "path": "src/renderer/src/utils/runStatistics.ts",
-      "sha256": "1b515ace4b7b7b428f6697bf75fac349398eac2805e2a125a77a07710638605b"
+      "sha256": "a3ba62e00e1582082ab371a498f031954664f95d77abb5a4a04d09406c85b5d2"
+    },
+    {
+      "path": "src/renderer/src/utils/strategyConstants.ts",
+      "sha256": "765e25fcb908cced68ed766b008827be10224c8e540586cb0a4bf06f9fd1ee28"
     },
     {
       "path": "src/shared/atlasReaderSafety.ts",
@@ -137,15 +161,39 @@
     },
     {
       "path": "src/shared/atlasStats.ts",
-      "sha256": "01ccaa35aa5b82ac878a76e140d06b15fcc5449e459d540b565875410d307f2a"
+      "sha256": "cd885e0ee1b4544153f7cee10c8aa9e5c0d0353d0d428961603511e05c01c5fb"
+    },
+    {
+      "path": "src/shared/authorNames.ts",
+      "sha256": "0ec9fee6aa8e20c7276d9addd83241903f24c6ffcc86abad69fa7a2f7f60832c"
+    },
+    {
+      "path": "src/shared/authorSubmission.ts",
+      "sha256": "6189f68afa1e50a4e96cb8c0cccbe7ca345dc56a8d26eaee3a1ee2a7c930bef1"
+    },
+    {
+      "path": "src/shared/brickMods.ts",
+      "sha256": "e2d42095747a037d2977e9a2c35b775c0d6da3c12e500830a9528e06c569d500"
+    },
+    {
+      "path": "src/shared/gameData/manifest.ts",
+      "sha256": "996b966d9e301349476fd1569a6ad0085dca756f4ce8203e84b34933c6c38422"
     },
     {
       "path": "src/shared/manualLoot.ts",
       "sha256": "c826c6e6c198b7dc24f25bb2d0b7fe7c8231af997ceb856baaac39cfeff3a4b2"
     },
     {
-      "path": "website/node_modules/fflate/esm/browser.js",
-      "sha256": "b7ca4450b19559a1d50eb381adcee94b82449674be4cd17789d9beba7e6122a1"
+      "path": "src/shared/mapDevice.ts",
+      "sha256": "96f021ae8a93e60112ff16d894b391a7f9adc24f71d8e93ccc29b66d7b83adfb"
+    },
+    {
+      "path": "src/shared/modTokens.ts",
+      "sha256": "1efbd76905c7a2b1c95c34a2516fd49e53ac5f07bbb3b893df0c8896af36fe81"
+    },
+    {
+      "path": "src/shared/strategyApi.ts",
+      "sha256": "8d84ab65dd665a873cdfee07cde5904b4fcd90f71f7a18586b88c8f86b925ce8"
     }
   ]
 }
