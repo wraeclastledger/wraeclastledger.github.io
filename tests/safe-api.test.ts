@@ -5,6 +5,7 @@ import fixture from './safe-strategy-v2.json';
 import listContract from './safe-strategy-list-v2.json';
 import { buildPresentationFixtures } from './safe-strategy-presentation.mjs';
 import { anonymousAuthor } from '../lib/safe-api';
+import { atlasChoiceLabel } from '../lib/covens-labels';
 import { safeDetail, safeList, safeEvidence, safeCatalogue, authorLabel, websiteSetup } from '../lib/safe-api';
 import { PublicApi, validateResponse } from '../lib/api';
 import { DEFAULT_QUERY, type EvidencePage } from '../lib/model';
@@ -152,6 +153,32 @@ describe('shared safe website reader', () => {
     const enriched = (covens: unknown) => ({ ...original, runs: [{ ...run, covens }] });
     expect(safeEvidence(enriched(fields), d).runs[0]).toHaveProperty('covens', fields);
     expect(() => safeEvidence(enriched({ ...fields, internal_note: 'synthetic' }), d)).toThrow();
+  });
+  it.each([
+    [27261, 15113, 'Celestial Presence → Map Bosses'],
+    [27261, 62580, 'Celestial Presence → Players'],
+    [27261, 24486, 'Celestial Presence → Influenced Monsters'],
+    [53484, 33191, 'Runic Distortion → Monsters'],
+    [53484, 39546, 'Runic Distortion → Chests'],
+  ] as const)('reads, labels and exports corrected Atlas choice %i/%i', (node, option, label) => {
+    const atlas = { version: '3.30.0-atlas', choices: [{ node, option }] };
+    const fragment = node === 27261 ? 'AAAABgAAAwIAan1xdXF1AAA=' : 'AAAABgAAAwIAcXXQ7HF1AAA=';
+    const atlasTreeUrl = `https://atlas.wraeclastledger.com/?v=${atlas.version}&choices=${node}-${option}#${fragment}`;
+    const covens = { version: 1, threads: null, ember: null, atlas };
+    const raw = fixture.detail;
+    const value = { ...raw.reusable_setup.value, league: 'Covens', scarabs: [], delirium: null, atlasTreeUrl, covens };
+    const d = safeDetail({ ...raw, league: 'Covens', setup: { ...raw.setup, scarabs: [], delirium: null,
+      atlas: { ...raw.setup.atlas, url: atlasTreeUrl } },
+      reusable_setup: { status: 'available', value } }, raw.id);
+    const page = evidence();
+    const run = page.runs[0];
+    const fields = { ...covens, atlas_drops: null, more_threads: null, delirium: null, encounters: null, orbs: null };
+    const checked = safeEvidence({ ...page, runs: [{ ...run, setup: { ...run.setup, scarabs: [], delirium: null }, covens: fields }] }, d);
+    expect(checked.runs[0].covens?.atlas).toEqual(atlas);
+    expect(atlasChoiceLabel(atlas.version, node, option)).toBe(label);
+    const decoded = decodeStrategySetupCode(encodeStrategySetupCode(websiteSetup(d, checked)!));
+    expect(decoded?.covens).toEqual(covens);
+    expect(decoded?.atlasTreeUrl).toBe(atlasTreeUrl);
   });
   it('bounds the catalogue and rejects repeated snapshot identities', async () => {
     const snapshot = { snapshot_key: fixture.snapshot, read_version: fixture.detail.read_version,

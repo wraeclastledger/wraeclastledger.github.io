@@ -212,6 +212,23 @@
         }
       ]
     },
+    "27261": {
+      "name": "Celestial Presence",
+      "options": [
+        {
+          "id": "15113",
+          "text": "Map Bosses"
+        },
+        {
+          "id": "62580",
+          "text": "Players"
+        },
+        {
+          "id": "24486",
+          "text": "Influenced Monsters"
+        }
+      ]
+    },
     "28029": {
       "name": "Path of Worship",
       "options": [
@@ -466,6 +483,19 @@
         {
           "id": "22534",
           "text": "Contempt"
+        }
+      ]
+    },
+    "53484": {
+      "name": "Runic Distortion",
+      "options": [
+        {
+          "id": "33191",
+          "text": "Monsters"
+        },
+        {
+          "id": "39546",
+          "text": "Chests"
         }
       ]
     },

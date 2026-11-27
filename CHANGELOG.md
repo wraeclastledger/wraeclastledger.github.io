@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Celestial Presence and Runic Distortion choices now appear by name in Covens evidence and carry through copied setup codes.
+
 - Strategy links and setup codes preserve Ledger Atlas choices. The import panel identifies setups that require the newer desktop reader.
 
 - Strategy details show Thread costs, each Ember’s quoted price beside its name, partial Delirium Orb spending and Atlas choice names. Evidence can be retried on a single-run strategy.

@@ -5,8 +5,12 @@
     "generatePublicStrategySetupCode",
     "isSafeStrategyAtlasUrl"
   ],
-  "bundleSha256": "6bd65847379095bb02042f75c7e522dfad2aa8044d9173d0c9dd2b777b7e8381",
+  "bundleSha256": "23e1f64fb78b6b2b7ea86ae3ba60760a4c11ae0dae487555077081759460a951",
   "sources": [
+    {
+      "path": "website/node_modules/fflate/esm/browser.js",
+      "sha256": "b7ca4450b19559a1d50eb381adcee94b82449674be4cd17789d9beba7e6122a1"
+    },
     {
       "path": "node_modules/uuid/dist/index.js",
       "sha256": "65e9fae8f22278e6c9ac5b016dbe1ead01b8014f66ce08a807741885d4bf01f1"
@@ -92,16 +96,12 @@
       "sha256": "5a43d6eb8496806fd5e152f92edda603dbb1f77108045edcf034f22c9e320ce8"
     },
     {
-      "path": "website/node_modules/fflate/esm/browser.js",
-      "sha256": "b7ca4450b19559a1d50eb381adcee94b82449674be4cd17789d9beba7e6122a1"
-    },
-    {
       "path": "src/renderer/src/utils/atlasChoices.ts",
       "sha256": "798ddfa65a13b2f19bbae9f8703bb24380e4810767608d36b603cc1372b449de"
     },
     {
       "path": "src/renderer/src/utils/atlasStatsSync.ts",
-      "sha256": "6be7448adc31e8c3dfe5ca5a238d58afb69976fc43a456cc60180995acb4a6f5"
+      "sha256": "dd775d364db4cdc78d1ed7ee3defe097795e81a0315e0ca26a608d1a539e9c45"
     },
     {
       "path": "src/renderer/src/utils/atlasTags.ts",
@@ -109,7 +109,7 @@
     },
     {
       "path": "src/renderer/src/utils/atlasUrl.ts",
-      "sha256": "d09eea78a4a8ad06b7a4e8ac396badf102cef5435d8a1642026398e4747a575f"
+      "sha256": "9aa5d9112422962814a57a97c7747f0340d9eed094e32bb2edddae5fb2a48bdc"
     },
     {
       "path": "src/renderer/src/utils/discordShareWire.ts",
@@ -157,11 +157,11 @@
     },
     {
       "path": "src/shared/atlasReaderSafety.ts",
-      "sha256": "71bcb558abe8932abb24e7847d9f70d024957994bbc92ca385ee089f0904993c"
+      "sha256": "ae930c71cedb027835601fa55ef07d75917e86fdefb1f27dd7a1cf23689cac33"
     },
     {
       "path": "src/shared/atlasStats.ts",
-      "sha256": "cd885e0ee1b4544153f7cee10c8aa9e5c0d0353d0d428961603511e05c01c5fb"
+      "sha256": "e0863e018a9351f3654fc86a3ce18713bd19dae22f10b48dcf93fb4fb4abee70"
     },
     {
       "path": "src/shared/authorNames.ts",
@@ -181,7 +181,7 @@
     },
     {
       "path": "src/shared/gameData/manifest.ts",
-      "sha256": "996b966d9e301349476fd1569a6ad0085dca756f4ce8203e84b34933c6c38422"
+      "sha256": "6bd4ebdabc91159993c67d447df71a28875a2f68919919449f115abb53f32393"
     },
     {
       "path": "src/shared/manualLoot.ts",

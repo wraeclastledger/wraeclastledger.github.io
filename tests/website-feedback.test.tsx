@@ -135,22 +135,32 @@ it('waits for composition completion and lets Enter flush a pending search once'
   expect(requests().at(-1)?.searchParams.get('search')).toBe('Bestiary');
 });
 
-it('identifies the required desktop version and copies the Covens fields', async () => {
+it.each([
+  { atlas: null, url: null, notice: 'Requires WraeclastLedger 1.0.100 or later.' },
+  { atlas: { version: '3.30.0-atlas', choices: [{ node: 53484, option: 39546 }] },
+    url: 'https://pathofpathing.com/?v=3.30.0-atlas#AAAABgAAAwIAcXXQ7HF1AAA=',
+    notice: 'Requires a desktop release with Ledger Atlas support.' },
+  { atlas: { version: '3.30.0-atlas', choices: [{ node: 27261, option: 15113 }, { node: 53484, option: 33191 }] },
+    url: 'https://atlas.wraeclastledger.com/?v=3.30.0-atlas&choices=27261-15113.53484-33191#AAAABgAABAMAan1xddDscXUAAA==',
+    notice: 'Requires a desktop release with Ledger Atlas support.' },
+])('identifies desktop compatibility and copies the Covens setup for $url', async ({ atlas, url, notice }) => {
   const base = detail();
-  const covens = { version: 1, threads: [], ember: null, atlas: null };
+  const covens = { version: 1, threads: [], ember: null, atlas };
   const enriched = { ...base, league: 'Covens', setup: { ...base.setup, scarabs: [], delirium: null },
     reusable_setup: { status: 'available', value: {
-    ...base.reusable_setup.value, league: 'Covens', scarabs: [], delirium: null, covens,
+    ...base.reusable_setup.value, league: 'Covens', scarabs: [], delirium: null, covens, atlasTreeUrl: url,
   } } };
   vi.mocked(fetch).mockImplementation(async url => respond(requestUrl(url).pathname.endsWith('/evidence') ? evidence() : enriched));
   history.replaceState(null, '', '#/strategy/' + id(1));
   await mount();
-  expect(host.querySelector('#setup-code-version')?.textContent).toContain('1.0.100');
+  expect(host.querySelector('#setup-code-version')?.textContent).toContain(notice);
   const writeText = vi.fn(async (_text: string) => {});
   vi.stubGlobal('navigator', { clipboard: { writeText } });
   const copy = [...host.querySelectorAll('button')].find(b => b.textContent?.includes('Copy setup code'))!;
   await act(async () => copy.click());
-  expect(decodeStrategySetupCode(writeText.mock.calls[0][0])?.covens).toEqual(covens);
+  const decoded = decodeStrategySetupCode(writeText.mock.calls[0][0]);
+  expect(decoded?.covens).toEqual(covens);
+  expect(decoded?.atlasTreeUrl).toBe(url);
 });
 
 it('copies reusable setup and available history even when structured run costs are missing', async () => {

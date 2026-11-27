@@ -1,11 +1,11 @@
 {
   "source": "gund0lf/wraeclastledger_react",
   "minimumAppVersion": "1.0.97",
-  "bundleSha256": "b45875f795e327b2ce9cca72549559b6e3daf4112198d4d7fe8b36257f99195d",
+  "bundleSha256": "38d2e8563f0792741dc264ff871c3e10938fa027c297a21dfdc361def0111dc1",
   "sources": [
     {
       "path": "src/shared/atlasReaderSafety.ts",
-      "sha256": "71bcb558abe8932abb24e7847d9f70d024957994bbc92ca385ee089f0904993c"
+      "sha256": "ae930c71cedb027835601fa55ef07d75917e86fdefb1f27dd7a1cf23689cac33"
     },
     {
       "path": "src/shared/covensImport.ts",
@@ -17,7 +17,7 @@
     },
     {
       "path": "src/shared/gameData/manifest.ts",
-      "sha256": "996b966d9e301349476fd1569a6ad0085dca756f4ce8203e84b34933c6c38422"
+      "sha256": "6bd4ebdabc91159993c67d447df71a28875a2f68919919449f115abb53f32393"
     },
     {
       "path": "src/shared/strategySetupCode.ts",

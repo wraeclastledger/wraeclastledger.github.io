@@ -39,6 +39,7 @@ import {
   signedClass,
   type Query,
   type SortKey,
+  type StrategyDetail,
 } from '../lib/model';
 
 import { parseRoute, routeUrl, routeLabel, type Route } from '../lib/routes';
@@ -120,6 +121,19 @@ function ErrorNotice({ error, retry }: { error: ApiError; retry: () => void }) {
       )}
     </div>
   );
+}
+
+function setupVersionNote(detail: StrategyDetail): string {
+  const reusable = detail.safe?.reusable_setup;
+  const setup = reusable?.status === 'available' ? reusable.value : undefined;
+  const atlasUrl = setup ? setup.atlasTreeUrl : detail.setup.atlas?.url;
+  const atlas = setup?.covens?.atlas;
+  // Version 1.0.100 shipped before these two 3.30 choice nodes were added to the catalogue.
+  const updatedChoices = atlas?.version === '3.30.0-atlas' &&
+    atlas.choices.some(({ node }) => node === 27261 || node === 53484);
+  if (atlasUrl?.startsWith('https://atlas.wraeclastledger.com/') || updatedChoices)
+    return 'Requires a desktop release with Ledger Atlas support. WraeclastLedger 1.0.100 cannot import this setup.';
+  return `Requires WraeclastLedger ${setup?.covens ? '1.0.100' : SETUP_CODE_MIN_APP_VERSION} or later.`;
 }
 
 export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_REVIEW === '1', defaultCommunity = import.meta.env.VITE_REVIEW_HOME_COMMUNITY || '' }: { communityReview?: boolean; defaultCommunity?: string } = {}) {
@@ -1339,11 +1353,7 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
                       maps, costs and returns. Enter your own current prices.
                     </p>
                     <p id="setup-code-version" className="footnote">
-                      {(state.detail.safe?.reusable_setup.status === 'available'
-                        ? state.detail.safe.reusable_setup.value.atlasTreeUrl : state.detail.setup.atlas?.url)?.startsWith('https://atlas.wraeclastledger.com/')
-                        ? 'Requires a desktop release with Ledger Atlas support. WraeclastLedger 1.0.100 cannot import this setup.'
-                        : `Requires WraeclastLedger ${state.detail.safe?.reusable_setup.status === 'available' &&
-                          'covens' in state.detail.safe.reusable_setup.value ? '1.0.100' : SETUP_CODE_MIN_APP_VERSION} or later.`}
+                      {setupVersionNote(state.detail)}{' '}
                       Inspect available historical results; loading applies only setup and leaves new-run prices empty.
                     </p>
                   </div>

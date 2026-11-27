@@ -1,6 +1,6 @@
 {
   "source": "gund0lf/wraeclastledger_react",
-  "bundleSha256": "440d013c08e8f0746b1b253f39cc5b196833bb1d55be57fe95cd1ab53e9e7795",
+  "bundleSha256": "270ff11573cea9f9d20b3d6981899ec708d836dbfad8551044e869aea5638e03",
   "fixture": {
     "path": "src/renderer/src/utils/__fixtures__/safe-strategy-v2.json",
     "sha256": "6e04d8ec8c3063a09c46190414d3509d6bac28a9bd2867bb0cf047baaec3e5fd"
@@ -16,7 +16,7 @@
   "sources": [
     {
       "path": "src/shared/atlasReaderSafety.ts",
-      "sha256": "71bcb558abe8932abb24e7847d9f70d024957994bbc92ca385ee089f0904993c"
+      "sha256": "ae930c71cedb027835601fa55ef07d75917e86fdefb1f27dd7a1cf23689cac33"
     },
     {
       "path": "src/shared/authorHandoff.ts",
@@ -36,7 +36,7 @@
     },
     {
       "path": "src/shared/gameData/manifest.ts",
-      "sha256": "996b966d9e301349476fd1569a6ad0085dca756f4ce8203e84b34933c6c38422"
+      "sha256": "6bd4ebdabc91159993c67d447df71a28875a2f68919919449f115abb53f32393"
     },
     {
       "path": "src/shared/safeStrategy.ts",
