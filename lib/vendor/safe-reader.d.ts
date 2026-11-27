@@ -30,7 +30,7 @@ export declare const parseSafeRow: Check<{
     attribution: {
         registration_id: string;
         display_name: string | null;
-        status: "active" | "retired" | "suspended" | "removed" | "quarantined";
+        status: "active" | "retired" | "removed" | "suspended" | "quarantined";
     } | null;
     community: {
         id: string;
@@ -401,7 +401,7 @@ export declare const parseSafeDetail: Check<{
     attribution: {
         registration_id: string;
         display_name: string | null;
-        status: "active" | "retired" | "suspended" | "removed" | "quarantined";
+        status: "active" | "retired" | "removed" | "suspended" | "quarantined";
     } | null;
     community: {
         id: string;
@@ -437,7 +437,7 @@ export declare const parseSafeList: Check<{
     read_version: string;
     total: number;
     limit: number;
-    sort: "maps" | "title" | "score" | "activity" | "mod" | "cost_per_map" | "profit_per_map" | "net_profit" | "total_invest" | "div_per_hour";
+    sort: "title" | "maps" | "score" | "activity" | "mod" | "cost_per_map" | "profit_per_map" | "net_profit" | "total_invest" | "div_per_hour";
     order: "asc" | "desc";
     strategies: {
         map_type: string | null;
@@ -469,7 +469,7 @@ export declare const parseSafeList: Check<{
         attribution: {
             registration_id: string;
             display_name: string | null;
-            status: "active" | "retired" | "suspended" | "removed" | "quarantined";
+            status: "active" | "retired" | "removed" | "suspended" | "quarantined";
         } | null;
         community: {
             id: string;

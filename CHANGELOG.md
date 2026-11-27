@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Strategy links and setup codes preserve Ledger Atlas choices. The import panel identifies setups that require the newer desktop reader.
+
 - Strategy details show Thread costs, each Ember’s quoted price beside its name, partial Delirium Orb spending and Atlas choice names. Evidence can be retried on a single-run strategy.
 
 - Threads have a painted spool loot category icon.

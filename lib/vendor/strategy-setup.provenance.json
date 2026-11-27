@@ -1,15 +1,15 @@
 {
   "source": "gund0lf/wraeclastledger_react",
   "minimumAppVersion": "1.0.97",
-  "bundleSha256": "b62a578978e0253f313875765a54c9c5df1d2a57d3144a8a9b0165fed6fed4fa",
+  "bundleSha256": "b45875f795e327b2ce9cca72549559b6e3daf4112198d4d7fe8b36257f99195d",
   "sources": [
     {
       "path": "src/shared/atlasReaderSafety.ts",
-      "sha256": "4ff755b199bdb5b499b72d469e68d7c75b5735cbfca8cb41365c249d2d2c1716"
+      "sha256": "71bcb558abe8932abb24e7847d9f70d024957994bbc92ca385ee089f0904993c"
     },
     {
       "path": "src/shared/covensImport.ts",
-      "sha256": "37301f840371c26683c3c0a86baf54b757a5745c327ff8f212b3e459f219e05a"
+      "sha256": "3805dc41bfc2c5b1076440bb5e6f400fa2c6d94a0a92f3de1354a0c898b27188"
     },
     {
       "path": "src/shared/deliriumOrbs.ts",

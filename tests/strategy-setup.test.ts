@@ -24,3 +24,11 @@ it('rejects stale revision evidence while permitting detail-only codes', () => {
   expect(publicStrategySetup(detail())?.history?.netProfit).toBeNull();
   expect(publicStrategySetup(detail())?.scarabs).toHaveLength(2);
 });
+
+it('retains the authored Ledger URL including its choice and fragment on setup export and import', () => {
+  const url = 'https://atlas.wraeclastledger.com/?v=3.30.0-atlas&choices=712-17864#AAAABgAAAgEAAshxdQAA';
+  const d = detail(3);
+  const setup = publicStrategySetup({ ...d, setup: { ...d.setup, atlas: { ...d.setup.atlas, url } } });
+  expect(setup?.atlasTreeUrl).toBe(url);
+  expect(decodeStrategySetupCode(encodeStrategySetupCode(setup!))?.atlasTreeUrl).toBe(url);
+});

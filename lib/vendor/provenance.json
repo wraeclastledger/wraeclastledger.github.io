@@ -1,16 +1,12 @@
 {
-  "clientVersion": "1.0.99",
+  "clientVersion": "1.0.100",
   "source": "gund0lf/wraeclastledger_react; public setup adapter",
   "exports": [
     "generatePublicStrategySetupCode",
     "isSafeStrategyAtlasUrl"
   ],
-  "bundleSha256": "7f7f9c4f9a7243a5c180b93fcd6b89d3969993aee99bbc0aa137eefaa4c25d88",
+  "bundleSha256": "6bd65847379095bb02042f75c7e522dfad2aa8044d9173d0c9dd2b777b7e8381",
   "sources": [
-    {
-      "path": "website/node_modules/fflate/esm/browser.js",
-      "sha256": "b7ca4450b19559a1d50eb381adcee94b82449674be4cd17789d9beba7e6122a1"
-    },
     {
       "path": "node_modules/uuid/dist/index.js",
       "sha256": "65e9fae8f22278e6c9ac5b016dbe1ead01b8014f66ce08a807741885d4bf01f1"
@@ -96,6 +92,10 @@
       "sha256": "5a43d6eb8496806fd5e152f92edda603dbb1f77108045edcf034f22c9e320ce8"
     },
     {
+      "path": "website/node_modules/fflate/esm/browser.js",
+      "sha256": "b7ca4450b19559a1d50eb381adcee94b82449674be4cd17789d9beba7e6122a1"
+    },
+    {
       "path": "src/renderer/src/utils/atlasChoices.ts",
       "sha256": "798ddfa65a13b2f19bbae9f8703bb24380e4810767608d36b603cc1372b449de"
     },
@@ -113,7 +113,7 @@
     },
     {
       "path": "src/renderer/src/utils/discordShareWire.ts",
-      "sha256": "bf3873c0715b72d5026e4dd27026224dd8e0b3d8322491fa1d86e7ffc7dac6ca"
+      "sha256": "946fc7d110df2436a6e32f8b0293af6211b0cae5743a7ace9b863ce73a241d80"
     },
     {
       "path": "src/renderer/src/utils/gameData.ts",
@@ -121,7 +121,7 @@
     },
     {
       "path": "src/renderer/src/utils/lootCategories.ts",
-      "sha256": "468ea7908d3793fcb5f47f4f716a2933680f0b93af96db4e25194dd602bb2378"
+      "sha256": "7383a366383984eb1c800572b90be9fa80607ced8eb21600c2efd1dafa6d0dfb"
     },
     {
       "path": "src/renderer/src/utils/lootSummary.ts",
@@ -137,7 +137,7 @@
     },
     {
       "path": "src/renderer/src/utils/mapParser.ts",
-      "sha256": "6c907637e37300283c326c808dabb01e8a44142affe98eeab15567664c17e364"
+      "sha256": "b8e089ec226457da4a44017e6ec367cd954f9c6f99c761c966c5eeed184b3a05"
     },
     {
       "path": "src/renderer/src/utils/profit.ts",
@@ -157,7 +157,7 @@
     },
     {
       "path": "src/shared/atlasReaderSafety.ts",
-      "sha256": "4ff755b199bdb5b499b72d469e68d7c75b5735cbfca8cb41365c249d2d2c1716"
+      "sha256": "71bcb558abe8932abb24e7847d9f70d024957994bbc92ca385ee089f0904993c"
     },
     {
       "path": "src/shared/atlasStats.ts",
@@ -169,11 +169,15 @@
     },
     {
       "path": "src/shared/authorSubmission.ts",
-      "sha256": "6189f68afa1e50a4e96cb8c0cccbe7ca345dc56a8d26eaee3a1ee2a7c930bef1"
+      "sha256": "41a1afbbce34e1e6d1d10db42afb115d7fe066d4cbc334d841df491e221ea4b8"
     },
     {
       "path": "src/shared/brickMods.ts",
       "sha256": "e2d42095747a037d2977e9a2c35b775c0d6da3c12e500830a9528e06c569d500"
+    },
+    {
+      "path": "src/shared/covensWireValidator.mjs",
+      "sha256": "36664ddad6389925fbbcc84080a779e68009ed5cd8dd7ab00c3abf1584bd71de"
     },
     {
       "path": "src/shared/gameData/manifest.ts",

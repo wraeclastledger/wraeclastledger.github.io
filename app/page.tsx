@@ -1339,8 +1339,11 @@ export default function Home({ communityReview = import.meta.env.VITE_COMMUNITY_
                       maps, costs and returns. Enter your own current prices.
                     </p>
                     <p id="setup-code-version" className="footnote">
-                      Requires WraeclastLedger {state.detail.safe?.reusable_setup.status === 'available' &&
-                        'covens' in state.detail.safe.reusable_setup.value ? '1.0.100' : SETUP_CODE_MIN_APP_VERSION} or later.
+                      {(state.detail.safe?.reusable_setup.status === 'available'
+                        ? state.detail.safe.reusable_setup.value.atlasTreeUrl : state.detail.setup.atlas?.url)?.startsWith('https://atlas.wraeclastledger.com/')
+                        ? 'Requires a desktop release with Ledger Atlas support. WraeclastLedger 1.0.100 cannot import this setup.'
+                        : `Requires WraeclastLedger ${state.detail.safe?.reusable_setup.status === 'available' &&
+                          'covens' in state.detail.safe.reusable_setup.value ? '1.0.100' : SETUP_CODE_MIN_APP_VERSION} or later.`}
                       Inspect available historical results; loading applies only setup and leaves new-run prices empty.
                     </p>
                   </div>
